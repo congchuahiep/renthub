@@ -1,5 +1,5 @@
 """
-WSGI config for thue_tro_django project.
+WSGI config for renthub project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'thue_tro_django.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'renthub.settings')
 
 application = get_wsgi_application()

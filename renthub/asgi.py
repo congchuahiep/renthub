@@ -1,5 +1,5 @@
 """
-ASGI config for thue_tro_django project.
+ASGI config for renthub_django project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'thue_tro_django.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'renthub.settings')
 
 application = get_asgi_application()
