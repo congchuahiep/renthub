@@ -1,3 +1,4 @@
+# Các bước chạy
 1. Tạo tệp `.env`
 2. Điền các thông tin sau
     ```
