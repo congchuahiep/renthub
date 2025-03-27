@@ -72,10 +72,10 @@ class RentalPost(Post):
     number_of_bathrooms = models.IntegerField()
     utilities = models.ManyToManyField('Utilities', related_name='rental_posts')
 
-class Composation(BaseModel):
+class Conversation(BaseModel):
     landlord = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.LANDLORD}, related_name='landlord')
     tenent = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.TENANT}, related_name='tenant')
 
 class Message(BaseModel):
-    composation = models.ForeignKey(Composation, on_delete=models.CASCADE)
+    composation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     content = models.TextField(null=False)
