@@ -55,7 +55,7 @@ class Post(BaseModel):
     
     title = models.CharField(max_length=256)
     content = models.TextField(null = True)
-    status = models.CharField()
+    status = models.CharField(max=10, choices=STATUS)
     
 
 class RentalPost(Post):
