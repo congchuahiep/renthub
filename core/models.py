@@ -35,6 +35,11 @@ class BaseModel(models.Model):
         abstract = True
         
 
+class Image(models.Model):
+    image = CloudinaryField(null=False)
+    alt = models.CharField(blank=True, null=True)
+        
+
 class Utilities(BaseModel):
     '''
     Model này dùng để hỗ trợ cho Model RentalPost,
