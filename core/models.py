@@ -10,7 +10,7 @@ class User(AbstractUser):
         ('landlord', 'Landlord'),
         ('tenant', 'Tenant'),
     ]
-
+    # Loại người dùng
     user_type = models.CharField(
         max_length=10,
         choices=USER_TYPE_CHOICES,
@@ -23,7 +23,7 @@ class User(AbstractUser):
 
     class Meta:
         db_table = "user"
-    
+
     
 class BaseModel(models.Model):
     active = models.BooleanField(default=True)
@@ -33,11 +33,36 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
         
+
+class Utilities(BaseModel):
+    '''
+    Model này dùng để hỗ trợ cho Model RentalPost,
+    thêm các thông tin về tiện ích cho căn phòng
+    của bài đăng cho thuê nhà
+    '''
+    name = models.CharField(max_length=256)
+    
+        
 class Post(BaseModel):
+    
+    STATUS = {
+        "pending": "Đang kiểm duyệt",
+        "approved": "Đã kiểm duyệt",
+        "rejected": "Từ chối kiểm duyệt",
+        "expired": "Hết hạn",
+        "rented": "Đã thuê"
+    }
+    
     title = models.CharField(max_length=256)
     content = models.TextField(null = True)
+    status = models.CharField()
+    
 
 class RentalPost(Post):
+    '''
+    Model này định nghĩa một bài đăng cho thuê nhà của
+    một chủ thuê
+    '''
     province = models.CharField(max_length=256)
     city = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
@@ -46,5 +71,4 @@ class RentalPost(Post):
     area = models.FloatField()
     number_of_bedrooms = models.IntegerField()
     number_of_bathrooms = models.IntegerField()
-    utilities = models.Choices
-
+    utilities = models.ManyToManyField('Utilities', related_name='rental_posts')
