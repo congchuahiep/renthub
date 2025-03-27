@@ -6,15 +6,16 @@ class User(AbstractUser):
     '''
     Người dùng chung: Chủ trọ và Người thuê trọ
     '''
-    USER_TYPE_CHOICES = [
-        ('landlord', 'Landlord'),
-        ('tenant', 'Tenant'),
-    ]
+    # Loại người dùng Enum
+    class UserType(models.TextChoices):
+        LANDLORD = "LR", "Landlord"
+        TENANT = "TN", "Tenant"
+        
     # Loại người dùng
     user_type = models.CharField(
         max_length=10,
-        choices=USER_TYPE_CHOICES,
-        default='tenant',
+        choices=UserType,
+        default=UserType.TENANT,
     )
     
     avatar = CloudinaryField(null=False)
@@ -44,18 +45,17 @@ class Utilities(BaseModel):
     
         
 class Post(BaseModel):
+    class Status(models.TextChoices):
+        PENDING = "pd", "Đang kiểm duyệt"
+        APPROVED = "ap", "Đã kiểm duyệt"
+        REJECTED = "rj", "Từ chối kiểm duyệt"
+        EXPIRED = "ep", "Hết hạn"
+        RENTED = "rt", "Đã thuê"
     
-    STATUS = {
-        "pending": "Đang kiểm duyệt",
-        "approved": "Đã kiểm duyệt",
-        "rejected": "Từ chối kiểm duyệt",
-        "expired": "Hết hạn",
-        "rented": "Đã thuê"
-    }
     
     title = models.CharField(max_length=256)
     content = models.TextField(null = True)
-    status = models.CharField(max=10, choices=STATUS)
+    status = models.CharField(max=10, choices=Status, default=Status.PENDING)
     
 
 class RentalPost(Post):
