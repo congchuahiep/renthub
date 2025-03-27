@@ -37,7 +37,7 @@ class BaseModel(models.Model):
 
 class Image(models.Model):
     image = CloudinaryField(null=False)
-    alt = models.CharField(blank=True, null=True)
+    alt = models.CharField(max_length=100, blank=True, null=True)
         
 
 class Utilities(BaseModel):
@@ -83,9 +83,22 @@ class RentalPost(Post):
     number_of_bathrooms = models.IntegerField()
     utilities = models.ManyToManyField('Utilities', related_name='rental_posts')
 
+
+class RoomSeekingPost(BaseModel):
+    tenent = models.ForeignKey('User', on_delete=models.CASCADE,
+        limit_choices_to={'user_type':User.UserType.TENANT}, 
+        related_name='room_seeking_post', null=False)
+    position = models.CharField(max_length=20)
+    area = models.FloatField(null=False)
+    limit_person = models.IntegerField()
+
 class Conversation(BaseModel):
-    landlord = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.LANDLORD}, related_name='landlord')
-    tenent = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.TENANT}, related_name='tenant')
+    landlord = models.ForeignKey(User, on_delete=models.CASCADE,
+        limit_choices_to={'user_type':User.UserType.LANDLORD}, 
+        related_name='landlord_convarsation', null=False)
+    tenent = models.ForeignKey(User, on_delete=models.CASCADE, 
+        limit_choices_to={'user_type':User.UserType.TENANT}, 
+        related_name='tenant_convarsation', null=False)
 
 class Message(BaseModel):
     composation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
