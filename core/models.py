@@ -62,6 +62,12 @@ class RentalPost(Post):
     Model này định nghĩa một bài đăng cho thuê nhà của
     một chủ thuê
     '''
+    # Chỉ định chỉ cho phép người đăng bài cho thuê nhà là Chủ nhà
+    landlord = models.ForeignKey(
+        'User',
+        limit_choices_to={'user_type': User.UserType.LANDLORD}
+    )
+    
     province = models.CharField(max_length=256)
     city = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
