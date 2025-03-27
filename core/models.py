@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from cloudinary.models import CloudinaryField
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
+
 
 class User(AbstractUser):
     '''
@@ -40,6 +44,22 @@ class Image(models.Model):
     alt = models.CharField(max_length=256, blank=True, null=True)
 
 
+class ImageRelation(models.Model):
+    '''
+    Model này dùng để quản lý mối quan hệ giữa ảnh và các đối tượng khác
+    '''
+    image = models.ForeignKey('Image', on_delete=models.CASCADE, related_name='relations')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    # Hai trường object_id và content_object thường được sử dụng để tạo
+    # một mối quan hệ đa hình (polymorphic relationship) giữa một mô hình và
+    # nhiều mô hình khác nhau
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        db_table = "image_relation"
+
+
 class BoardingHouse(BaseModel):
     '''
     Model này định nghĩa một dãy trọ:
@@ -52,6 +72,7 @@ class BoardingHouse(BaseModel):
     '''
     boarding_house_name = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
+    images = GenericRelation(Image, null=True)
 
 
 class Utilities(BaseModel):
@@ -100,21 +121,9 @@ class RentalPost(Post):
     utilities = models.ManyToManyField('Utilities', related_name='rental_posts')
 
 
-class RoomSeekingPost(BaseModel):
-    tenent = models.ForeignKey('User', on_delete=models.CASCADE,
-        limit_choices_to={'user_type':User.UserType.TENANT}, 
-        related_name='room_seeking_post', null=False)
-    position = models.CharField(max_length=20)
-    area = models.FloatField(null=False)
-    limit_person = models.IntegerField()
-
 class Conversation(BaseModel):
-    landlord = models.ForeignKey(User, on_delete=models.CASCADE,
-        limit_choices_to={'user_type':User.UserType.LANDLORD}, 
-        related_name='landlord_convarsation', null=False)
-    tenent = models.ForeignKey(User, on_delete=models.CASCADE, 
-        limit_choices_to={'user_type':User.UserType.TENANT}, 
-        related_name='tenant_convarsation', null=False)
+    landlord = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.LANDLORD}, related_name='landlord')
+    tenent = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.TENANT}, related_name='tenant')
 
 
 class Message(BaseModel):
