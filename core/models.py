@@ -2,41 +2,27 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from cloudinary.models import CloudinaryField
 
-# Create your models here.
-class User(AbstractUser):
+class User(AbstractUser): 
+    '''
+    Người dùng chung: Chủ trọ và Người thuê trọ
+    '''
+    USER_TYPE_CHOICES = [
+        ('landlord', 'Landlord'),
+        ('tenant', 'Tenant'),
+    ]
+
+    user_type = models.CharField(
+        max_length=10,
+        choices=USER_TYPE_CHOICES,
+        default='tenant',
+    )
+    
     avatar = CloudinaryField(null=False)
     phone_number = models.CharField(max_length=10, unique=True, blank=False, null=False)
     cccd = models.CharField(max_length=12, unique=True, blank=True, null=True)
-    
-    class Meta:
-        abstract = True
-    
-
-class AdminUser(User):
-    '''
-    Quản trị
-    '''
 
     class Meta:
-        db_table = "admin_user"
-
-
-class Landlord(User): 
-    '''
-    Người dùng: Chủ trọ
-    '''
-
-    class Meta:
-        db_table = "landlord"
-
-
-class Tenant(User):
-    '''
-    Người dùng: Người thuê trọ
-    '''
-
-    class Meta:
-        db_table = "tenant"
+        db_table = "user"
     
     
 class BaseModel(models.Model):
@@ -48,17 +34,17 @@ class BaseModel(models.Model):
         abstract = True
         
 class Post(BaseModel):
-    title = models.CharField()
+    title = models.CharField(max_length=256)
     content = models.TextField(null = True)
 
 class RentalPost(Post):
-    province = models.CharField()
-    city = models.CharField()
-    address = models.CharField()
+    province = models.CharField(max_length=256)
+    city = models.CharField(max_length=256)
+    address = models.CharField(max_length=256)
     price = models.FloatField()
-    limit_person = models.IntegerChoices()
+    limit_person = models.IntegerField()
     area = models.FloatField()
-    number_of_bedrooms = models.IntegerChoices()
-    number_of_bathrooms = models.IntegerChoices()
+    number_of_bedrooms = models.IntegerField()
+    number_of_bathrooms = models.IntegerField()
     utilities = models.Choices
 

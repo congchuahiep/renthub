@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core.apps.CoreConfig'
 ]
 
 MIDDLEWARE = [
@@ -78,9 +79,12 @@ WSGI_APPLICATION = 'renthub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import pymysql
+pymysql.install_as_MySQLdb()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
         "NAME": os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASSWORD"),
@@ -143,3 +147,5 @@ cloudinary.config(
     api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
+
+AUTH_USER_MODEL = "core.User"
