@@ -52,7 +52,6 @@ class Post(BaseModel):
         EXPIRED = "ep", "Hết hạn"
         RENTED = "rt", "Đã thuê"
     
-    
     title = models.CharField(max_length=256)
     content = models.TextField(null = True)
     status = models.CharField(max=10, choices=Status, default=Status.PENDING)
