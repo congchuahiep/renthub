@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from cloudinary.models import CloudinaryField
 
-class User(AbstractUser): 
+class User(AbstractUser):
     '''
     Người dùng chung: Chủ trọ và Người thuê trọ
     '''
@@ -10,14 +10,14 @@ class User(AbstractUser):
     class UserType(models.TextChoices):
         LANDLORD = "LR", "Landlord"
         TENANT = "TN", "Tenant"
-        
+
     # Loại người dùng
     user_type = models.CharField(
         max_length=10,
         choices=UserType,
         default=UserType.TENANT,
     )
-    
+
     avatar = CloudinaryField(null=False)
     phone_number = models.CharField(max_length=10, unique=True, blank=False, null=False)
     cccd = models.CharField(max_length=12, unique=True, blank=True, null=True)
@@ -25,7 +25,7 @@ class User(AbstractUser):
     class Meta:
         db_table = "user"
 
-    
+
 class BaseModel(models.Model):
     active = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -33,12 +33,26 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
-        
+
 
 class Image(models.Model):
     image = CloudinaryField(null=False)
-    alt = models.CharField(blank=True, null=True)
-        
+    alt = models.CharField(max_length=256, blank=True, null=True)
+
+
+class BoardingHouse(BaseModel):
+    '''
+    Model này định nghĩa một dãy trọ:
+    Khi chủ trọ mới tạo một tài khoản, bắt buộc chủ trọ phải tạo một dãy trọ,
+    và dãy trọ này sẽ được xét duyệt bởi quản trị viên. Nếu dãy trọ đầu tiên của
+    chủ trọ đã không được xét duyệt, thì tài khoản của chủ trọ sẽ không được phép
+    tạo mới.
+
+    Ngược lại, nếu dãy trọ đã được xét duyệt, thì chủ trọ có thể tạo các bài đăng
+    '''
+    boarding_house_name = models.CharField(max_length=256)
+    address = models.CharField(max_length=256)
+
 
 class Utilities(BaseModel):
     '''
@@ -47,8 +61,8 @@ class Utilities(BaseModel):
     của bài đăng cho thuê nhà
     '''
     name = models.CharField(max_length=256)
-    
-        
+
+
 class Post(BaseModel):
     class Status(models.TextChoices):
         PENDING = "pd", "Đang kiểm duyệt"
@@ -56,11 +70,11 @@ class Post(BaseModel):
         REJECTED = "rj", "Từ chối kiểm duyệt"
         EXPIRED = "ep", "Hết hạn"
         RENTED = "rt", "Đã thuê"
-    
+
     title = models.CharField(max_length=256)
     content = models.TextField(null = True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
-    
+
 
 class RentalPost(Post):
     '''
@@ -70,9 +84,11 @@ class RentalPost(Post):
     # Chỉ định chỉ cho phép người đăng bài cho thuê nhà là Chủ nhà
     landlord = models.ForeignKey(
         'User',
-        limit_choices_to={'user_type': User.UserType.LANDLORD}
+        on_delete=models.CASCADE,
+        limit_choices_to={'user_type': User.UserType.LANDLORD},
+        null=True,
     )
-    
+
     province = models.CharField(max_length=256)
     city = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
@@ -83,9 +99,11 @@ class RentalPost(Post):
     number_of_bathrooms = models.IntegerField()
     utilities = models.ManyToManyField('Utilities', related_name='rental_posts')
 
+
 class Conversation(BaseModel):
     landlord = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.LANDLORD}, related_name='landlord')
     tenent = models.ForeignKey(User, on_delete=models.CASCADE,limit_choices_to={'user_type':User.UserType.TENANT}, related_name='tenant')
+
 
 class Message(BaseModel):
     composation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
