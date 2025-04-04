@@ -23,8 +23,14 @@ class User(AbstractUser):
         default=UserType.TENANT,
     )
 
-    avatar = CloudinaryField(null=False)
-    phone_number = models.CharField(max_length=10, unique=True, blank=False, null=False)
+    # Nơi ở
+    address = models.CharField(max_length=256, blank=True, null=True)
+    district = models.CharField(max_length=256, blank=True, null=True)
+    province = models.CharField(max_length=256, blank=True, null=True)
+
+    # TODO: GIAI ĐOẠN TESTING NÊN MẤY TRƯỜNG NÀY CÓ THỂ BLANK
+    avatar = CloudinaryField(null=True, blank=True)
+    phone_number = models.CharField(max_length=10, unique=True, blank=True, null=True)
     cccd = models.CharField(max_length=12, unique=True, blank=True, null=True)
 
     class Meta:
@@ -33,7 +39,7 @@ class User(AbstractUser):
 
 class BaseModel(models.Model):
     active = models.BooleanField(default=True)
-    created_date = models.DateTimeField(auto_now_add=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -47,18 +53,21 @@ class Image(models.Model):
 
 class ImageRelation(models.Model):
     """
-    Model này dùng để quản lý mối quan hệ giữa ảnh và các đối tượng khác
+    Model này dùng để quản lý mối quan hệ giữa ảnh và với các loại model khác
     """
 
     image = models.ForeignKey(
         "Image", on_delete=models.CASCADE, related_name="relations"
     )
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    # Hai trường object_id và content_object thường được sử dụng để tạo
-    # một mối quan hệ đa hình (polymorphic relationship) giữa một mô hình và
-    # nhiều mô hình khác nhau
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("content_type", "object_id")
+    # generic_model là một trường ForeignKey đến ContentType
+    # nó chấp nhận mọi loại model trong Django đều có thể làm
+    # khoá ngoại cho trường này
+    generic_model = models.ForeignKey(ContentType, on_delete=models.CASCADE) # Loại đối tượng
+
+    # object_id là một trường IntegerField, nó lưu trữ ID của đối tượng
+    object_id = models.PositiveIntegerField() # ID của đối tượng
+    # đối tượng sau khi đã được ánh xạ với generic_model và object_id
+    content_object = GenericForeignKey("generic_model", "object_id")
 
     class Meta:
         db_table = "image_relation"
@@ -101,6 +110,19 @@ class Post(BaseModel):
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
+    comment_post = models.OneToOneField("CommentPost", on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+        ordering = ["-created_date"]
+
+    def save(self, *args, **kwargs):
+        """
+        Tự động tạo một comment_post mới khi tạo một bài đăng
+        """
+        if not self.comment_post:  # Nếu chưa có đối tượng `B`, thì tạo mới
+            self.comment_post = CommentPost.objects.create()
+        super().save(*args, **kwargs)  # Gọi phương thức `save()` của lớp cha
 
 
 class RentalPost(Post):
@@ -120,15 +142,15 @@ class RentalPost(Post):
     province = models.CharField(max_length=256)
     city = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
-    price = models.FloatField()
-    limit_person = models.IntegerField()
+    price = models.FloatField(null=True, blank=True)
+    limit_person = models.IntegerField(null=True, blank=True)
     area = models.FloatField()
-    number_of_bedrooms = models.IntegerField()
-    number_of_bathrooms = models.IntegerField()
-    utilities = models.ManyToManyField("Utilities", related_name="rental_posts")
+    number_of_bedrooms = models.IntegerField(null=True, blank=True)
+    number_of_bathrooms = models.IntegerField(null=True, blank=True)
+    utilities = models.ManyToManyField("Utilities", related_name="rental_posts", null=True, blank=True)
 
 
-class RoomSeekingPost(BaseModel):
+class RoomSeekingPost(Post):
     tenent = models.ForeignKey(
         "User",
         on_delete=models.CASCADE,
@@ -139,6 +161,23 @@ class RoomSeekingPost(BaseModel):
     position = models.CharField(max_length=20)
     area = models.FloatField(null=False)
     limit_person = models.IntegerField()
+
+
+class CommentPost(BaseModel):
+    pass
+
+
+class Comment(BaseModel):
+    post = models.ForeignKey(
+        CommentPost, on_delete=models.CASCADE, related_name="comment_post"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="comment_post"
+    )
+    content = models.TextField(max_length=100)
+    reply_to = models.ForeignKey(
+        "Comment", on_delete=models.CASCADE, related_name="replies", null=True
+    )
 
 
 class Conversation(BaseModel):
@@ -161,16 +200,3 @@ class Conversation(BaseModel):
 class Message(BaseModel):
     composation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     content = models.TextField(null=False)
-
-
-class CommentPost(BaseModel):
-    post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="comment_post"
-    )
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comment_post"
-    )
-    content = models.TextField(max_length=100)
-    reply_to = models.ForeignKey(
-        "CommentPost", on_delete=models.CASCADE, related_name="replies", null=True
-    )
