@@ -9,6 +9,7 @@ from core.models import (
 )
 
 
+# Change ItemSerializer to ModelWithImageSerializer for more clarify
 class ModelWithImageSerializer(ModelSerializer):
     # this function run before serialization time
     def to_representation(self, instance):
