@@ -19,6 +19,8 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ["username", "email"]
     list_filter = ["is_active", "date_joined"]
     sortable_by = ["username"]
+    readonly_fields = ["avatar_view", "status_display"]
+    filter_horizontal = ["user_permissions"]
 
     fieldsets = [
         ("User profile", {"fields": ["status_display", "username", "email", "avatar_view"]}),
@@ -33,10 +35,6 @@ class UserAdmin(admin.ModelAdmin):
         ),
     ]
 
-    # list_editable = ['is_staff']
-    readonly_fields = ["avatar_view", "status_display"]
-    filter_horizontal = ["user_permissions"]
-
     def avatar_view(self, user):
         if user:
             return get_cloudinary_image(
@@ -50,6 +48,31 @@ class UserAdmin(admin.ModelAdmin):
 
     status_display.short_description = "Trạng thái"
 
+
+class RentalPostAdmin(admin.ModelAdmin):
+    """
+    Trang quản lý bài đăng cho thuê
+    """
+    list_display = ["title", "price", "content", "landlord__username", "created_date"]
+    search_fields = ["title", "landlord__username", "content"]
+    list_filter = ["created_date"]
+    sortable_by = ["title"]
+    filter_horizontal = ["utilities"]
+
+    fieldsets = [
+        ("Status", {"fields": ["status"]}),
+        ("Rental post", {"fields": ["title", "price", "content", "landlord"]}),
+        ("Location", {"fields": ["province", "city", "address"]}),
+        ("Utilities", {"fields": ["utilities"]}),
+    ]
+
+    def image_view(self, rental_post):
+        if rental_post:
+            return get_cloudinary_image(
+                rental_post.image.public_id, transformations={"width": 200}
+            )
+
+
 # Admin Site Object
 class MyAdminSite(admin.AdminSite):
     site_header = "RentHub Admin"
@@ -61,7 +84,7 @@ class MyAdminSite(admin.AdminSite):
 admin_site = MyAdminSite(name="RentHub")
 
 admin_site.register(User, UserAdmin)
-admin_site.register(RentalPost)
+admin_site.register(RentalPost, RentalPostAdmin)
 admin_site.register(RoomSeekingPost)
 admin_site.register(BoardingHouse)
 admin_site.register(CommentPost)

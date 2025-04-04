@@ -124,6 +124,9 @@ class Post(BaseModel):
             self.comment_post = CommentPost.objects.create()
         super().save(*args, **kwargs)  # Gọi phương thức `save()` của lớp cha
 
+    def __str__(self):
+        return self.title
+
 
 class RentalPost(Post):
     """
