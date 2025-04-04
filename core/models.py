@@ -148,3 +148,11 @@ class Conversation(BaseModel):
 class Message(BaseModel):
     composation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     content = models.TextField(null=False)
+
+class CommentPost(BaseModel):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comment_post')
+    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name='comment_post')
+    content = models.TextField(max_length=100)
+    reply_to = models.ForeignKey('CommentPost', on_delete=models.CASCADE, related_name='replies', null=True )
+
+
