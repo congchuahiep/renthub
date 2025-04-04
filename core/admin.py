@@ -21,11 +21,12 @@ class UserAdmin(admin.ModelAdmin):
     sortable_by = ["username"]
 
     fieldsets = [
-        ("Thông tin cá nhân", {"fields": ["status_display", "username", "email", "avatar_view"]}),
+        ("User profile", {"fields": ["status_display", "username", "email", "avatar_view"]}),
+        ("Location", {"fields": ["address", "district", "province"]}),
         (
-            "Quyền truy cập",
+            "Permissions",
             {
-                "description": "Thiết lập quyền truy cập của người dùng",
+                "description": "Config user permissions",
                 "classes": ["collapse"],
                 "fields": ["user_permissions", "is_staff", "is_superuser"],
             },
