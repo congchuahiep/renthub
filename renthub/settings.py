@@ -46,8 +46,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core.apps.CoreConfig'
+    'core.apps.CoreConfig',
+    'django_ckeditor_5',
+    'ckeditor_uploader',
+    'rest_framework',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,6 +82,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'renthub.wsgi.application'
+
+
+
+
 
 
 # Database
