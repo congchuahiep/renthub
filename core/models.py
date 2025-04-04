@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from cloudinary.models import CloudinaryField
+
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
 
 class User(AbstractUser):
@@ -128,6 +128,19 @@ class RentalPost(Post):
     utilities = models.ManyToManyField("Utilities", related_name="rental_posts")
 
 
+class RoomSeekingPost(BaseModel):
+    tenent = models.ForeignKey(
+        "User",
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": User.UserType.TENANT},
+        related_name="room_seeking_post",
+        null=False,
+    )
+    position = models.CharField(max_length=20)
+    area = models.FloatField(null=False)
+    limit_person = models.IntegerField()
+
+
 class Conversation(BaseModel):
     landlord = models.ForeignKey(
         User,
@@ -149,10 +162,15 @@ class Message(BaseModel):
     composation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     content = models.TextField(null=False)
 
+
 class CommentPost(BaseModel):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comment_post')
-    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name='comment_post')
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="comment_post"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="comment_post"
+    )
     content = models.TextField(max_length=100)
-    reply_to = models.ForeignKey('CommentPost', on_delete=models.CASCADE, related_name='replies', null=True )
-
-
+    reply_to = models.ForeignKey(
+        "CommentPost", on_delete=models.CASCADE, related_name="replies", null=True
+    )
