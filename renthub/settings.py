@@ -10,9 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
-from dotenv import load_dotenv
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Setup cloundianry
+import cloudinary
+import cloudinary.uploader
 
 # Load .env file for API key
 load_dotenv()
@@ -80,6 +85,7 @@ WSGI_APPLICATION = 'renthub.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 import pymysql
+
 pymysql.install_as_MySQLdb()
 
 DATABASES = {
@@ -90,7 +96,7 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": os.getenv("DB_PORT")
-        
+
     }
 }
 
@@ -136,14 +142,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Setup cloundianry
-import cloudinary
-import cloudinary.uploader
-
-# Configuration       
-cloudinary.config( 
-    cloud_name = "dmt4mvjdx", 
-    api_key = "344596978848947", 
+# Configuration
+cloudinary.config(
+    cloud_name = "dmt4mvjdx",
+    api_key = "344596978848947",
     api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
