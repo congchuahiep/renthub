@@ -13,11 +13,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-# Setup cloundianry
 import cloudinary
 import cloudinary.uploader
+import pymysql
+from dotenv import load_dotenv
 
 # Load .env file for API key
 load_dotenv()
@@ -84,8 +83,6 @@ WSGI_APPLICATION = 'renthub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-import pymysql
-
 pymysql.install_as_MySQLdb()
 
 DATABASES = {
@@ -103,6 +100,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = "core.User"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -142,12 +141,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuration
+# Configuration for Cloudinary
 cloudinary.config(
     cloud_name = "dmt4mvjdx",
     api_key = "344596978848947",
     api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
-
-AUTH_USER_MODEL = "core.User"
