@@ -1,41 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from cloudinary.models import CloudinaryField
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
-
-class User(AbstractUser):
-    """
-    Người dùng chung: Chủ trọ và Người thuê trọ
-    """
-
-    # Loại người dùng Enum
-    class UserType(models.TextChoices):
-        LANDLORD = "LR", "Landlord"
-        TENANT = "TN", "Tenant"
-
-    # Loại người dùng
-    user_type = models.CharField(
-        max_length=10,
-        choices=UserType,
-        default=UserType.TENANT,
-    )
-
-    # Nơi ở
-    address = models.CharField(max_length=256, blank=True, null=True)
-    district = models.CharField(max_length=256, blank=True, null=True)
-    province = models.CharField(max_length=256, blank=True, null=True)
-
-    # TODO: GIAI ĐOẠN TESTING NÊN MẤY TRƯỜNG NÀY CÓ THỂ BLANK
-    avatar = CloudinaryField(null=True, blank=True)
-    phone_number = models.CharField(max_length=10, unique=True, blank=True, null=True)
-    cccd = models.CharField(max_length=12, unique=True, blank=True, null=True)
-
-    class Meta:
-        db_table = "user"
-
+from accounts.utils import UserType
 
 class BaseModel(models.Model):
     active = models.BooleanField(default=True)
@@ -136,9 +105,9 @@ class RentalPost(Post):
 
     # Chỉ định chỉ cho phép người đăng bài cho thuê nhà là Chủ nhà
     landlord = models.ForeignKey(
-        "User",
+        "accounts.User",
         on_delete=models.CASCADE,
-        limit_choices_to={"user_type": User.UserType.LANDLORD},
+        limit_choices_to={"user_type": UserType.LANDLORD},
         null=True,
     )
 
@@ -150,14 +119,14 @@ class RentalPost(Post):
     area = models.FloatField()
     number_of_bedrooms = models.IntegerField(null=True, blank=True)
     number_of_bathrooms = models.IntegerField(null=True, blank=True)
-    utilities = models.ManyToManyField("Utilities", related_name="rental_posts", null=True, blank=True)
+    utilities = models.ManyToManyField("Utilities", related_name="rental_posts", blank=True)
 
 
 class RoomSeekingPost(Post):
     tenent = models.ForeignKey(
-        "User",
+        "accounts.User",
         on_delete=models.CASCADE,
-        limit_choices_to={"user_type": User.UserType.TENANT},
+        limit_choices_to={"user_type": UserType.TENANT},
         related_name="room_seeking_post",
         null=False,
     )
@@ -175,7 +144,7 @@ class Comment(BaseModel):
         CommentPost, on_delete=models.CASCADE, related_name="comment_post"
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comment_post"
+        "accounts.User", on_delete=models.CASCADE, related_name="comment_post"
     )
     content = models.TextField(max_length=100)
     reply_to = models.ForeignKey(
@@ -185,16 +154,16 @@ class Comment(BaseModel):
 
 class Conversation(BaseModel):
     landlord = models.ForeignKey(
-        User,
+        "accounts.User",
         on_delete=models.CASCADE,
-        limit_choices_to={"user_type": User.UserType.LANDLORD},
+        limit_choices_to={"user_type": UserType.LANDLORD},
         related_name="landlord_convarsation",
         null=False,
     )
     tenent = models.ForeignKey(
-        User,
+        "accounts.User",
         on_delete=models.CASCADE,
-        limit_choices_to={"user_type": User.UserType.TENANT},
+        limit_choices_to={"user_type": UserType.TENANT},
         related_name="tenant_convarsation",
         null=False,
     )
