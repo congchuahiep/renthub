@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'utils.apps.UtilsConfig',
     'accounts.apps.AccountsConfig',
     'posts.apps.PostsConfig',
-    'properties.apps.PropertiesConfig'
+    'properties.apps.PropertiesConfig',
+    'comments.apps.CommentsConfig'
 ]
 
 MIDDLEWARE = [

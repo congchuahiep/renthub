@@ -1,7 +1,7 @@
 from django.db import models
 
 from accounts.utils import UserType
-from utils.models import BaseModel, CommentPost
+from utils.models import BaseModel
 
 # Create your models here.
 class Post(BaseModel):
@@ -15,7 +15,7 @@ class Post(BaseModel):
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
-    comment_post = models.OneToOneField("utils.CommentPost", on_delete=models.CASCADE, null=True, blank=True)
+    comment_post = models.OneToOneField("comments.CommentPost", on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -26,6 +26,7 @@ class Post(BaseModel):
         Tự động tạo một comment_post mới khi tạo một bài đăng
         """
         if not self.comment_post:  # Nếu chưa có đối tượng `B`, thì tạo mới
+            from comments.models import CommentPost
             self.comment_post = CommentPost.objects.create()
         super().save(*args, **kwargs)  # Gọi phương thức `save()` của lớp cha
 
