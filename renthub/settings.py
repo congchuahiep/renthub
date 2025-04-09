@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'admin_site.apps.AdminSiteConfig',
     'utils.apps.UtilsConfig',
     'accounts.apps.AccountsConfig',
-    'posts.apps.PostsConfig'
+    'posts.apps.PostsConfig',
+    'properties.apps.PropertiesConfig'
 ]
 
 MIDDLEWARE = [
