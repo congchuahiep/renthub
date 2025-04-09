@@ -21,14 +21,15 @@
 - Xử lý CRUD bình luận
 - Quản lý phản hồi bình luận
 
-5. **messages** (Nhắn tin):
+5. **chats** (Nhắn tin):
 - Models: Conversation, Message
 - Chat realtime
 - Thông báo tin nhắn
 - Lịch sử chat
 
-6. **media** (Quản lý media):
-- Models: Image, ImageRelation
+6. **utils** (Các công cụ hỗ trợ):
+- Models: BaseModel, Image, ImageRelation
+- BaseModel cho phép tạo một model mẫu có sẵn
 - Upload và quản lý ảnh
 - Tích hợp Cloudinary
 - Xử lý media
