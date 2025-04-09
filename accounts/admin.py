@@ -3,7 +3,7 @@ from django.forms.utils import mark_safe
 
 from admin_site.site import admin_site
 from accounts.models import User
-from core.utils.image import get_cloudinary_image
+from utils.utils.image import get_cloudinary_image
 
 class UserAdmin(admin.ModelAdmin):
     """

@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from core.models import (
+from utils.models import (
     RentalPost,
     RoomSeekingPost,
     Conversation,
