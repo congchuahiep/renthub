@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'admin_site.apps.AdminSiteConfig',
     'utils.apps.UtilsConfig',
-    'accounts.apps.AccountsConfig'
+    'accounts.apps.AccountsConfig',
+    'posts.apps.PostsConfig'
 ]
 
 MIDDLEWARE = [
