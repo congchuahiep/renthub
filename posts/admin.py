@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from admin_site.site import admin_site
 from posts.models import RentalPost, RoomSeekingPost
-from utils.utils.image import get_cloudinary_image
+from utils.image import get_cloudinary_image
 
 # Register your models here.
 class RentalPostAdmin(admin.ModelAdmin):
