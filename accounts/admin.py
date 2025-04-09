@@ -9,7 +9,7 @@ class UserAdmin(admin.ModelAdmin):
     """
     Trang quản lý người dùng
     """
-    list_display = ["username", "status_display", "email"]
+    list_display = ["username", "status_display", "email", "user_type"]
     search_fields = ["username", "email"]
     list_filter = ["is_active", "date_joined"]
     sortable_by = ["username"]
@@ -24,7 +24,7 @@ class UserAdmin(admin.ModelAdmin):
             {
                 "description": "Config user permissions",
                 "classes": ["collapse"],
-                "fields": ["user_permissions", "is_staff", "is_superuser"],
+                "fields": ["user_type", "user_permissions", "is_staff", "is_superuser"],
             },
         ),
     ]
