@@ -42,23 +42,6 @@ class ImageRelation(models.Model):
         db_table = "image_relation"
 
 
-class CommentPost(BaseModel):
-    pass
-
-
-class Comment(BaseModel):
-    post = models.ForeignKey(
-        CommentPost, on_delete=models.CASCADE, related_name="comment_post"
-    )
-    user = models.ForeignKey(
-        "accounts.User", on_delete=models.CASCADE, related_name="comment_post"
-    )
-    content = models.TextField(max_length=100)
-    reply_to = models.ForeignKey(
-        "Comment", on_delete=models.CASCADE, related_name="replies", null=True
-    )
-
-
 class Conversation(BaseModel):
     landlord = models.ForeignKey(
         "accounts.User",
