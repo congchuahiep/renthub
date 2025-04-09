@@ -15,7 +15,12 @@ class Post(BaseModel):
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
-    comment_post = models.OneToOneField("comments.CommentPost", on_delete=models.CASCADE, null=True, blank=True)
+    comment_post = models.OneToOneField(
+        "comments.CommentPost",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         abstract = True
