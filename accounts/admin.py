@@ -1,24 +1,20 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
-from core.utils.image import get_cloudinary_image
+from django.forms.utils import mark_safe
 
-from core.models import (
-    BoardingHouse,
-    Comment,
-    CommentPost,
-    RentalPost,
-    RoomSeekingPost,
-    User,
-)
+from admin_site.site import admin_site
+from accounts.models import User
+from utils.image import get_cloudinary_image
 
 class UserAdmin(admin.ModelAdmin):
     """
     Trang quản lý người dùng
     """
-    list_display = ["username", "status_display", "email"]
+    list_display = ["username", "status_display", "email", "user_type"]
     search_fields = ["username", "email"]
     list_filter = ["is_active", "date_joined"]
     sortable_by = ["username"]
+    readonly_fields = ["avatar_view", "status_display"]
+    filter_horizontal = ["user_permissions"]
 
     fieldsets = [
         ("User profile", {"fields": ["status_display", "username", "email", "avatar_view"]}),
@@ -28,14 +24,10 @@ class UserAdmin(admin.ModelAdmin):
             {
                 "description": "Config user permissions",
                 "classes": ["collapse"],
-                "fields": ["user_permissions", "is_staff", "is_superuser"],
+                "fields": ["user_type", "user_permissions", "is_staff", "is_superuser"],
             },
         ),
     ]
-
-    # list_editable = ['is_staff']
-    readonly_fields = ["avatar_view", "status_display"]
-    filter_horizontal = ["user_permissions"]
 
     def avatar_view(self, user):
         if user:
@@ -50,19 +42,5 @@ class UserAdmin(admin.ModelAdmin):
 
     status_display.short_description = "Trạng thái"
 
-# Admin Site Object
-class MyAdminSite(admin.AdminSite):
-    site_header = "RentHub Admin"
-
-    def get_urls(self):
-        return super().get_urls()
-
-
-admin_site = MyAdminSite(name="RentHub")
-
+# Register your models here.
 admin_site.register(User, UserAdmin)
-admin_site.register(RentalPost)
-admin_site.register(RoomSeekingPost)
-admin_site.register(BoardingHouse)
-admin_site.register(CommentPost)
-admin_site.register(Comment)
