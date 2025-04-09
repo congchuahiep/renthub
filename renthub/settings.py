@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'posts.apps.PostsConfig',
     'properties.apps.PropertiesConfig',
-    'comments.apps.CommentsConfig'
+    'comments.apps.CommentsConfig',
+    'chats.apps.ChatsConfig'
 ]
 
 MIDDLEWARE = [

@@ -4,8 +4,6 @@ from cloudinary.models import CloudinaryField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
-from accounts.utils import UserType
-
 class BaseModel(models.Model):
     active = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now_add=True, null=True)
@@ -40,25 +38,3 @@ class ImageRelation(models.Model):
 
     class Meta:
         db_table = "image_relation"
-
-
-class Conversation(BaseModel):
-    landlord = models.ForeignKey(
-        "accounts.User",
-        on_delete=models.CASCADE,
-        limit_choices_to={"user_type": UserType.LANDLORD},
-        related_name="landlord_convarsation",
-        null=False,
-    )
-    tenent = models.ForeignKey(
-        "accounts.User",
-        on_delete=models.CASCADE,
-        limit_choices_to={"user_type": UserType.TENANT},
-        related_name="tenant_convarsation",
-        null=False,
-    )
-
-
-class Message(BaseModel):
-    composation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
-    content = models.TextField(null=False)
