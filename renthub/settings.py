@@ -46,7 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core.apps.CoreConfig'
+    'admin_site.apps.AdminSiteConfig',
+    'utils.apps.UtilsConfig',
+    'accounts.apps.AccountsConfig',
+    'posts.apps.PostsConfig',
+    'properties.apps.PropertiesConfig',
+    'comments.apps.CommentsConfig',
+    'chats.apps.ChatsConfig'
 ]
 
 MIDDLEWARE = [
@@ -101,7 +107,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = "core.User"
+AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
