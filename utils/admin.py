@@ -1,16 +1,14 @@
 from django.contrib import admin
-from core.utils.image import get_cloudinary_image
-
 
 from admin_site.site import admin_site
-
-from core.models import (
+from utils.models import (
     BoardingHouse,
     Comment,
     CommentPost,
     RentalPost,
-    RoomSeekingPost
+    RoomSeekingPost,
 )
+from utils.utils.image import get_cloudinary_image
 
 
 class RentalPostAdmin(admin.ModelAdmin):
