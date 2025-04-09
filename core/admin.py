@@ -2,13 +2,14 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from core.utils.image import get_cloudinary_image
 
+from accounts.models import User
+
 from core.models import (
     BoardingHouse,
     Comment,
     CommentPost,
     RentalPost,
-    RoomSeekingPost,
-    User,
+    RoomSeekingPost
 )
 
 class UserAdmin(admin.ModelAdmin):
