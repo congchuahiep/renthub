@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from admin_site.site import admin_site
-from posts.models import RentalPost, RoomSeekingPost
+from posts.models import RentalPost, RoomSeekingPost, Utilities
 from utils.image import get_cloudinary_image
 
 # Register your models here.
@@ -45,3 +45,4 @@ class RoomSeekingPostAdmin(admin.ModelAdmin):
 
 admin_site.register(RentalPost, RentalPostAdmin)
 admin_site.register(RoomSeekingPost, RoomSeekingPostAdmin)
+admin_site.register(Utilities)
