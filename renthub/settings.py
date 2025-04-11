@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+
     'admin_site.apps.AdminSiteConfig',
     'utils.apps.UtilsConfig',
     'accounts.apps.AccountsConfig',
@@ -150,7 +152,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuration for Cloudinary
 cloudinary.config(
     cloud_name = "dmt4mvjdx",
-    api_key = "344596978848947",
+    api_key = "476562764194571",
     api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
