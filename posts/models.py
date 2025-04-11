@@ -1,10 +1,10 @@
 from django.db import models
 
 from accounts.utils import UserType
-from utils.models import BaseModel
+from utils.models import BaseModel, ImageManagement
 
 # Create your models here.
-class Post(BaseModel):
+class Post(BaseModel, ImageManagement):
     class Status(models.TextChoices):
         PENDING = "pd", "Đang kiểm duyệt"
         APPROVED = "ap", "Đã kiểm duyệt"
