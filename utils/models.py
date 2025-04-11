@@ -17,24 +17,12 @@ class Image(models.Model):
     image = CloudinaryField(null=False)
     alt = models.CharField(max_length=256, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.image.public_id}"
 
-class ImageRelation(models.Model):
-    """
-    Model này dùng để quản lý mối quan hệ giữa ảnh và với các loại model khác
-    """
 
-    image = models.ForeignKey(
-        "Image", on_delete=models.CASCADE, related_name="relations"
-    )
-    # generic_model là một trường ForeignKey đến ContentType
-    # nó chấp nhận mọi loại model trong Django đều có thể làm
-    # khoá ngoại cho trường này
-    generic_model = models.ForeignKey(ContentType, on_delete=models.CASCADE) # Loại đối tượng
-
-    # object_id là một trường IntegerField, nó lưu trữ ID của đối tượng
-    object_id = models.PositiveIntegerField() # ID của đối tượng
-    # đối tượng sau khi đã được ánh xạ với generic_model và object_id
-    content_object = GenericForeignKey("generic_model", "object_id")
+class ImageManagement(models.Model):
+    images = models.ManyToManyField('utils.Image', blank=True, related_name="%(class)s")
 
     class Meta:
-        db_table = "image_relation"
+        abstract = True
