@@ -4,7 +4,6 @@ from django.utils.html import format_html
 from admin_site.site import admin_site
 from posts.models import RentalPost, RoomSeekingPost, Utilities
 from utils.image import get_cloudinary_image
-from utils.models import Image
 
 # Register your models here.
 class RentalPostAdmin(admin.ModelAdmin):
