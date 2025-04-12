@@ -47,10 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-<<<<<<< HEAD
-=======
-
->>>>>>> f3da31857448c1a7368f5c04f603db623b252568
     'admin_site.apps.AdminSiteConfig',
     'utils.apps.UtilsConfig',
     'accounts.apps.AccountsConfig',
