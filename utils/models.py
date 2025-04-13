@@ -1,8 +1,6 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
 
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 
 class BaseModel(models.Model):
     active = models.BooleanField(default=True)
