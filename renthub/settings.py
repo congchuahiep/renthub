@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'properties.apps.PropertiesConfig',
     'comments.apps.CommentsConfig',
-    'chats.apps.ChatsConfig'
+    'chats.apps.ChatsConfig',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -126,6 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -150,9 +153,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuration for Cloudinary
 cloudinary.config(
-    cloud_name = "dmt4mvjdx",
-    api_key = "476562764194571",
-    api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
+    cloud_name = "dru3blni0",
+    api_key = "555293915735959",
+    api_secret = "r1vjp477NTVInqqrhQk7RTFoz14", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
 

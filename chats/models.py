@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.exceptions import ValidationError
 from accounts.utils import UserType
 from utils.models import BaseModel
 
@@ -34,3 +34,11 @@ class Message(BaseModel):
 
     class Meta:
         ordering = ["-created_date"]
+
+    def clean(self):
+        if self.sender not in [self.conversation.landlord, self.conversation.tenent]:
+            raise ValidationError("Người gửi không thuộc cuộc trò chuyện này.")
+
+    def save(self, *args, **kwargs):
+        self.clean()  # gọi clean() trước khi lưu
+        super().save(*args, **kwargs)

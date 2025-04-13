@@ -35,6 +35,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'updated_date'
         ]
         read_only_fields = ['landlord', 'created_at', 'updated_at', 'status']
+        
 
 class RoomSeekingPostSerializer(serializers.ModelSerializer):
     tenent = UserSerializer(read_only=True)
@@ -54,3 +55,5 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
             'updated_date'
         ]
         read_only_fields = ['tenent', 'created_date', 'updated_date', 'status']
+
+        
