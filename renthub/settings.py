@@ -40,14 +40,18 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Các App cấu hình Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Các App ngoài bổ sung
     'drf_yasg',
     'rest_framework',
+    'debug_toolbar',
+    # Các App của Renthub
     'admin_site.apps.AdminSiteConfig',
     'utils.apps.UtilsConfig',
     'accounts.apps.AccountsConfig',
@@ -65,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware', # Debug Toolbar
 ]
 
 ROOT_URLCONF = 'renthub.urls'
@@ -156,3 +161,9 @@ cloudinary.config(
     api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
+
+# Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
+# vào debug toolbar ở địa chỉ localhost
+INTERNAL_IPS = [
+ '127.0.0.1'
+ ]
