@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
 from posts.models import RentalPost, RoomSeekingPost, Utilities
+from utils.serializers import ImageSerializer
 
 
 class UtilitiesSerializer(serializers.ModelSerializer):
@@ -13,6 +14,7 @@ class UtilitiesSerializer(serializers.ModelSerializer):
 class RentalPostSerializer(serializers.ModelSerializer):
     landlord = UserSerializer(read_only=True)
     utilities = UtilitiesSerializer(many=True, read_only=True)
+    images = ImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = RentalPost
@@ -32,7 +34,8 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'number_of_bathrooms',
             'utilities',
             'created_date',
-            'updated_date'
+            'updated_date',
+            'images'
         ]
         read_only_fields = ['landlord', 'created_at', 'updated_at', 'status']
 
