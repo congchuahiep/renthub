@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'properties.apps.PropertiesConfig',
     'comments.apps.CommentsConfig',
     'chats.apps.ChatsConfig',
-    'drf_yasg',
 ]
 
 MIDDLEWARE = [
