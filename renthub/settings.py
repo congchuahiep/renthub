@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'rest_framework',
     'admin_site.apps.AdminSiteConfig',
     'utils.apps.UtilsConfig',
@@ -158,5 +159,3 @@ cloudinary.config(
     api_secret = "r1vjp477NTVInqqrhQk7RTFoz14", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
-
-
