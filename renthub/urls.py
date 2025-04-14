@@ -39,9 +39,9 @@ schema_view = get_schema_view(
 # Các API của cả dự án Renthub
 urlpatterns = [
     # Các API chính của dự án Renthub
-    path('', include('admin_site.urls')),
-    path('', include('chats.urls')),
-    path('', include('posts.urls')),
+    path('', include('admin_site.urls')), # admin/
+    path('', include('chats.urls')), # chats/
+    path('', include('posts.urls')), # rentals/
 
     # Tests
     path('test/', include('testing.urls')),
