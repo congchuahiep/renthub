@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -40,14 +41,18 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Các App cấu hình Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Các App ngoài bổ sung
     'drf_yasg',
     'rest_framework',
+    'debug_toolbar',
+    # Các App của Renthub
     'admin_site.apps.AdminSiteConfig',
     'utils.apps.UtilsConfig',
     'accounts.apps.AccountsConfig',
@@ -55,6 +60,8 @@ INSTALLED_APPS = [
     'properties.apps.PropertiesConfig',
     'comments.apps.CommentsConfig',
     'chats.apps.ChatsConfig',
+    # Test app
+    'testing.apps.TestingConfig',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware', # Debug Toolbar
 ]
 
 ROOT_URLCONF = 'renthub.urls'
@@ -127,8 +135,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -151,10 +157,31 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# DRF Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+
 # Configuration for Cloudinary
 cloudinary.config(
-    cloud_name = "dru3blni0",
-    api_key = "555293915735959",
-    api_secret = "r1vjp477NTVInqqrhQk7RTFoz14", # Click 'View API Keys' above to copy your API secret
+    cloud_name = "dmt4mvjdx",
+    api_key = "476562764194571",
+    api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
     secure=True
 )
+
+# Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
+# vào debug toolbar ở địa chỉ localhost
+INTERNAL_IPS = [
+ '127.0.0.1'
+ ]
+
+# JWT Configuration
+SIMPLE_JWT = {
+	# Token access có hiệu lực trong 60 phút
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7)
+}
