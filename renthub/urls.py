@@ -43,6 +43,9 @@ urlpatterns = [
     path('', include('chats.urls')),
     path('', include('posts.urls')),
 
+    # Tests
+    path('test/', include('testing.urls')),
+
     # Swagger API
     re_path(
         r'^swagger(?P<format>\.json|\.yaml)$',
