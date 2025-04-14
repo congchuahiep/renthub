@@ -14,27 +14,44 @@ class ConversationViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Conversation.objects.filter(active=True)
     serializer_class = serializers.ConversationSerializer
 
-    @action(methods=['post'],detail=False, url_path='conversation_post')
-    def create_conversation(self, request,id):       
-        try:
-            user2 = User.objects.get(pk=id)
-        except User.DoesNotExist:
-            return Response({"error": f"User with id {id} not found"}, status=status.HTTP_400_BAD_REQUEST)
-        serializer = serializers.ConversationSerializer(
-            data={},
-            context={'request':request,'user2':user2}
-        )
-        serializer.is_valid(raise_exception=True)
-        conversation= serializer.save()
-        return Response(serializer.data,status=status.HTTP_201_CREATED)            
+    @action(methods=['post'],detail=False, url_path='conversation')
+    def create_conversation(self, request):
+        if request.method == 'POST':
+            user1 = request.user
+            user2_id = None
 
-    @action(detail=False, methods=['get'], url_path='conversation_get')
-    def get_conversations(self, request):
-        """Lấy danh sách cuộc trò chuyện của user hiện tại."""
-        user = request.user
-        conversations = Conversation.objects.filter(Q(landlord=user) | Q(tenent=user))
-        serializer = serializers.ConversationSerializer(conversations, many=True,context={'request': request})
-        return Response(serializer.data) 
+            if user1.user_type == 'LR':
+                user2_id = request.data.get('tenent')
+            else:
+                user2_id = request.data.get('landlord')
+
+            if user2_id is None:
+                return Response({"error": "user2 is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                user2 = User.objects.get(pk=user2_id)
+            except User.DoesNotExist:
+                return Response({"error": f"User with id {user2_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if user1 == user2:
+                return Response({"error": "Cannot create conversation with yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if user1.user_type == 'LR':
+                conversation = Conversation.objects.create(landlord=user1, tenent=user2)
+            else:
+                conversation = Conversation.objects.create(landlord=user2, tenent=user1)
+
+            serializer = serializers.ConversationSerializer(conversation, context={'request': request}) # Truyền request vào context
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    @action(detail=False, methods=['get'])
+    def list_conversations(self, request):
+        if request.method == 'GET':
+            """Lấy danh sách cuộc trò chuyện của user hiện tại."""
+            user = request.user
+            conversations = Conversation.objects.filter(Q(landlord=user) | Q(tenent=user))
+            serializer = serializers.ConversationSerializer(conversations, many=True,context={'request': request})
+            return Response(serializer.data)  # Thêm return Response
+    
     
 class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Message.objects.all()
@@ -52,7 +69,7 @@ class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
             serializer = serializers.MessageSerializer(messages, many=True)
             return Response(serializer.data)
 
-    def create_message(self, request, id):
+    def create_message(self, request, pk):
         if request.method == 'POST':
             sender_id = request.data.get("sender")
             try:
@@ -62,8 +79,8 @@ class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
 
             serializer = serializers.MessageSerializer(data={
                 "content": request.data.get("content"),
-                "conversation": id,
-                "sender": sender.pk, 
+                "conversation": pk,
+                "sender": sender.pk, # Sử dụng sender.pk thay vì request.user.pk
                 "active": True
             }, context={'request': request})
 
@@ -72,7 +89,7 @@ class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
 
             return Response(serializers.MessageSerializer(message).data, status=status.HTTP_201_CREATED)
 
-        messages = Message.objects.filter(conversation_id=id, active=True).select_related('sender')
+        messages = Message.objects.filter(conversation_id=pk, active=True).select_related('sender')
         serializer = serializers.MessageSerializer(messages, many=True)
         return Response(serializer.data)
     
