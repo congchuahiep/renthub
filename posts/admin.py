@@ -21,6 +21,7 @@ class RentalPostAdmin(admin.ModelAdmin):
     fieldsets = [
         ("Status", {"fields": ["status"]}),
         ("Rental post", {"fields": ["title", "price", "area", "content", "landlord"]}),
+        ("Interior",{"fields":["number_of_bedrooms","number_of_bathrooms"]}),
         ("Location", {"fields": ["province", "city", "address"]}),
         ("Utilities", {"fields": ["utilities"]}),
         ("Images", {"fields": ["images", "image_gallery"]}),
@@ -54,6 +55,8 @@ class RoomSeekingPostAdmin(admin.ModelAdmin):
         ("Status", {"fields": ["status"]}),
         ("Room seeking post", {"fields": ["title", "area", "limit_person", "tenent"]}),
     ]
+
+
 
 admin_site.register(RentalPost, RentalPostAdmin)
 admin_site.register(RoomSeekingPost, RoomSeekingPostAdmin)

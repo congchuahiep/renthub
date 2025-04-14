@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, Serializer
 from chats.models import Conversation, Message
 from datetime import datetime
 
@@ -38,9 +38,15 @@ class MessageSerializer(ModelSerializer):
             'id': instance.sender.id,
             'username': instance.sender.username,
         }
-        data['create_at'] = datetime.strftime(instance.create_at, "%Y-%m-%d %H:%M:%S")
+        data['create_at'] = datetime.strftime(instance.created_date, "%Y-%m-%d %H:%M:%S")
 
         return data
-    
 
-    
+    def validate(self, attrs):
+        sender = attrs.get('sender')  # sender lúc này là instance của User hoặc ID, tùy serializer
+        conversation = attrs.get('conversation')
+
+        
+
+        return attrs
+        
