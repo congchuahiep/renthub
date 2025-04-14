@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -177,3 +178,10 @@ cloudinary.config(
 INTERNAL_IPS = [
  '127.0.0.1'
  ]
+
+# JWT Configuration
+SIMPLE_JWT = {
+	# Token access có hiệu lực trong 60 phút
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7)
+}
