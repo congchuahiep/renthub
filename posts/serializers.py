@@ -19,7 +19,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
     # Trường để upload ảnh
     upload_images = serializers.ListField(
-        child=serializers.ImageField(),
+        child=serializers.CharField(),
         write_only=True,
         required=False
     )
