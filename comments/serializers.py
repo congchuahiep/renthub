@@ -34,7 +34,6 @@ class CommentSerializer(serializers.ModelSerializer):
                     "created_date": reply.created_date,
                     "user": {
                         "id": reply.user.id,
-                        "username": reply.user.username,
                         "full_name": f"{reply.user.first_name} {reply.user.last_name}".strip()
                     },
                     "reply_to": instance.id

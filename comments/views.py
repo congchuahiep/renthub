@@ -37,9 +37,9 @@ class CommentPostView(viewsets.ViewSet, generics.ListAPIView):
     @action(methods=['get'], detail=False, url_path='get_comments')
     def get_comments(self, request, id):
         comments = Comment.objects.filter(
-            post_id=id
+            post_id=id,
+            reply_to__isnull=True  # Chỉ lấy comment gốc
         ).select_related("user").prefetch_related("replies__user").order_by("created_date")
 
         serializer = CommentSerializer(comments, many=True, context={'request': request})
         return Response(serializer.data)
-    
