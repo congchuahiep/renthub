@@ -1,7 +1,10 @@
 from logging import Logger
+
+import cloudinary
 from cloudinary import uploader
-from django.db import models
 from cloudinary.models import CloudinaryField
+from django.db import models
+from django.utils.safestring import mark_safe
 
 
 class BaseModel(models.Model):
@@ -27,6 +30,30 @@ class Image(models.Model):
         if self.image.public_id:
             uploader.destroy(self.image.public_id)
         super().delete(*args, **kwargs)
+
+    def get_url(self, transformations=""):
+        '''
+        Tạo URL cho ảnh cloudinary
+        :param transformations: Các biến đổi ảnh
+        :return: URL ảnh
+        '''
+        url = cloudinary.utils.cloudinary_url(
+            self.image.public_id,
+            cloud_name=cloudinary.config().cloud_name,  # Lấy cloud_name từ config
+            secure=True,  # Đảm bảo HTTPS
+            transformation=transformations
+        )[0]
+        return url
+
+    def get_image_element(self, transformations=""):
+        '''
+        Hiển thị ảnh từ cloudinary
+        :param transformations: Các biến đổi ảnh
+        :return: Ảnh
+        '''
+        image_url = self.get_url(transformations)
+
+        return mark_safe(f"<img src='{image_url}' />")
 
 
 class ImageManagement(models.Model):

@@ -3,7 +3,6 @@ from django.forms.utils import mark_safe
 
 from admin_site.site import admin_site
 from accounts.models import User
-from utils.image import get_cloudinary_image
 
 class UserAdmin(admin.ModelAdmin):
     """
@@ -31,9 +30,7 @@ class UserAdmin(admin.ModelAdmin):
 
     def avatar_view(self, user):
         if user:
-            return get_cloudinary_image(
-                user.avatar.public_id, transformations={"width": 200}
-            )
+            return user.avatar.get_image_element(transformations={"width": 200})
 
     def status_display(self, user):
         """Hiển thị trạng thái dưới dạng biểu tượng màu."""

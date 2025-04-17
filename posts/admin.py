@@ -3,7 +3,6 @@ from django.utils.html import format_html
 
 from admin_site.site import admin_site
 from posts.models import RentalPost, RoomSeekingPost, Utilities
-from utils.image import get_cloudinary_image
 
 # Register your models here.
 class RentalPostAdmin(admin.ModelAdmin):
@@ -30,11 +29,11 @@ class RentalPostAdmin(admin.ModelAdmin):
     def image_gallery(self, rental_post):
         """Hiển thị tất cả ảnh trong trang chi tiết"""
         html = '<div style="display: flex; gap: 10px; flex-wrap: wrap;">'
-        for image in rental_post.images.all():
+        for image_object in rental_post.images.all():
             html += '<div style="margin: 10px;">'
-            html += get_cloudinary_image(image.image.public_id, transformations={"width": 200})
-            html += f'<p style="color: grey; font-style: italic;">{image.image.public_id or ""}</p>'
-            html += f'<p>{image.alt or ""}</p>'
+            html += image_object.get_image_element(transformations={"width": 200})
+            html += f'<p style="color: grey; font-style: italic;">{image_object.image.public_id or ""}</p>'
+            html += f'<p>{image_object.alt or ""}</p>'
             html += '</div>'
         html += '</div>'
         return format_html(html)
