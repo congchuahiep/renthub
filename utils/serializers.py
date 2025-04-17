@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from utils.image import generate_image_url
-
 from .models import Image
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -12,7 +10,7 @@ class ImageSerializer(serializers.ModelSerializer):
         để thêm URL của hình ảnh vào dữ liệu trả về.
         """
         data = super().to_representation(instance)
-        data['image'] = generate_image_url(instance.image.url) if instance.image else None
+        data['image'] = instance.image.get_url() if instance.image else None
         return data
 
     class Meta:
