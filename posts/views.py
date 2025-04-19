@@ -6,7 +6,9 @@ from rest_framework.response import Response
 from accounts.perms import IsLandlord
 from posts.models import RentalPost
 from posts.paginators import PostPagination
-from posts.serializers import RentalPostSerializer
+from posts.serializers import RentalPostCreateSerializer, RentalPostSerializer
+
+from drf_yasg.utils import swagger_auto_schema
 
 
 # Create your views here.
@@ -19,7 +21,7 @@ class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retriev
     """
 
     # Sử dụng prefetch_related("utilities", "images") để tối ưu hóa câu truy vấn
-    queryset = RentalPost.objects.prefetch_related("utilities", "images").filter(active=True)
+    queryset = RentalPost.objects.prefetch_related("utilities", "post")
     serializer_class = RentalPostSerializer
     pagination_class = PostPagination
     page_size = 10
@@ -38,6 +40,12 @@ class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retriev
             permission_classes = []
         return [permission() for permission in permission_classes]
 
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return RentalPostCreateSerializer
+        return RentalPostSerializer
+
+    @swagger_auto_schema(auto_schema=None)  # Endpoint này sẽ bị ẩn khỏi Swagger
     def create(self, request, *args, **kwargs):
         """
         Ghi đè phương thức create() để xử lý việc tạo bài đăng mới

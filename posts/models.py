@@ -12,38 +12,43 @@ class Post(BaseModel, ImageManagement):
         EXPIRED = "ep", "Hết hạn"
         RENTED = "rt", "Đã thuê"
 
+    class PostType(models.TextChoices):
+        RENTAL = 'RENTAL', 'Rental Post'
+        SEEKING = 'SEEKING', 'Seeking Post'
+
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
-    comment_post = models.OneToOneField(
-        "comments.CommentPost",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
+    post_type = models.CharField(max_length=20, choices=PostType.choices)
 
     class Meta:
-        abstract = True
         ordering = ["-created_date"]
 
-    def save(self, *args, **kwargs):
-        """
-        Tự động tạo một comment_post mới khi tạo một bài đăng
-        """
-        if not self.comment_post:  # Nếu chưa có đối tượng `B`, thì tạo mới
-            from comments.models import CommentPost
-            self.comment_post = CommentPost.objects.create()
-        super().save(*args, **kwargs)  # Gọi phương thức `save()` của lớp cha
+    # def save(self, *args, **kwargs):
+    #     """
+    #     Tự động tạo một comment_post mới khi tạo một bài đăng
+    #     """
+    #     if not self.comment_post:  # Nếu chưa có đối tượng `B`, thì tạo mới
+    #         from comments.models import CommentPost
+    #         self.comment_post = CommentPost.objects.create()
+    #     super().save(*args, **kwargs)  # Gọi phương thức `save()` của lớp cha
 
     def __str__(self):
         return self.title
 
 
-class RentalPost(Post):
+class RentalPost(models.Model):
     """
     Model này định nghĩa một bài đăng cho thuê nhà của
     một chủ thuê
     """
+
+    post = models.OneToOneField(
+        "posts.Post",
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name='rental_details'
+    )
 
     # Chỉ định chỉ cho phép người đăng bài cho thuê nhà là Chủ nhà
     landlord = models.ForeignKey(
@@ -64,7 +69,15 @@ class RentalPost(Post):
     utilities = models.ManyToManyField("Utilities", related_name="rental_posts", blank=True)
 
 
-class RoomSeekingPost(Post):
+class RoomSeekingPost(models.Model):
+
+    post = models.OneToOneField(
+        "posts.Post",
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name='seeking_details'
+    )
+
     tenent = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,

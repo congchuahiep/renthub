@@ -1,7 +1,19 @@
+"""
+# TỔ CHỨC CÁCH VIẾT SERIALIZER
+    Các serializer ở đây mình sẽ viết theo trật tự thực hiện của các chức năng:
+    -> Các trường Serializer
+    -> Phương thức to_representation()
+    -> Class Meta
+    -> Các trường bổ sung
+    -> Các phương thức validate
+    -> Các phương thức bổ sung
+    -> Ghi đè create/update
+"""
+
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
-from posts.models import RentalPost, RoomSeekingPost, Utilities
+from posts.models import Post, RentalPost, RoomSeekingPost, Utilities
 from utils.models import Image
 from utils.serializers import ImageSerializer
 
@@ -12,9 +24,10 @@ class UtilitiesSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class RentalPostSerializer(serializers.ModelSerializer):
-    landlord = UserSerializer(read_only=True)
-    utilities = UtilitiesSerializer(many=True, read_only=True)
+class PostSerializer(serializers.ModelSerializer):
+    """
+    Base serializer cho việc hiển thị post
+    """
     images = ImageSerializer(many=True, read_only=True)
 
     # Trường để upload ảnh
@@ -25,30 +38,25 @@ class RentalPostSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = RentalPost
-        fields = [
-            'id',
-            'landlord',
-            'title',
-            'content',
-            'status',
-            'province',
-            'city',
-            'address',
-            'price',
-            'limit_person',
-            'area',
-            'number_of_bedrooms',
-            'number_of_bathrooms',
-            'utilities',
-            'created_date',
-            'updated_date',
-            'images',
-            'upload_images'
-        ]
-        read_only_fields = ['landlord', 'created_at', 'updated_at', 'status']
+        model = Post
+        fields = ['title', 'content', 'status', 'created_date', 'images', 'upload_images']
 
 
+class PostCreateSerializer(serializers.ModelSerializer):
+    """
+    Base serializer cho việc tạo post
+    """
+
+    # Các trường Serializer
+    title = serializers.CharField(write_only=True)
+    content = serializers.CharField(write_only=True)
+    upload_images = serializers.ListField(
+        child=serializers.FileField(),
+        write_only=True,
+        required=False
+    )
+
+    # Các phương thức Validate
     def validate_upload_images(self, value):
         """
         Validate cho trường upload_images.
@@ -81,21 +89,98 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
         return value
 
-
-    def create(self, validated_data):
-        # Lấy và xoá ảnh ra từ validated_data
+    # Các phương thức bổ sung
+    def create_post(self, validated_data, post_type):
+        """
+        Method chung để tạo Post và xử lý ảnh
+        """
+        # Tách dữ liệu của Post và ảnh
+        title = validated_data.pop('title')
+        content = validated_data.pop('content')
         upload_images = validated_data.pop('upload_images', [])
 
-        # Tạo rental post, nhưng rental post này chưa có ảnh
-        rental_post = RentalPost.objects.create(**validated_data)
+        # Tạo Post
+        post = Post.objects.create(
+            title=title,
+            content=content,
+            post_type=post_type
+        )
 
-        # Xử lý từng ảnh được upload
+        # Xử lý ảnh
         for image_file in upload_images:
             image = Image.objects.create(
                 image=image_file,
-                alt=f"Image for {rental_post.title}"
+                alt=f"Image for {post.title}"
             )
-            rental_post.images.add(image)
+            post.images.add(image)
+
+        return post
+
+
+class RentalPostSerializer(serializers.ModelSerializer):
+    """
+    Serializer cho việc hiển thị RentalPost
+    """
+
+    # Các trường serializer
+    landlord = UserSerializer(read_only=True)
+    utilities = UtilitiesSerializer(many=True, read_only=True)
+    post = PostSerializer(read_only=True)
+
+    class Meta:
+        model = RentalPost
+        fields = [
+            'post',
+            'landlord', 'province', 'city', 'address', 'price',  # RentalPost fields
+            'area', 'number_of_bedrooms', 'number_of_bathrooms', 'utilities'
+        ]
+        read_only_fields = ['landlord', 'created_at', 'updated_at', 'status']
+
+
+class RentalPostCreateSerializer(PostCreateSerializer):
+
+    def to_representation(self, instance):
+        """
+        Sau khi thực hiện phương thức HTTP POST hoàn tất
+        ta trả về phản hồi cho client thông qua RentalPostSerializer
+        """
+        # Sử dụng RentalPostSerializer để serialize kết quả
+        return RentalPostSerializer(instance).data
+
+    class Meta:
+        model = RentalPost
+        fields = [
+            'title', 'content', 'upload_images',  # Post fields
+            'province', 'city', 'address', 'price',  # RentalPost fields
+            'area', 'number_of_bedrooms', 'number_of_bathrooms', 'utilities'
+        ]
+
+    # Ghi đè phương thức create()
+    def create(self, validated_data):
+        """
+        Khi tạo một RentalPost
+        nó sẽ tạo ra một Post mới và RentalPost sẽ dùng khoá
+        chính của nó trỏ quan hệ 1-1 tới Post.
+
+        Ngoài ra, trong Django ta không thể gán trực tiếp
+        giá trị cho trường many-to-many (ở đây là `utilities`).
+        Nên ta phải thêm `ultilites` thủ công bằng:
+        ```python
+        rental_post.utilities.set(utilities)
+        ```
+        """
+        # Tách dữ liệu utilities ra khỏi validated_data
+        utilities = validated_data.pop('utilities', [])
+
+        # Tạo Post
+        post = self.create_post(validated_data, Post.PostType.RENTAL)
+
+        # Tạo RentalPost (không bao gồm utilities)
+        rental_post = RentalPost.objects.create(post=post, **validated_data)
+
+        # Thêm utilities sau khi đã tạo rental_post
+        if utilities:
+            rental_post.utilities.set(utilities)
 
         return rental_post
 

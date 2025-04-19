@@ -16,7 +16,7 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Image(models.Model):
+class Image(BaseModel):
     image = CloudinaryField(null=False)
     alt = models.CharField(max_length=256, blank=True, null=True)
 
