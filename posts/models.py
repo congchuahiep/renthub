@@ -47,6 +47,14 @@ class RentalPost(Post):
         null=True,
     )
 
+    # Dãy trọ mà bài đăng này thuộc
+    property = models.ForeignKey(
+        "properties.Property",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
     price = models.FloatField(null=True, blank=True)
     limit_person = models.IntegerField(null=True, blank=True)
     area = models.FloatField()
