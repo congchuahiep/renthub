@@ -16,13 +16,6 @@ class Post(BaseModel, ImageManagement):
     content = models.TextField(null=True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
 
-    property = models.ForeignKey(
-        "properties.Property",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
-
     class Meta:
         abstract = True
         ordering = ["-created_date"]
