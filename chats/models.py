@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from accounts.utils import UserType
+from utils.choices import UserType
 from utils.models import BaseModel
 
 # Create your models here.

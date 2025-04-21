@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
-from accounts.utils import UserType
 from django.db.models import Q
 
 User = get_user_model()
@@ -15,7 +14,7 @@ class ConversationViewSet(viewsets.ViewSet, generics.ListAPIView):
     serializer_class = serializers.ConversationSerializer
 
     @action(methods=['post'],detail=True, url_path='conversation_post')
-    def create_conversation(self, request,id):       
+    def create_conversation(self, request,id):
         try:
             user2 = User.objects.get(pk=id)
         except User.DoesNotExist:
@@ -33,12 +32,12 @@ class ConversationViewSet(viewsets.ViewSet, generics.ListAPIView):
         user = request.user
         conversations = Conversation.objects.filter(Q(landlord=user) | Q(tenent=user))
         serializer = serializers.ConversationSerializer(conversations, many=True,context={'request': request})
-        return Response(serializer.data) 
-    
+        return Response(serializer.data)
+
 class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Message.objects.all()
     serializer_class = serializers.MessageSerializer
-   
+
     @action(methods=['get', 'post'], detail=True, url_path='message')
     def get_message(self,request,id):
         if request.method == 'GET':
@@ -62,7 +61,7 @@ class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
             serializer = serializers.MessageSerializer(data={
                 "content": request.data.get("content"),
                 "conversation": id,
-                "sender": sender.pk, 
+                "sender": sender.pk,
                 "active": True
             }, context={'request': request})
 
@@ -74,4 +73,3 @@ class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
         messages = Message.objects.filter(conversation_id=id, active=True).select_related('sender')
         serializer = serializers.MessageSerializer(messages, many=True)
         return Response(serializer.data)
-    

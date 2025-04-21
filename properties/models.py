@@ -1,9 +1,11 @@
 from django.db import models
 
-from utils.models import BaseModel
+from utils.choices import PropertyStatus, UserType
+from utils.models import BaseModel, ImageManagement
+
 
 # Create your models here.
-class Property(BaseModel):
+class Property(BaseModel, ImageManagement):
     """
     Model này định nghĩa một dự án bất động sản - aka "Dãy trọ"
 
@@ -15,12 +17,15 @@ class Property(BaseModel):
     chấp nhận và bị xoá.
     """
 
-    class Status(models.TextChoices):
-        PENDING = 'pending', 'Đang kiểm duyệt'
-        APPROVED = 'approved', 'Đã duyệt'
-        REJECTED = 'rejected', 'Đã từ chối'
+    status = models.CharField(max_length=10, choices=PropertyStatus.choices, default=PropertyStatus.PENDING)
 
-    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    owner = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": UserType.LANDLORD},
+        related_name="properties",
+        null=True
+    )
 
     properties_name = models.CharField(max_length=256)
 
