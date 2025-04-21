@@ -19,7 +19,7 @@ class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retriev
     """
 
     # Sử dụng prefetch_related("utilities", "images") để tối ưu hóa câu truy vấn
-    queryset = RentalPost.objects.prefetch_related("utilities", "images").filter(active=True)
+    queryset = RentalPost.objects.prefetch_related("utilities", "images", "landlord").filter(active=True)
     serializer_class = RentalPostSerializer
     pagination_class = PostPagination
     page_size = 10
