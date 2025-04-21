@@ -15,6 +15,15 @@ class Property(BaseModel, ImageManagement):
 
     Ngược lại, nếu dãy trọ đầu tiên không được duyệt, thì tài khoản chủ trọ sẽ không được
     chấp nhận và bị xoá.
+
+    Các trường dữ liệu:
+        - `name`: Tên của dãy trọ
+        - `owner`: Chủ trọ của dãy trọ
+        - `images`: Hình ảnh của dãy trọ
+        - `status`: Trạng thái của dãy trọ
+        - `province`: Tỉnh của dãy trọ
+        - `district`: Quận của dãy trọ
+        - `address`: Địa chỉ của dãy trọ
     """
 
     status = models.CharField(max_length=10, choices=PropertyStatus.choices, default=PropertyStatus.PENDING)
@@ -27,8 +36,8 @@ class Property(BaseModel, ImageManagement):
         null=True
     )
 
-    properties_name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256)
 
     province = models.CharField(max_length=256)
-    city = models.CharField(max_length=256)
+    district = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
