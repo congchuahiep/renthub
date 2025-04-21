@@ -32,6 +32,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'title',
             'content',
             'status',
+            'expired_date',
             'price',
             'limit_person',
             'area',

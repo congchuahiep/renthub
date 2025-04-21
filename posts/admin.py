@@ -18,7 +18,7 @@ class RentalPostAdmin(admin.ModelAdmin):
     readonly_fields = ["image_gallery"]
 
     fieldsets = [
-        ("Status", {"fields": ["status"]}),
+        ("Status", {"fields": ["status", "expired_date"]}),
         ("Rental post", {"fields": ["title", "price", "area", "content", "landlord"]}),
         # ("Location", {"fields": ["province", "city", "address"]}),
         ("Details", {"fields": [ "number_of_bedrooms","number_of_bathrooms", "utilities"]}),

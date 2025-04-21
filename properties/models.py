@@ -16,9 +16,9 @@ class Property(BaseModel):
     """
 
     class Status(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        APPROVED = 'approved', 'Approved'
-        REJECTED = 'rejected', 'Rejected'
+        PENDING = 'pending', 'Đang kiểm duyệt'
+        APPROVED = 'approved', 'Đã duyệt'
+        REJECTED = 'rejected', 'Đã từ chối'
 
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
 
