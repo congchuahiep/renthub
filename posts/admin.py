@@ -20,9 +20,8 @@ class RentalPostAdmin(admin.ModelAdmin):
     fieldsets = [
         ("Status", {"fields": ["status"]}),
         ("Rental post", {"fields": ["title", "price", "area", "content", "landlord"]}),
-        ("Interior",{"fields":["number_of_bedrooms","number_of_bathrooms"]}),
-        ("Location", {"fields": ["province", "city", "address"]}),
-        ("Utilities", {"fields": ["utilities"]}),
+        # ("Location", {"fields": ["province", "city", "address"]}),
+        ("Details", {"fields": [ "number_of_bedrooms","number_of_bathrooms", "utilities"]}),
         ("Images", {"fields": ["images", "image_gallery"]}),
     ]
 
