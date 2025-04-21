@@ -2,7 +2,7 @@ from django.db import models
 
 from django.utils import timezone
 
-from accounts.utils import UserType
+from utils.choices import PropertyStatus, UserType
 from utils.models import BaseModel, ImageManagement
 
 def default_post_expiration_date():
@@ -15,16 +15,9 @@ class Post(BaseModel, ImageManagement):
         -
     """
 
-    class Status(models.TextChoices):
-        PENDING = "pending", "Đang kiểm duyệt"
-        APPROVED = "approved", "Đã kiểm duyệt"
-        REJECTED = "rejected", "Từ chối kiểm duyệt"
-        EXPIRED = "expired", "Hết hạn"
-        RENTED = "rented", "Đã thuê"
-
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
-    status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
+    status = models.CharField(max_length=10, choices=PropertyStatus, default=PropertyStatus.PENDING)
 
     # Tự động thiết lập bài đăng hết hạn sau 7 ngày
     expired_date = models.DateTimeField(
@@ -60,7 +53,7 @@ class RentalPost(Post):
         "properties.Property",
         on_delete=models.CASCADE,
         null=True,
-        blank=True,
+        limit_choices_to={"status": PropertyStatus.APPROVED}
     )
 
     price = models.FloatField(null=True, blank=True)

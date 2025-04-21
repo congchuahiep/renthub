@@ -2,7 +2,7 @@ from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from accounts.utils import UserType
+from utils.choices import UserType
 
 # Create your models here.
 class User(AbstractUser):

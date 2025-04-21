@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from accounts.utils import UserType
+from utils.choices import UserType
 
 class IsLandlord(permissions.IsAuthenticated):
     def has_permission(self, request, view):
