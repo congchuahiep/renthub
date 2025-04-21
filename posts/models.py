@@ -15,8 +15,9 @@ class Post(BaseModel, ImageManagement):
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
-    comment_post = models.OneToOneField(
-        "comments.CommentPost",
+
+    property = models.ForeignKey(
+        "properties.Property",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
@@ -53,9 +54,6 @@ class RentalPost(Post):
         null=True,
     )
 
-    province = models.CharField(max_length=256)
-    city = models.CharField(max_length=256)
-    address = models.CharField(max_length=256)
     price = models.FloatField(null=True, blank=True)
     limit_person = models.IntegerField(null=True, blank=True)
     area = models.FloatField()
