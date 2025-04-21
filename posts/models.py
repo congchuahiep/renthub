@@ -1,33 +1,41 @@
 from django.db import models
 
+from django.utils import timezone
+
 from accounts.utils import UserType
 from utils.models import BaseModel, ImageManagement
 
+def default_post_expiration_date():
+    return timezone.now() + timezone.timedelta(days=7)
+
 # Create your models here.
 class Post(BaseModel, ImageManagement):
+    """
+    Model này định nghĩa một bài đăng:
+        -
+    """
+
     class Status(models.TextChoices):
-        PENDING = "pd", "Đang kiểm duyệt"
-        APPROVED = "ap", "Đã kiểm duyệt"
-        REJECTED = "rj", "Từ chối kiểm duyệt"
-        EXPIRED = "ep", "Hết hạn"
-        RENTED = "rt", "Đã thuê"
+        PENDING = "pending", "Đang kiểm duyệt"
+        APPROVED = "approved", "Đã kiểm duyệt"
+        REJECTED = "rejected", "Từ chối kiểm duyệt"
+        EXPIRED = "expired", "Hết hạn"
+        RENTED = "rented", "Đã thuê"
 
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
     status = models.CharField(max_length=10, choices=Status, default=Status.PENDING)
 
+    # Tự động thiết lập bài đăng hết hạn sau 7 ngày
+    expired_date = models.DateTimeField(
+        default=default_post_expiration_date,
+        null=True,
+        blank=True
+    )
+
     class Meta:
         abstract = True
         ordering = ["-created_date"]
-
-    def save(self, *args, **kwargs):
-        """
-        Tự động tạo một comment_post mới khi tạo một bài đăng
-        """
-        if not self.comment_post:  # Nếu chưa có đối tượng `B`, thì tạo mới
-            from comments.models import CommentPost
-            self.comment_post = CommentPost.objects.create()
-        super().save(*args, **kwargs)  # Gọi phương thức `save()` của lớp cha
 
     def __str__(self):
         return self.title
