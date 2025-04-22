@@ -1,11 +1,6 @@
 from rest_framework import generics, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 
 from accounts.perms import IsLandlord
 from posts.models import RentalPost

@@ -22,6 +22,9 @@ class User(AbstractUser):
     district = models.CharField(max_length=256, blank=True, null=True)
     province = models.CharField(max_length=256, blank=True, null=True)
 
+    # Các thông tin khác
+    dob = models.DateField(blank=True, null=True)
+
     # TODO: GIAI ĐOẠN TESTING NÊN MẤY TRƯỜNG NÀY CÓ THỂ BLANK
     avatar = CloudinaryField(null=True, blank=True)
     phone_number = models.CharField(max_length=10, unique=True, blank=True, null=True)
