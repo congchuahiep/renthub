@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from properties.models import Property
+from properties.serializers import PropertySerializer
 from utils.choices import UserType
 from utils.models import Image
 
@@ -57,6 +58,18 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
         child=serializers.ImageField(),
         required=False
     )
+
+    def to_representation(self, instance):
+        """
+        Định nghĩa cách serialize kết quả. Vì kết quả khi đăng ký
+        ta sẽ trả về thông tin của người dùng mới tạo và cả thông
+        tin về dãy trọ mà người dùng đã đăng ký (Tức khác với `ModelSerializer`)
+        """
+        return {
+            'message': 'Đăng ký thành công. Tài khoản của bạn sẽ được kích hoạt sau khi dãy trọ được xét duyệt.',
+            'user': UserSerializer(instance['user']).data,
+            'property': PropertySerializer(instance['property']).data
+        }
 
     class Meta:
         model = User

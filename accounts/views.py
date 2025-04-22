@@ -1,11 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 
 from accounts.serializers import LandlordRegistrationSerializer, UserSerializer
-from utils.choices import UserType
 
 User = get_user_model()
 
@@ -37,22 +35,6 @@ class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
     def landlord_register(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            # Vì serializer trả về loại dữ liệu hơi lạ nên ở đây ta
-            # xử lý phản hồi thế này
-            result = serializer.save()
-
-            response_data = {
-                'message': 'Đăng ký thành công. Tài khoản của bạn sẽ được kích hoạt sau khi dãy trọ được xét duyệt.',
-                'user': UserSerializer(result['user']).data,
-                'property': {
-                    'id': result['property'].id,
-                    'name': result['property'].name,
-                    'province': result['property'].province,
-                    'district': result['property'].district,
-                    'address': result['property'].address,
-                    'status': result['property'].status
-                }
-            }
-
-            return Response(response_data, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
