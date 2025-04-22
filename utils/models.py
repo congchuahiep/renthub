@@ -17,6 +17,14 @@ class BaseModel(models.Model):
 
 
 class Image(models.Model):
+    """
+    Model này định nghĩa một ảnh được lưu trữ trên Cloudinary.
+
+    Các trường dữ liệu:
+        - `image`: URL của ảnh trên Cloudinary
+        - `alt`: Mô tả ngắn của ảnh
+    """
+
     image = CloudinaryField(null=False)
     alt = models.CharField(max_length=256, blank=True, null=True)
 
@@ -57,6 +65,10 @@ class Image(models.Model):
 
 
 class ImageManagement(models.Model):
+    """
+    Các model kế thừa từ ImageManagement có thể quản lý các ảnh thông qua thuộc tính `images`
+    """
+
     images = models.ManyToManyField(
         'utils.Image',
         blank=True,

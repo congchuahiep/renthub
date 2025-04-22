@@ -1,7 +1,11 @@
 from rest_framework import generics, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from accounts.perms import IsLandlord
 from posts.models import RentalPost
@@ -23,8 +27,9 @@ class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retriev
     serializer_class = RentalPostSerializer
     pagination_class = PostPagination
     page_size = 10
-    # Thêm parser cho file upload
-    parser_classes = [MultiPartParser, FormParser]
+
+    # Thêm parser cho file upload, nhưng không hiểu tại sao khi thêm parser thì nó lại không hoạt động
+    # parser_classes = [MultiPartParser, FormParser]
 
     def get_permissions(self):
         """
