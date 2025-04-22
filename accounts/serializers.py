@@ -2,9 +2,9 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 from properties.models import Property
-from properties.serializers import PropertySerializer
 from utils.choices import UserType
 from utils.models import Image
+from utils.serializers import ImageSerializer
 
 User = get_user_model()
 
@@ -18,7 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id',
             'username',
             'password',
             'email',
@@ -30,12 +29,14 @@ class UserSerializer(serializers.ModelSerializer):
             'avatar',
             'dob'
         ]
-        read_only_fields = ['id']
         extra_kwargs = {
             'password': {
                 'write_only': True
             }
         }
+
+    def __str__(self) -> str:
+        return self.username
 
     def create(self, validated_data):
         user = User(**validated_data)
@@ -44,7 +45,9 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+
 class LandlordRegistrationSerializer(serializers.ModelSerializer):
+
     # User information
     avatar = serializers.ImageField(required=False)
 
@@ -53,9 +56,10 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
     property_province = serializers.CharField()
     property_district = serializers.CharField()
     property_address = serializers.CharField()
-    property_images = serializers.ListField(
+    property_upload_images = serializers.ListField(
         child=serializers.ImageField(),
-        required=False
+        required=False,
+        write_only=True
     )
 
     def to_representation(self, instance):
@@ -64,10 +68,17 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
         ta sẽ trả về thông tin của người dùng mới tạo và cả thông
         tin về dãy trọ mà người dùng đã đăng ký (Tức khác với `ModelSerializer`)
         """
+        property = instance['property']
         return {
             'message': 'Đăng ký thành công. Tài khoản của bạn sẽ được kích hoạt sau khi dãy trọ được xét duyệt.',
             'user': UserSerializer(instance['user']).data,
-            'property': PropertySerializer(instance['property']).data
+            'property': {
+                'name': property.name,
+                'province': property.province,
+                'district': property.district,
+                'address': property.address,
+                'images': ImageSerializer(property.images.all(), many=True).data
+            }
         }
 
     class Meta:
@@ -87,7 +98,7 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             'property_province',
             'property_district',
             'property_address',
-            'property_images'
+            'property_upload_images'
         ]
         extra_kwargs = {
             'password': {
@@ -103,7 +114,7 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             'district': validated_data.pop('property_district'),
             'address': validated_data.pop('property_address'),
         }
-        property_images = validated_data.pop('property_images', [])
+        property_images = validated_data.pop('property_upload_images', [])
 
         # Tạo user trước, gọi lên UserSerializer
         user_serializer = UserSerializer(data=validated_data)
