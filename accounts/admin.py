@@ -30,7 +30,7 @@ class UserAdmin(admin.ModelAdmin):
 
     def avatar_view(self, user):
         if user:
-            return user.avatar.get_image_element(transformations={"width": 200})
+            return mark_safe(f"<img src='{user.avatar.url}' width='200' />")
 
     def status_display(self, user):
         """Hiển thị trạng thái dưới dạng biểu tượng màu."""

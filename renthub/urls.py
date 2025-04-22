@@ -43,6 +43,7 @@ urlpatterns = [
     path('', include('chats.urls')), # chats/
     path('', include('posts.urls')), # rentals/
     path('', include('comments.urls')), # rentals/
+    path('', include('accounts.urls')), # rentals/
 
     # Tests
     path('test/', include('testing.urls')),
