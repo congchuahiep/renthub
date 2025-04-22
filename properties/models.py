@@ -14,7 +14,12 @@ class Property(BaseModel, ImageManagement):
     được xét duyệt, tài khoản chủ trọ sẽ được kích hoạt.
 
     Ngược lại, nếu dãy trọ đầu tiên không được duyệt, thì tài khoản chủ trọ sẽ không được
-    chấp nhận và bị xoá.
+    chấp nhận và gửi thông báo qua email.
+
+    Phương thức duyệt tài khoản chủ trọ khi dãy trọ đầu tiên được duyệt được triển khai trong:
+    ```
+    /properties/signals.py/handle_property_and_landlord_approval/
+    ```
 
     Các trường dữ liệu:
         - `name`: Tên của dãy trọ

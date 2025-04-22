@@ -38,7 +38,6 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        # Tạo rental post, nhưng rental post này chưa có ảnh
         user = User(**validated_data)
         user.set_password(user.password)
         user.save()
