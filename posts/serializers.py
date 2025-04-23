@@ -11,6 +11,14 @@ class UtilitiesSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class PostReferenceSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PostReference
+        fields = '__all__'
+
+
 class RentalPostSerializer(serializers.ModelSerializer):
     """
     Serializer cho RentalPost model. Phục vụ hầu hết các chức năng
@@ -18,9 +26,9 @@ class RentalPostSerializer(serializers.ModelSerializer):
     """
 
     # Serialize lồng
+    post = PostReferenceSerializer(read_only=True)
     landlord = UserSerializer(read_only=True)
     utilities = UtilitiesSerializer(many=True, read_only=True)
-    images = ImageSerializer(many=True, read_only=True)
 
     # Trường để upload ảnh
     upload_images = serializers.ListField(
@@ -32,10 +40,13 @@ class RentalPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentalPost
         fields = [
+            'post',
             'landlord',
+            'created_date',
+            'updated_date',
+            'status',
             'title',
             'content',
-            'status',
             'expired_date',
             'price',
             'limit_person',
@@ -43,10 +54,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'number_of_bedrooms',
             'number_of_bathrooms',
             'utilities',
-            'created_date',
-            'updated_date',
-            'images',
-            'upload_images'
+            'upload_images',
         ]
         read_only_fields = ['landlord', 'created_at', 'updated_at', 'status']
 
