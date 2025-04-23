@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
-from posts.models import RentalPost, RoomSeekingPost, Utilities
+from posts.models import Post, RentalPost, RoomSeekingPost, Utilities
 from utils.models import Image
 from utils.serializers import ImageSerializer
 
@@ -33,7 +33,6 @@ class RentalPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentalPost
         fields = [
-            'id',
             'landlord',
             'title',
             'content',
@@ -90,8 +89,14 @@ class RentalPostSerializer(serializers.ModelSerializer):
         # Lấy và xoá ảnh ra từ validated_data
         upload_images = validated_data.pop('upload_images', [])
 
-        # Tạo rental post, nhưng rental post này chưa có ảnh
-        rental_post = RentalPost.objects.create(**validated_data)
+        # Tạo Post base trước
+        post = Post.objects.create()
+
+        # Tạo RentalPost với post reference, nhưng rental post này chưa có ảnh
+        rental_post = RentalPost.objects.create(
+            post=post,
+            **validated_data
+        )
 
         # Xử lý từng ảnh được upload
         for image_file in upload_images:
