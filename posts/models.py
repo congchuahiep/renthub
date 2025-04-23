@@ -9,10 +9,13 @@ def default_post_expiration_date():
     return timezone.now() + timezone.timedelta(days=7)
 
 # Create your models here.
-class Post(models.Model):
+class PostReference(models.Model):
     """
     Model này chỉ dùng để làm reference cho các loại post khác. Mục đích
     chính là để tạo khả năng khoá ngoại trỏ đến bài đăng.
+
+    Ngoài ra các model của BasePost sẽ sử dụng khoá chính của PostReference làm
+    khoá chính của bản thân mình
     """
     pass
 
@@ -32,7 +35,7 @@ class BasePostContent(BaseModel):
     """
 
     # id được trỏ tới model Post
-    post = models.OneToOneField("Post", on_delete=models.CASCADE, primary_key=True)
+    post = models.OneToOneField("PostReference", on_delete=models.CASCADE, primary_key=True)
 
     # Các trường dữ liệu chung
     title = models.CharField(max_length=256)
@@ -109,7 +112,7 @@ class RoomSeekingPost(BasePostContent):
 
 class ImagePost(Image):
     post = models.ForeignKey(
-        "Post",
+        "PostReference",
         on_delete=models.CASCADE,
         related_name="images",
     )

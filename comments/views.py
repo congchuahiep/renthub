@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets,generics,status
 from .models import Comment, CommentPost
 from rest_framework.decorators import action
-from posts.models import Post,RentalPost,RoomSeekingPost
+from posts.models import PostReference,RentalPost,RoomSeekingPost
 from rest_framework.response import Response
 from .serializers import CommentSerializer
 from comments import serializers
@@ -14,7 +14,7 @@ class CommentPostView(viewsets.ViewSet, generics.ListAPIView):
     serializer_class = serializers.CommentSerializer
 
     @action(methods=['post'], detail=True,url_path='add_comment')
-    def add_comment(self,request, id):  
+    def add_comment(self,request, id):
         serializer = CommentSerializer(
         data=request.data,
         context={

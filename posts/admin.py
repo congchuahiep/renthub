@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from admin_site.site import admin_site
-from posts.models import RentalPost, RoomSeekingPost, Utilities
+from posts.models import ImagePost, RentalPost, RoomSeekingPost, Utilities
 
 # Register your models here.
 class RentalPostAdmin(admin.ModelAdmin):
@@ -15,29 +15,29 @@ class RentalPostAdmin(admin.ModelAdmin):
     sortable_by = ["title"]
     filter_horizontal = ["utilities"]
 
-    # readonly_fields = ["image_gallery"]
+    readonly_fields = ["image_gallery"]
 
     fieldsets = [
         ("Status", {"fields": ["status", "expired_date"]}),
         ("Rental post", {"fields": ["title", "price", "area", "content", "landlord"]}),
         # ("Location", {"fields": ["province", "city", "address"]}),
         ("Details", {"fields": [ "number_of_bedrooms","number_of_bathrooms", "utilities"]}),
-        # ("Images", {"fields": ["images", "image_gallery"]}),
+        ("Images", {"fields": ["image_gallery"]}),
     ]
 
-    # def image_gallery(self, rental_post):
-    #     """Hiển thị tất cả ảnh trong trang chi tiết"""
-    #     html = '<div style="display: flex; gap: 10px; flex-wrap: wrap;">'
-    #     for image_object in rental_post.images.all():
-    #         html += '<div style="margin: 10px;">'
-    #         html += image_object.get_image_element(transformations={"width": 200})
-    #         html += f'<p style="color: grey; font-style: italic;">{image_object.image.public_id or ""}</p>'
-    #         html += f'<p>{image_object.alt or ""}</p>'
-    #         html += '</div>'
-    #     html += '</div>'
-    #     return format_html(html)
+    def image_gallery(self, rental_post):
+        """Hiển thị tất cả ảnh trong trang chi tiết"""
+        html = '<div style="display: flex; gap: 10px; flex-wrap: wrap;">'
+        for image_object in rental_post.post.images.all():
+            html += '<div style="margin: 10px;">'
+            html += image_object.get_image_element(transformations={"width": 200})
+            html += f'<p style="color: grey; font-style: italic;">{image_object.image.public_id or ""}</p>'
+            html += f'<p>{image_object.alt or ""}</p>'
+            html += '</div>'
+        html += '</div>'
+        return format_html(html)
 
-    # image_gallery.short_description = 'Image Gallery'
+    image_gallery.short_description = 'Image Gallery'
 
 
 class RoomSeekingPostAdmin(admin.ModelAdmin):

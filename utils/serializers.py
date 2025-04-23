@@ -1,8 +1,6 @@
 from rest_framework import serializers
 
-from .models import Image
-
-class ImageSerializer(serializers.ModelSerializer):
+class ImageSerializer(serializers.Serializer):
     """
     Serializer cho các model kế thừa từ abstract Image model
     """
@@ -22,7 +20,3 @@ class ImageSerializer(serializers.ModelSerializer):
             'image': image_object.get_url() if image_object.image else None
         }
         return data
-
-    class Meta:
-        model = Image
-        fields = '__all__'
