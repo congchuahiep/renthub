@@ -2,17 +2,24 @@ from django.db import models
 
 from django.utils import timezone
 
-from utils.choices import PropertyStatus, UserType
+from utils.choices import PostStatus, PropertyStatus, UserType
 from utils.models import BaseModel, ImageManagement
 
 def default_post_expiration_date():
     return timezone.now() + timezone.timedelta(days=7)
 
 # Create your models here.
-class Post(BaseModel, ImageManagement):
+class Post(models.Model):
     """
-    Model này định nghĩa một bài đăng, nó là model trừu tượng.
-    Được sử dụng để định nghĩa các thuộc tính chung cho hai model con:
+    Model này chỉ dùng để làm reference cho các loại post khác. Mục đích
+    chính là để tạo khả năng khoá ngoại trỏ đến bài đăng.
+    """
+    pass
+
+class BasePostContent(BaseModel):
+    """
+    Là một model trừu tượng, được sử dụng để định nghĩa các thuộc tính chung
+    cho hai model con:
         - RentalPost
         - RoomSeekingPost
 
@@ -24,9 +31,13 @@ class Post(BaseModel, ImageManagement):
         - `images`: Danh sách hình ảnh của bài đăng
     """
 
+    # id được trỏ tới model Post
+    post = models.OneToOneField("Post", on_delete=models.CASCADE, primary_key=True)
+
+    # Các trường dữ liệu chung
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
-    status = models.CharField(max_length=10, choices=PropertyStatus, default=PropertyStatus.PENDING)
+    status = models.CharField(max_length=10, choices=PostStatus, default=PostStatus.PENDING)
 
     # Tự động thiết lập bài đăng hết hạn sau 7 ngày
     expired_date = models.DateTimeField(
@@ -43,7 +54,7 @@ class Post(BaseModel, ImageManagement):
         return self.title
 
 
-class RentalPost(Post):
+class RentalPost(BasePostContent):
     """
     Model này định nghĩa một bài đăng cho thuê nhà của một chủ thuê.
     Nó kế thừa từ lớp trừu tượng `Post`
@@ -83,7 +94,7 @@ class RentalPost(Post):
     utilities = models.ManyToManyField("Utilities", related_name="rental_posts", blank=True)
 
 
-class RoomSeekingPost(Post):
+class RoomSeekingPost(BasePostContent):
     tenent = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,
