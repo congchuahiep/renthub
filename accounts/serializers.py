@@ -9,6 +9,18 @@ from utils.serializers import ImageSerializer
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer này được sử dụng để trả về thông tin của người dùng
+
+    Phương thức `create()` của `UserSerializer` được ghi đè lại để tiện cho việc
+    đăng ký tạo tài khoản và đồng thời băm mật khẩu
+
+    Tuy nhiên ta không nên sử dụng trực tiếp `UserSerializer` để đăng ký tài
+    khoản, thay vào đó ta nên sử dụng các Serializer chuyên biệt cho việc tạo
+    tài khoản:
+        - `LandlordRegistrationSerializer` - Đăng ký tài khoản loại chủ nhà
+        - `TenantRegistrationSerializer` - Đăng ký tài khoản loại người thuê
+    """
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -47,6 +59,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LandlordRegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer chuyên biệt cho việc đăng ký tài khoản chủ nhà
+    """
 
     # User information
     avatar = serializers.ImageField(required=False)

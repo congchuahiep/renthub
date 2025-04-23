@@ -13,6 +13,12 @@ class UtilitiesSerializer(serializers.ModelSerializer):
 
 
 class RentalPostSerializer(serializers.ModelSerializer):
+    """
+    Serializer cho RentalPost model. Phục vụ hầu hết các chức năng
+    như tạo, cập nhật, xóa, và lấy thông tin chi tiết của một bài đăng cho thuê.
+    """
+
+    # Serialize lồng
     landlord = UserSerializer(read_only=True)
     utilities = UtilitiesSerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
