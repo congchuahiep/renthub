@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
-from posts.models import Post, RentalPost, RoomSeekingPost, Utilities
-from utils.models import Image
+from posts.models import ImagePost, Post, RentalPost, RoomSeekingPost, Utilities
 from utils.serializers import ImageSerializer
 
 
@@ -100,11 +99,11 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
         # Xử lý từng ảnh được upload
         for image_file in upload_images:
-            image = Image.objects.create(
+            ImagePost.objects.create(
                 image=image_file,
-                alt=f"Image for {rental_post.title}"
+                alt=f"Image for {rental_post.title}",
+                post=post
             )
-            rental_post.images.add(image)
 
         return rental_post
 

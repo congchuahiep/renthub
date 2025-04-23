@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from utils.choices import PostStatus, PropertyStatus, UserType
-from utils.models import BaseModel, ImageManagement
+from utils.models import BaseModel, Image
 
 def default_post_expiration_date():
     return timezone.now() + timezone.timedelta(days=7)
@@ -105,6 +105,14 @@ class RoomSeekingPost(BasePostContent):
     position = models.CharField(max_length=20)
     area = models.FloatField(null=False)
     limit_person = models.IntegerField()
+
+
+class ImagePost(Image):
+    post = models.ForeignKey(
+        "Post",
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
 
 class Utilities(BaseModel):
     """
