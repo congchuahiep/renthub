@@ -66,7 +66,8 @@ class Image(models.Model):
 
 class ImageManagement(models.Model):
     """
-    Các model kế thừa từ ImageManagement có thể quản lý các ảnh thông qua thuộc tính `images`
+    Kế thừa ImageManagement cho phép model có khả năng quản lý các ảnh
+    thông qua thuộc tính `images`
     """
 
     images = models.ManyToManyField(
