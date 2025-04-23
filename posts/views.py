@@ -11,9 +11,11 @@ from posts.serializers import RentalPostSerializer
 # Create your views here.
 class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView, generics.CreateAPIView):
     """
-    Viewset này chứa các endpoints sau:
+    ViewSet này cung cấp khả năng quản lý các Rental post
+
+    Endpoints:
         - `GET /rentals/ ` : Trả về danh sách các Rentals post
-        - `GET /retals/<id>` : Trả về một Rentals post
+        - `GET /rentals/<id>` : Trả về một Rentals post
         - `POST /rentals/ ` : Tạo mới một Rentals post
     """
 
