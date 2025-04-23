@@ -1,11 +1,11 @@
 from django.db import models
 
 from utils.choices import PropertyStatus, UserType
-from utils.models import BaseModel, ImageManagement
+from utils.models import BaseModel
 
 
 # Create your models here.
-class Property(BaseModel, ImageManagement):
+class Property(BaseModel):
     """
     Model này định nghĩa một dự án bất động sản - aka "Dãy trọ"
 
