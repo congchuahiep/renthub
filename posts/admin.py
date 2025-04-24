@@ -1,11 +1,12 @@
-from django.contrib import admin
 from django.utils.html import format_html
 
-from admin_site.site import admin_site
-from posts.models import ImagePost, RentalPost, RoomSeekingPost, Utilities
+from posts.models import RentalPost, RoomSeekingPost, Utilities
+
+from unfold.admin import ModelAdmin
+from admin_site.site import renthub_admin_site
 
 # Register your models here.
-class RentalPostAdmin(admin.ModelAdmin):
+class RentalPostAdmin(ModelAdmin):
     """
     Trang quản lý bài đăng cho thuê
     """
@@ -40,7 +41,7 @@ class RentalPostAdmin(admin.ModelAdmin):
     image_gallery.short_description = 'Image Gallery'
 
 
-class RoomSeekingPostAdmin(admin.ModelAdmin):
+class RoomSeekingPostAdmin(ModelAdmin):
     """
     Trang quản lý bài đăng tìm phòng
     """
@@ -55,7 +56,10 @@ class RoomSeekingPostAdmin(admin.ModelAdmin):
     ]
 
 
+class UtilitiesAdmin(ModelAdmin):
+    pass
 
-admin_site.register(RentalPost, RentalPostAdmin)
-admin_site.register(RoomSeekingPost, RoomSeekingPostAdmin)
-admin_site.register(Utilities)
+
+renthub_admin_site.register(RentalPost, RentalPostAdmin)
+renthub_admin_site.register(RoomSeekingPost, RoomSeekingPostAdmin)
+renthub_admin_site.register(Utilities, UtilitiesAdmin)

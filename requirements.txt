@@ -5,12 +5,14 @@ cloudinary==1.43.0
 cryptography==44.0.2
 Django==5.1.7
 django-debug-toolbar==5.1.0
+django-unfold==0.55.3
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 dotenv==0.9.9
 drf-yasg==1.21.10
 inflection==0.5.1
 packaging==24.2
+pillow==11.2.1
 pycparser==2.22
 PyJWT==2.9.0
 PyMySQL==1.1.1

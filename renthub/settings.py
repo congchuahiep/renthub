@@ -41,6 +41,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Django unfold
+    'unfold',
+    'unfold.contrib.filters',  # Bộ lọc nâng cao (không bắt buộc)
+    'unfold.contrib.forms',  # Form nâng cao (không bắt buộc)
     # Các App cấu hình Django
     'django.contrib.admin',
     'django.contrib.auth',
@@ -184,4 +188,41 @@ SIMPLE_JWT = {
 	# Token access có hiệu lực trong 60 phút
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7)
+}
+
+UNFOLD = {
+    "SITE_TITLE": "Renthub Admin",
+    "SITE_HEADER": "Renthub",
+    "SITE_URL": "/",
+    "SITE_ICON": None,  # Đường dẫn đến icon của bạn nếu có
+    # Thêm các cấu hình khác nếu cần
+
+    "COLORS": {
+        "base": {
+            "50": "249 250 251",
+            "100": "243 244 246",
+            "200": "229 231 235",
+            "300": "209 213 219",
+            "400": "156 163 175",
+            "500": "107 114 128",
+            "600": "75 85 99",
+            "700": "55 65 81",
+            "800": "31 41 55",
+            "900": "17 24 39",
+            "950": "3 7 18",
+        },
+        "primary": {
+            "50": "250 245 255",
+            "100": "206 250 254",
+            "200": "162 244 253",
+            "300": "83 234 253",
+            "400": "0 211 242",
+            "500": "0 184 219",
+            "600": "0 146 184",
+            "700": "0 117 149",
+            "800": "0 95 120",
+            "900": "16 78 100",
+            "950": "5 51 69",
+        },
+    }
 }

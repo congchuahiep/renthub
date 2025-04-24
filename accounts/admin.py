@@ -1,10 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from django.forms.utils import mark_safe
-
-from admin_site.site import admin_site
 from accounts.models import User
 
-class UserAdmin(admin.ModelAdmin):
+from unfold.admin import ModelAdmin
+from admin_site.site import renthub_admin_site
+
+class UserAdmin(ModelAdmin):
     """
     Trang quản lý người dùng
     """
@@ -34,10 +36,16 @@ class UserAdmin(admin.ModelAdmin):
 
     def status_display(self, user):
         """Hiển thị trạng thái dưới dạng biểu tượng màu."""
-        color = "green" if user.is_active else "red"
-        return mark_safe(f'<span style="color: {color};">●</span>')
+        class_name = "inline-block font-semibold leading-normal px-2 py-1 rounded text-xxs uppercase whitespace-nowrap"
+        if user.is_active:
+            class_name += " bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+        else:
+            class_name += " bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"
+
+        status = "Active" if user.is_active else "Inactive"
+        return mark_safe(f"<span class='{class_name}'>{status}</span>")
 
     status_display.short_description = "Trạng thái"
 
-# Register your models here.
-admin_site.register(User, UserAdmin)
+
+renthub_admin_site.register(User, UserAdmin)
