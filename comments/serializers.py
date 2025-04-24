@@ -46,51 +46,53 @@ class CommentSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         request = self.context.get("request")
         post_id = self.context.get("post_id")
-        reply_to = self.context.get("reply_to")
+        reply_to_id = self.context.get("reply_to")
 
         if not post_id:
             raise serializers.ValidationError("Không lấy được id bài viết")
-        
-        # Kiểm tra và xử lý reply_to
-        if reply_to == 0:
-            reply_to = None
-        elif reply_to is not None:
-            try:
-                reply_to = Comment.objects.get(pk=reply_to)
-            except Comment.DoesNotExist:
-                raise serializers.ValidationError("Không tìm thấy bình luận gốc để trả lời")
+
+        reply_to = None
+        if reply_to_id is not None:
+            if reply_to_id == 0:
+                reply_to = None
+            else:
+                try:
+                    reply_to = Comment.objects.get(pk=reply_to_id)
+                except Comment.DoesNotExist:
+                    raise serializers.ValidationError("Không tìm thấy bình luận gốc để trả lời")
 
         user = request.user
+        if not user.is_authenticated:
+            raise serializers.ValidationError("Bạn cần đăng nhập để bình luận.")
 
-        # Kiểm tra bài viết và quyền truy cập
+        post = None
+        comment_post = None
         try:
             post = RentalPost.objects.get(pk=post_id)
-            if user.user_type == "LR":
-                raise serializers.ValidationError("Người dùng không hợp lệ với bài đăng này")
+            if hasattr(user, 'user_type') and user.user_type == "LR":
+                raise serializers.ValidationError("Người dùng không hợp lệ để bình luận trên bài đăng cho thuê.")
+            comment_post = post.comment_post
         except RentalPost.DoesNotExist:
             try:
                 post = RoomSeekingPost.objects.get(pk=post_id)
-                if user.user_type == "TN":
-                    raise serializers.ValidationError("Người dùng không hợp lệ với bài đăng này")
+                if hasattr(user, 'user_type') and user.user_type == "TN":
+                    raise serializers.ValidationError("Người dùng không hợp lệ để bình luận trên bài đăng tìm phòng.")
+                comment_post = post.comment_post
             except RoomSeekingPost.DoesNotExist:
                 raise serializers.ValidationError("Bài viết không tồn tại")
 
-        # Lấy hoặc tạo CommentPost
-        try:
-            comment_post = CommentPost.objects.get(pk=post_id)
-        except CommentPost.DoesNotExist:
-            raise serializers.ValidationError("Không tìm thấy CommentPost cho bài viết này")
+        if not comment_post:
+            raise serializers.ValidationError("Bài viết chưa có comment_post.")
 
-        # Lưu CommentPost và reply_to vào context
         self.context["comment_post"] = comment_post
         self.context["reply_to"] = reply_to
 
-        return attrs    
+        return attrs
     
     def create(self, validated_data):
         return Comment.objects.create(
             user=self.context['request'].user,
-            post=self.context['comment_post'],  # Sử dụng comment_post từ context
-            reply_to=self.context['reply_to'],  # Sử dụng reply_to từ context
+            post=self.context['comment_post'],  
+            reply_to=self.context['reply_to'],  
             content=validated_data['content']
         )

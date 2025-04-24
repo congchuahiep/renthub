@@ -100,6 +100,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
         post = PostReference.objects.create()
 
         # Tạo RentalPost với post reference, nhưng rental post này chưa có ảnh
+        print("validated_data:", validated_data)  # Add this line
         rental_post = RentalPost.objects.create(
             post=post,
             **validated_data

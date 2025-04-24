@@ -1,13 +1,14 @@
 from django.urls import path, include
-from . import views
+from comments import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
+router.register("Post",viewset=views.CommentPostView,basename="comments")
+
 
 urlpatterns = [
-    path('Comments/<int:id>/coment/', views.CommentPostView.as_view(
-        {'get': 'get_comments', 'post': 'add_comment'})),
+    path('', include(router.urls)),
    
 
 ]
