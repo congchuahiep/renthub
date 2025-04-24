@@ -1,4 +1,4 @@
-from admin_site.site import admin_site
+from admin_site.site import renthub_admin_site
 from chats.models import Conversation, Message
 from django.db import models
 from django.contrib import admin
@@ -9,5 +9,5 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-admin_site.register(Conversation)
-admin_site.register(Message)
+# admin_site.register(Conversation)
+# admin_site.register(Message)
