@@ -19,6 +19,10 @@ import cloudinary.uploader
 import pymysql
 from dotenv import load_dotenv
 
+# Dùng để tạo đường dẫn trong django unfold sidebar
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
 # Load .env file for API key
 load_dotenv()
 
@@ -195,7 +199,60 @@ UNFOLD = {
     "SITE_HEADER": "Renthub",
     "SITE_URL": "/",
     "SITE_ICON": None,  # Đường dẫn đến icon của bạn nếu có
-    # Thêm các cấu hình khác nếu cần
+
+    # Cấu hình thanh bên - sidebar
+    "SIDEBAR": {
+        "navigation": [
+            {
+                "title": _("Home"),
+                "icon": "home",
+                "items": [
+                    {
+                        "icon": "apps",
+                        "title": _("All applications"),
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ]
+            },
+            {
+                "title": _("User Manager"),
+                "separator": True,
+                "items": [
+                    {
+                        "icon": "person",
+                        "title": _("Users"),
+                        "link": reverse_lazy("renthub_admin:accounts_user_changelist"),
+                    },
+                ]
+            },
+            {
+                "title": _("Post Manager"),
+                "separator": True,
+                "items": [
+                    {
+                        "icon": "news",
+                        "title": _("Rentals posts"),
+                        "link": reverse_lazy("renthub_admin:posts_rentalpost_changelist"),
+                    },
+                    {
+                        "icon": "travel_explore",
+                        "title": _("Room seeking posts"),
+                        "link": reverse_lazy("renthub_admin:posts_roomseekingpost_changelist"),
+                    },
+                ]
+            },
+            {
+                "separator": True,
+                "items": [
+                    {
+                        "icon": "real_estate_agent",
+                        "title": _("Property"),
+                        "link": reverse_lazy("renthub_admin:properties_property_changelist"),
+                    },
+                ]
+            }
+        ],
+    },
 
     "COLORS": {
         "base": {
