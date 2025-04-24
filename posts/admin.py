@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from admin_site.site import admin_site
-from posts.models import ImagePost, RentalPost, RoomSeekingPost, Utilities
+from posts.models import ImagePost, RentalPost, RoomSeekingPost, Utilities, PostReference
 
 # Register your models here.
 class RentalPostAdmin(admin.ModelAdmin):
@@ -38,6 +38,13 @@ class RentalPostAdmin(admin.ModelAdmin):
         return format_html(html)
 
     image_gallery.short_description = 'Image Gallery'
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:  # Nếu là tạo mới
+            # Tạo PostReference trước
+            post_ref = PostReference.objects.create()
+            obj.post = post_ref  # Gán PostReference mới tạo
+        super().save_model(request, obj, form, change)
 
 
 class RoomSeekingPostAdmin(admin.ModelAdmin):
