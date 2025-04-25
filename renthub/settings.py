@@ -19,6 +19,8 @@ import cloudinary.uploader
 import pymysql
 from dotenv import load_dotenv
 
+from django.templatetags.static import static
+
 # Dùng để tạo đường dẫn trong django unfold sidebar
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -253,6 +255,10 @@ UNFOLD = {
             }
         ],
     },
+
+    "STYLES": [
+        lambda request: static("css/styles.css"),
+    ],
 
     "COLORS": {
         "base": {
