@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'chats.apps.ChatsConfig',
     # Test app
     'testing.apps.TestingConfig',
+    'oauth2_provider',
+
 ]
 
 MIDDLEWARE = [
@@ -160,8 +162,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # DRF Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ],
 }
 
@@ -173,6 +176,8 @@ cloudinary.config(
     secure=True
 )
 
+
+
 # Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
 # vào debug toolbar ở địa chỉ localhost
 INTERNAL_IPS = [
@@ -181,7 +186,22 @@ INTERNAL_IPS = [
 
 # JWT Configuration
 SIMPLE_JWT = {
-	# Token access có hiệu lực trong 60 phút
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,
+    'GRANT_TYPES': ['password', 'refresh_token', 'authorization_code']
+}
+
+CLIENT_ID="83HWSpREmiqNtBgBn4ZqVg7ITRWQgS4hU58cbzxN"
+CLIENT_SECRET="RipPR1uwb9olRLRNROYIUmGp7NwiOs8YZm3UJhIMuGX21GiTqUmDLYtW64phWpQuQ7MzxqqgrKmzU1na2Q62870TgcNIQgNQ2zhY8DqpCun7oL0Fa8ZfqaxsUtpSSo9Z"
