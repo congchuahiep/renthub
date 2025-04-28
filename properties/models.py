@@ -1,7 +1,7 @@
 from django.db import models
 
 from utils.choices import PropertyStatus, UserType
-from utils.models import BaseModel
+from utils.models import BaseModel, Image
 
 
 # Create your models here.
@@ -46,3 +46,16 @@ class Property(BaseModel):
     province = models.CharField(max_length=256)
     district = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
+
+
+class PropertyImage(Image):
+    property = models.ForeignKey(
+        "properties.Property",
+        on_delete=models.CASCADE,
+        related_name="images",
+        null=True
+    )
+
+    class Meta:
+        verbose_name = "Hình ảnh dãy trọ"
+        verbose_name_plural = "Hình ảnh dãy trọ"
