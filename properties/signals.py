@@ -11,12 +11,12 @@ def handle_property_and_landlord_approval(sender, instance, **kwargs):
     đồng thời kích hoạt hoặc từ chối tài khoản chủ trọ dựa trên kết quả xét duyệt.
 
     Ta có decorator @receiver(pre_save, sender=Property) tức:
-        - `pre_save`: Tín hiệu được kích hoạt trước khi lưu model vào cơ sở dữ liệu.
+        - `pre_save`: Hàm tín hiệu này được kích hoạt trước khi lưu model vào cơ sở dữ liệu.
         - `sender=Property`: Nguồn phát signal là model `Property`.
 
-    Tức:
-        - Quản trị duyệt property -> kích hoạt `handle_property_approval`
-        - handle_property_approval -> kích hoạt/từ chối kích hoạt tài khoản chủ trọ
+    Như vậy ta có luồng hoạt động như sau::
+        - Quản trị duyệt `property `-> kích hoạt hàm `handle_property_approval`
+        - `handle_property_approval` -> kích hoạt/từ chối kích hoạt tài khoản chủ trọ
     """
     try:
         # Lấy thông tin property khi chưa cập nhật
