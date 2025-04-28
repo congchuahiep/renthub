@@ -55,6 +55,15 @@ class BasePostContent(BaseModel):
 
     def __str__(self):
         return self.title
+        
+    def save(self, *args, **kwargs):
+        """
+        Ghi đè phương thức save() để tự động tạo khoá chính `PostReference`
+        nếu nó chưa tồn tại
+        """
+        if not self.post_id:
+            self.post = PostReference.objects.create()
+        super().save(*args, **kwargs)
 
 
 class RentalPost(BasePostContent):
