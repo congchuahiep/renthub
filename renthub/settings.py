@@ -19,6 +19,12 @@ import cloudinary.uploader
 import pymysql
 from dotenv import load_dotenv
 
+from django.templatetags.static import static
+
+# Dùng để tạo đường dẫn trong django unfold sidebar
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
 # Load .env file for API key
 load_dotenv()
 
@@ -41,6 +47,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Django unfold
+    'unfold',
+    'unfold.contrib.filters',  # Bộ lọc nâng cao (không bắt buộc)
+    'unfold.contrib.forms',  # Form nâng cao (không bắt buộc)
     # Các App cấu hình Django
     'django.contrib.admin',
     'django.contrib.auth',
@@ -205,3 +215,97 @@ OAUTH2_PROVIDER = {
 
 CLIENT_ID="83HWSpREmiqNtBgBn4ZqVg7ITRWQgS4hU58cbzxN"
 CLIENT_SECRET="RipPR1uwb9olRLRNROYIUmGp7NwiOs8YZm3UJhIMuGX21GiTqUmDLYtW64phWpQuQ7MzxqqgrKmzU1na2Q62870TgcNIQgNQ2zhY8DqpCun7oL0Fa8ZfqaxsUtpSSo9Z"
+
+UNFOLD = {
+    "SITE_TITLE": "Renthub Admin",
+    "SITE_HEADER": "Renthub",
+    "SITE_URL": "/",
+    "SITE_ICON": None,  # Đường dẫn đến icon của bạn nếu có
+
+    # Cấu hình thanh bên - sidebar
+    "SIDEBAR": {
+        "navigation": [
+            {
+                "title": _("Home"),
+                "icon": "home",
+                "items": [
+                    {
+                        "icon": "apps",
+                        "title": _("All applications"),
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ]
+            },
+            {
+                "title": _("User Manager"),
+                "separator": True,
+                "items": [
+                    {
+                        "icon": "person",
+                        "title": _("Users"),
+                        "link": reverse_lazy("renthub_admin:accounts_user_changelist"),
+                    },
+                ]
+            },
+            {
+                "title": _("Post Manager"),
+                "separator": True,
+                "items": [
+                    {
+                        "icon": "news",
+                        "title": _("Rentals posts"),
+                        "link": reverse_lazy("renthub_admin:posts_rentalpost_changelist"),
+                    },
+                    {
+                        "icon": "travel_explore",
+                        "title": _("Room seeking posts"),
+                        "link": reverse_lazy("renthub_admin:posts_roomseekingpost_changelist"),
+                    },
+                ]
+            },
+            {
+                "separator": True,
+                "items": [
+                    {
+                        "icon": "real_estate_agent",
+                        "title": _("Property"),
+                        "link": reverse_lazy("renthub_admin:properties_property_changelist"),
+                    },
+                ]
+            }
+        ],
+    },
+
+    "STYLES": [
+        lambda request: static("css/styles.css"),
+    ],
+
+    "COLORS": {
+        "base": {
+            "50": "249 250 251",
+            "100": "243 244 246",
+            "200": "229 231 235",
+            "300": "209 213 219",
+            "400": "156 163 175",
+            "500": "107 114 128",
+            "600": "75 85 99",
+            "700": "55 65 81",
+            "800": "31 41 55",
+            "900": "17 24 39",
+            "950": "3 7 18",
+        },
+        "primary": {
+            "50": "250 245 255",
+            "100": "206 250 254",
+            "200": "162 244 253",
+            "300": "83 234 253",
+            "400": "0 211 242",
+            "500": "0 184 219",
+            "600": "0 146 184",
+            "700": "0 117 149",
+            "800": "0 95 120",
+            "900": "16 78 100",
+            "950": "5 51 69",
+        },
+    }
+}

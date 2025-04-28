@@ -1,12 +1,12 @@
-from django.contrib.admin import AdminSite
+from unfold.sites import UnfoldAdminSite
 
-class RentHubAdminSite(AdminSite):
+class RentHubAdminSite(UnfoldAdminSite):
     site_header = "RentHub Admin"
     site_title = "RentHub Admin Portal"
     index_title = "Welcome to RentHub Admin Portal"
 
 
-admin_site = RentHubAdminSite(name="renthub_admin")
+renthub_admin_site = RentHubAdminSite(name="renthub_admin")
 """
 `admin_site` đại diện cho trang quản trị của RentHub.
 

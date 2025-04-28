@@ -1,14 +1,17 @@
-from django.contrib import admin
 from django.forms.utils import mark_safe
-
-from admin_site.site import admin_site
 from accounts.models import User
 
-class UserAdmin(admin.ModelAdmin):
+from unfold.admin import ModelAdmin
+from admin_site.components import option_display
+from admin_site.site import renthub_admin_site
+
+from utils.choices import UserType
+
+class UserAdmin(ModelAdmin):
     """
     Trang quản lý người dùng
     """
-    list_display = ["username", "status_display", "email", "user_type"]
+    list_display = ["username", "status_display", "email", "user_type_display"]
     search_fields = ["username", "email"]
     list_filter = ["is_active", "date_joined"]
     sortable_by = ["username"]
@@ -32,12 +35,27 @@ class UserAdmin(admin.ModelAdmin):
         if user:
             return mark_safe(f"<img src='{user.avatar.url}' width='200' />")
 
-    def status_display(self, user):
+    def user_type_display(self, user: User):
+        """Hiển thị loại tài khoản dưới dạng biểu tượng màu."""
+        
+        if user.is_superuser:
+            return option_display("Admin", color="red")
+        
+        if user.user_type == UserType.LANDLORD:
+            return option_display("Landlord", color="purple")
+        
+        if user.user_type == UserType.TENANT:
+            return option_display("Tenant", color="teal")
+    user_type_display.short_description = "User Type"
+    
+    def status_display(self, user: User):
         """Hiển thị trạng thái dưới dạng biểu tượng màu."""
-        color = "green" if user.is_active else "red"
-        return mark_safe(f'<span style="color: {color};">●</span>')
+        
+        if user.is_active:
+            return option_display("Active", color="green")
+        
+        return option_display("Inactive", color="red")
+    status_display.short_description = "Status"
 
-    status_display.short_description = "Trạng thái"
 
-# Register your models here.
-admin_site.register(User, UserAdmin)
+renthub_admin_site.register(User, UserAdmin)

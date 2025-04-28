@@ -1,9 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from properties.models import Property
+from properties.models import Property, PropertyImage
 from utils.choices import UserType
-from utils.models import Image
 from utils.serializers import ImageSerializer
 
 User = get_user_model()
@@ -18,8 +17,9 @@ class UserSerializer(serializers.ModelSerializer):
     Tuy nhiên ta không nên sử dụng trực tiếp `UserSerializer` để đăng ký tài
     khoản, thay vào đó ta nên sử dụng các Serializer chuyên biệt cho việc tạo
     tài khoản:
-        - `LandlordRegistrationSerializer` - Đăng ký tài khoản loại chủ nhà
-        - `TenantRegistrationSerializer` - Đăng ký tài khoản loại người thuê
+    
+        - `LandlordRegistrationSerializer`: Đăng ký tài khoản loại chủ nhà
+        - `TenantRegistrationSerializer`: Đăng ký tài khoản loại người thuê
     """
 
     def to_representation(self, instance):
@@ -121,38 +121,70 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             }
         }
 
+    def validate_property_upload_images(self, value):
+        """
+        Validate cho trường `property_upload_images`
+        Method này tự động được gọi khi validate field `_property_upload_images`
+        """
+        if not value:
+            return value
+
+        # Giới hạn số lượng ảnh
+        if len(value) > 10:
+            raise serializers.ValidationError("Không thể upload quá 10 ảnh")
+
+        # Giới hạn kích thước mỗi ảnh (10MB)
+        max_size = 10 * 1024 * 1024  # 10MB in bytes
+
+        # Kiểm tra định dạng và kích thước cho từng ảnh
+        allowed_types = ['image/jpeg', 'image/png', 'image/jpg']
+        for image in value:
+            # Kiểm tra kích thước
+            if image.size > max_size:
+                raise serializers.ValidationError(
+                    f"Kích thước ảnh {image.name} vượt quá 10MB"
+                )
+
+            # Kiểm tra định dạng file
+            if image.content_type not in allowed_types:
+                raise serializers.ValidationError(
+                    f"File {image.name} không phải là định dạng ảnh cho phép (jpg, jpeg, png)"
+                )
+
+        return value
+
     def create(self, validated_data):
-        # Tách dữ liệu thành thông tin user và property
+        # Tách dữ liệu thành thông tin `user` và `property`
         property_data = {
             'name': validated_data.pop('property_name'),
             'province': validated_data.pop('property_province'),
             'district': validated_data.pop('property_district'),
             'address': validated_data.pop('property_address'),
         }
-        property_images = validated_data.pop('property_upload_images', [])
+        property_upload_images = validated_data.pop('property_upload_images', [])
 
-        # Tạo user trước, gọi lên UserSerializer
+        # Tạo `user` trước, gọi UserSerializer để tạo sẵn tài khoản người dùng
         user_serializer = UserSerializer(data=validated_data)
         if user_serializer.is_valid():
             user = user_serializer.save(
-                is_active=False,  # Tài khoản chưa active cho đến khi property được duyệt
+                is_active=False,  # Tài khoản chưa active cho đến khi `property` được duyệt
                 user_type=UserType.LANDLORD
             )
         else:
             raise serializers.ValidationError(user_serializer.errors)
 
-        # Tạo property
+        # Tạo đối tượng `property`
         property = Property.objects.create(
             owner=user,
             **property_data
         )
 
-        # Xử lý images cho property
-        for image_file in property_images:
-            image = Image.objects.create(
+        # Xử lý `images` cho đối tượng `property`
+        for image_file in property_upload_images:
+            PropertyImage.objects.create(
                 image=image_file,
-                alt=f"Property {property.name}'s image"
+                alt=f"Property {property.name}'s image",
+                property=property
             )
-            property.images.add(image)
 
         return {'user': user, 'property': property}
