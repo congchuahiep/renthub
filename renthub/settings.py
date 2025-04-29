@@ -245,6 +245,11 @@ UNFOLD = {
                         "title": _("Users"),
                         "link": reverse_lazy("renthub_admin:accounts_user_changelist"),
                     },
+                    {
+                        "icon": "person_add",
+                        "title": _("Landlords Approval"),
+                        "link": reverse_lazy("renthub_admin:accounts_landlordapproved_changelist"),
+                    }
                 ]
             },
             {

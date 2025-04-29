@@ -8,11 +8,15 @@ class RentHubAdminSite(UnfoldAdminSite):
 
 renthub_admin_site = RentHubAdminSite(name="renthub_admin")
 """
-`admin_site` đại diện cho trang quản trị của RentHub.
+`renthub_admin_site` đại diện cho trang quản trị của RentHub.
 
 Để có thể đăng ký các model vào admin site,
-ta sử dụng phương thức register().
+ta sử dụng phương thức `.register()`.
 
-Ví dụ: Đăng ký model User vào trang quản trị
-`admin_site.register(User)`
+Ví dụ: Đăng ký model `User` vào trang quản trị
+```python
+from admin_site.site import renthub_admin_site
+
+renthub_admin_site.register(User)
+```
 """

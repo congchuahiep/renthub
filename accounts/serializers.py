@@ -64,7 +64,7 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
     """
 
     # User information
-    avatar = serializers.CharField(required=False)
+    avatar = serializers.ImageField(required=False)
 
     # Property information
     property_name = serializers.CharField()
@@ -72,7 +72,7 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
     property_district = serializers.CharField()
     property_address = serializers.CharField()
     property_upload_images = serializers.ListField(
-        child=serializers.CharField(),
+        child=serializers.ImageField(),
         required=False,
         write_only=True
     )

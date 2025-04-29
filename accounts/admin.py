@@ -1,5 +1,5 @@
 from django.forms.utils import mark_safe
-from accounts.models import User
+from accounts.models import User, LandlordApproved
 
 from unfold.admin import ModelAdmin
 from admin_site.components import option_display
@@ -58,4 +58,28 @@ class UserAdmin(ModelAdmin):
     status_display.short_description = "Status"
 
 
+class LandlordApprovedAdmin(UserAdmin):
+    """
+    Trang quản lý phê duyệt chủ trọ
+    """
+    list_display = ["username", "email"]
+    search_fields = ["username", "email"]
+    list_filter = ["date_joined"]
+    sortable_by = ["username"]
+    readonly_fields = ["avatar_view"]
+
+    fieldsets = [
+        ("User profile", {"fields": ["username", "email", "avatar_view"]}),
+        ("Location", {"fields": ["address", "district", "province"]}),
+    ]
+    
+    def get_queryset(self, request):
+        """
+        Chỉ hiển thị người dùng có loại người dùng là LANDLORD và chưa được kích hoạt (is_active=False)
+        """
+        query_set = super().get_queryset(request)
+        return query_set.filter(user_type=UserType.LANDLORD, is_active=False).select_related("properties")
+    
+
+renthub_admin_site.register(LandlordApproved, LandlordApprovedAdmin)
 renthub_admin_site.register(User, UserAdmin)

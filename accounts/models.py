@@ -32,3 +32,14 @@ class User(AbstractUser):
 
     class Meta:
         db_table = "user"
+
+
+
+### PROXY MODELS ###
+
+class LandlordApproved(User):
+    """
+    Người dùng là chủ trọ nhưng chưa được phê duyệt
+    """
+    class Meta:
+        proxy = True
