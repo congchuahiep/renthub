@@ -1,9 +1,9 @@
 from django.utils.html import format_html
+from unfold.admin import ModelAdmin
 
+from admin_site.site import renthub_admin_site
 from posts.models import RentalPost, RoomSeekingPost, Utilities
 
-from unfold.admin import ModelAdmin
-from admin_site.site import renthub_admin_site
 
 # Register your models here.
 class RentalPostAdmin(ModelAdmin):
