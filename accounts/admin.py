@@ -78,7 +78,7 @@ class LandlordApprovedAdmin(UserAdmin):
         Chỉ hiển thị người dùng có loại người dùng là LANDLORD và chưa được kích hoạt (is_active=False)
         """
         query_set = super().get_queryset(request)
-        return query_set.filter(user_type=UserType.LANDLORD, is_active=False).select_related("properties")
+        return query_set.filter(user_type=UserType.LANDLORD, is_active=False)
     
 
 renthub_admin_site.register(LandlordApproved, LandlordApprovedAdmin)
