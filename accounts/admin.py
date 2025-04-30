@@ -79,17 +79,6 @@ class LandlordApprovedAdmin(UserAdmin):
     search_fields = ["username", "email"]
     list_filter = ["date_joined"]
     sortable_by = ["username"]
-    readonly_fields = [
-        "avatar_view",
-        "username",
-        "email",
-        "address",
-        "district",
-        "province",
-        "property_image_gallery",
-        "property_name",
-        "property_address",
-    ]
 
     fieldsets = [
         ("User profile", {"fields": ["username", "email", "avatar_view"]}),
@@ -213,6 +202,17 @@ class LandlordApprovedAdmin(UserAdmin):
             
             extra_context["hide_default_buttons"] = True 
         return super().change_view(request, object_id, form_url, extra_context)
+    
+    
+    ### XOÁ CÁC CHỨC NĂNG: THÊM, XOÁ, SỬA TÀI KHOẢN ĐANG DUYỆT ###
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 renthub_admin_site.register(LandlordApproved, LandlordApprovedAdmin)
