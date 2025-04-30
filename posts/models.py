@@ -139,3 +139,26 @@ class Utilities(BaseModel):
 
     def __str__(self):
         return self.name
+
+class Comment(BaseModel):
+    """
+    Model này định nghĩa một bình luận của một bài đăng
+    """
+    post = models.ForeignKey(
+        "posts.PostReference",
+        on_delete=models.CASCADE,
+        related_name="comments"
+    )
+    user = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        related_name="comments_history"
+    )
+    reply_to = models.ForeignKey(
+        "posts.Comment",
+        on_delete=models.CASCADE,
+        related_name="replies",
+        null=True,
+        blank=True
+    )
+    content = models.TextField(max_length=100)

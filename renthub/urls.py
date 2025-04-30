@@ -15,7 +15,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 import debug_toolbar
-from django.contrib import admin
 from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
@@ -43,7 +42,6 @@ urlpatterns = [
     path("admin/", include('admin_site.urls')),
     path('', include('chats.urls')), # chats/
     path('', include('posts.urls')), # rentals/
-    path('', include('comments.urls')), # rentals/
     path('', include('accounts.urls')), # rentals/
 
     # Tests
