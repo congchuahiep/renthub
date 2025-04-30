@@ -75,6 +75,7 @@ class LandlordApprovedAdmin(UserAdmin):
     """
 
     list_display = ["username", "email", "property_name", "action_buttons"]
+    actions = ["approve_user", "reject_user"]
     search_fields = ["username", "email"]
     list_filter = ["date_joined"]
     sortable_by = ["username"]
