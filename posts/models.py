@@ -23,15 +23,16 @@ class BasePostContent(BaseModel):
     """
     Là một model trừu tượng, được sử dụng để định nghĩa các thuộc tính chung
     cho hai model con:
-        - RentalPost
-        - RoomSeekingPost
+    - RentalPost
+    - RoomSeekingPost
 
-    Các trường dữ liệu:
-        - `title`: Tiêu đề của bài đăng
-        - `content`: Nội dung của bài đăng
-        - `status`: Trạng thái của bài đăng
-        - `expired_date`: Ngày hết hạn của bài đăng
-        - `images`: Danh sách hình ảnh của bài đăng
+    Fields
+    ------
+    - `title`: Tiêu đề của bài đăng
+    - `content`: Nội dung của bài đăng
+    - `status`: Trạng thái của bài đăng
+    - `expired_date`: Ngày hết hạn của bài đăng
+    - `images`: Danh sách hình ảnh của bài đăng
     """
 
     # id được trỏ tới model Post
@@ -71,15 +72,16 @@ class RentalPost(BasePostContent):
     Model này định nghĩa một bài đăng cho thuê nhà của một chủ thuê.
     Nó kế thừa từ lớp trừu tượng `Post`
 
-    Các trường dữ liệu:
-        - `landlord`: Chủ nhà của bài đăng
-        - `property`: Dãy trọ mà bài đăng này thuộc
-        - `price`: Giá thuê của bài đăng
-        - `limit_person`: Số người tối đa cho thuê
-        - `area`: Diện tích của phòng trọ
-        - `number_of_bedrooms`: Số phòng ngủ của phòng trọ
-        - `number_of_bathrooms`: Số phòng tắm của phòng trọ
-        - `utilities`: Danh sách tiện ích của phòng trọ
+    Fields
+    ------
+    - `landlord`: Chủ nhà của bài đăng
+    - `property`: Dãy trọ mà bài đăng này thuộc
+    - `price`: Giá thuê của bài đăng
+    - `limit_person`: Số người tối đa cho thuê
+    - `area`: Diện tích của phòng trọ
+    - `number_of_bedrooms`: Số phòng ngủ của phòng trọ
+    - `number_of_bathrooms`: Số phòng tắm của phòng trọ
+    - `utilities`: Danh sách tiện ích của phòng trọ
     """
 
     # Chỉ định chỉ cho phép người đăng bài cho thuê nhà là Chủ nhà

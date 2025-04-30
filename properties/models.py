@@ -16,19 +16,22 @@ class Property(BaseModel):
     Ngược lại, nếu dãy trọ đầu tiên không được duyệt, thì tài khoản chủ trọ sẽ không được
     chấp nhận và gửi thông báo qua email.
 
-    Phương thức duyệt tài khoản chủ trọ khi dãy trọ đầu tiên được duyệt được triển khai trong:
+    Nếu như dãy trọ đầu tiên của tài khoản chủ trọ chưa được kích hoạt được duyệt, thì tài
+    khoản chủ trọ và dãy trọ sẽ được kích hoạt đồng thời, chúng được triển khai trong hàm
+    signal sau:
     ```
     /properties/signals.py/handle_property_and_landlord_approval/
     ```
 
-    Các trường dữ liệu:
-        - `name`: Tên của dãy trọ
-        - `owner`: Chủ trọ của dãy trọ
-        - `images`: Hình ảnh của dãy trọ
-        - `status`: Trạng thái của dãy trọ
-        - `province`: Tỉnh của dãy trọ
-        - `district`: Quận của dãy trọ
-        - `address`: Địa chỉ của dãy trọ
+    Fields
+    ------
+    - `name`: Tên của dãy trọ
+    - `owner`: Chủ trọ của dãy trọ
+    - `images`: Hình ảnh của dãy trọ
+    - `status`: Trạng thái của dãy trọ
+    - `province`: Tỉnh của dãy trọ
+    - `district`: Quận của dãy trọ
+    - `address`: Địa chỉ của dãy trọ
     """
 
     status = models.CharField(max_length=10, choices=PropertyStatus.choices, default=PropertyStatus.PENDING)
