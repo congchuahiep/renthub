@@ -17,17 +17,17 @@ class UserAdmin(ModelAdmin):
     Trang quản lý người dùng
     """
 
-    list_display = ["username", "status_display", "email", "user_type_display"]
+    list_display = ["username", "is_active", "email", "user_type_display"]
     search_fields = ["username", "email"]
     list_filter = ["is_active", "date_joined"]
     sortable_by = ["username"]
-    readonly_fields = ["avatar_view", "status_display"]
+    readonly_fields = ["avatar_view"]
     filter_horizontal = ["user_permissions"]
 
     fieldsets = [
         (
             "User profile",
-            {"fields": ["status_display", "username", "email", "avatar_view"]},
+            {"fields": ["is_active", "username", "email", "avatar_view"]},
         ),
         ("Location", {"fields": ["address", "district", "province"]}),
         (
@@ -57,16 +57,6 @@ class UserAdmin(ModelAdmin):
             return option_display("Tenant", color="teal")
 
     user_type_display.short_description = "User Type"
-
-    def status_display(self, user: User):
-        """Hiển thị trạng thái dưới dạng biểu tượng màu."""
-
-        if user.is_active:
-            return option_display("Active", color="green")
-
-        return option_display("Inactive", color="red")
-
-    status_display.short_description = "Status"
 
 
 class LandlordApprovedAdmin(UserAdmin):
