@@ -171,8 +171,8 @@ class LandlordApprovedAdmin(UserAdmin):
         """
         user = get_object_or_404(User, id=user_id, user_type=UserType.LANDLORD)
 
-        # TODO: Gửi email thông báo từ chối
-        # TODO: Xóa tài khoản người dùng
+        # TODO: Gửi email thông báo khi từ chối duyệt tài khoản
+        # TODO: Xóa tài khoản người dùng khi từ chối duyệt tài khoản
 
         user.delete()
         messages.success(request, f"User {user.username} has been rejected and deleted.")
