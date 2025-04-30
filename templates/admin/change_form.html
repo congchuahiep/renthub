@@ -1,0 +1,17 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_bottom %}
+{% if hide_default_buttons %}
+    <div class="relative lg:mt-16 z-20" id="submit-row">
+        <div class="max-w-full lg:bottom-0 lg:fixed lg:left-0 lg:right-0 xl:left-72">
+            <div class="submit-row backdrop-blur-sm bg-white/80 pb-4 dark:bg-base-900/80 lg:border-t lg:border-base-200 lg:py-4 relative lg:scrollable-top lg:px-8 dark:border-base-800">
+                <div class="flex flex-col-reverse gap-3 items-center mx-auto lg:flex-row-reverse">
+                    {{ custom_buttons|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    {{ block.super }}
+{% endif %}
+{% endblock %}

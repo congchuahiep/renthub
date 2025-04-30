@@ -22,10 +22,26 @@ bg_color = {
     "gray": " bg-gray dark:bg-gray",
 }
 
+hover_color = {
+    "red": " hover:bg-red hover:dark:bg-red",
+    "green": " hover:bg-green hover:dark:bg-green",
+    "blue": " hover:bg-blue hover:dark:bg-blue",
+    "yellow": " hover:bg-yellow hover:dark:bg-yellow",
+    "pink": " hover:bg-pink hover:dark:bg-pink",
+    "purple": " hover:bg-purple hover:dark:bg-purple",
+    "teal": " hover:bg-teal hover:dark:bg-teal",
+    "gray": " hover:bg-gray hover:dark:bg-gray",
+}
+
+button_color = {
+    "green": " button-green dark:button-green",
+    "red": " button-red dark:button-red",
+}
+
 def option_display(option, color="gray"):
     """
     Hiển thị một nút lựa chọn có màu
-    
+
     Parameters
     ----------
         `option` : giá trị hiển thị
@@ -35,5 +51,23 @@ def option_display(option, color="gray"):
 
     class_name += text_color.get(color)
     class_name += bg_color.get(color)
-    
+
     return mark_safe(f"<span class='{class_name}'>{option}</span>")
+
+
+def action_button(label, url, color="gray"):
+    """
+    Hiển thị một nút hành động có màu và liên kết
+
+    Parameters
+    ----------
+        `label` : Nhãn hiển thị trên nút
+        `url`   : Đường dẫn liên kết khi nhấn nút
+        `color` : Màu sắc của nút
+    """
+    class_name = "align-middle content-center leading-normal font-medium px-3 py-2 rounded"
+    class_name += " whitespace-nowrap no-underline w-full lg:w-auto"
+    
+    class_name += button_color.get(color, text_color["gray"])
+
+    return mark_safe(f"<a href='{url}' class='{class_name}'>{label}</a>")

@@ -3,11 +3,14 @@ from django.utils.html import format_html
 from accounts.models import User, LandlordApproved
 
 from unfold.admin import ModelAdmin
-from admin_site.components import option_display
+from admin_site.components import action_button, option_display
 from admin_site.site import renthub_admin_site
 
-from utils.choices import UserType
+from utils.choices import PropertyStatus, UserType
 
+from django.urls import path
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
 
 class UserAdmin(ModelAdmin):
     """
@@ -71,7 +74,7 @@ class LandlordApprovedAdmin(UserAdmin):
     Trang quản lý phê duyệt chủ trọ
     """
 
-    list_display = ["username", "email", "property_name"]
+    list_display = ["username", "email", "property_name", "action_buttons"]
     search_fields = ["username", "email"]
     list_filter = ["date_joined"]
     sortable_by = ["username"]
@@ -105,6 +108,7 @@ class LandlordApprovedAdmin(UserAdmin):
             "properties"
         )
 
+    ### CÁC TRƯỜNG THÔNG TIN PROPERTY CỦA NGƯỜI DÙNG CHỦ TRỌ ĐĂNG KÝ ###
     def property_name(self, user):
         """
         Hiển thị thông tin tên dãy trọ đăng ký
@@ -141,6 +145,73 @@ class LandlordApprovedAdmin(UserAdmin):
         return format_html(html)
 
     property_image_gallery.short_description = "Property Image Gallery"
+    
+    ### XỬ LÝ XÉT DUYỆT/TỪ CHỐI XÉT DUYỆT NGƯỜI DÙNG ###
+    def approve_user(self, request, user_id):
+        """
+        Xử lý khi nhấn nút Approve - Xét duyệt người dùng
+        """
+        user = get_object_or_404(User, id=user_id, user_type=UserType.LANDLORD)
+        property = user.properties.first()
+
+        if property:
+            property.status = PropertyStatus.APPROVED
+            property.save()
+
+        user.is_active = True
+        user.save()
+
+        messages.success(request, f"User {user.username} has been approved.")
+        return redirect("/admin/accounts/landlordapproved/")
+
+    def reject_user(self, request, user_id):
+        """
+        Xử lý khi nhấn nút Reject - Từ chối xét duyệt người dùng
+        """
+        user = get_object_or_404(User, id=user_id, user_type=UserType.LANDLORD)
+
+        # TODO: Gửi email thông báo từ chối
+        # TODO: Xóa tài khoản người dùng
+
+        user.delete()
+        messages.success(request, f"User {user.username} has been rejected and deleted.")
+        return redirect("/admin/accounts/landlordapproved/")
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path("<int:user_id>/approve/", self.admin_site.admin_view(self.approve_user), name="approve_landlord"),
+            path("<int:user_id>/reject/", self.admin_site.admin_view(self.reject_user), name="reject_landlord"),
+        ]
+        return custom_urls + urls
+    
+    def action_buttons(self, user):
+        """
+        Thêm các nút hành động (Approve, Reject) vào danh sách
+        """
+        approve_url = f"/admin/accounts/landlordapproved/{user.id}/approve/"
+        reject_url = f"/admin/accounts/landlordapproved/{user.id}/reject/"
+        approve_button = action_button("Approve", approve_url, color="green")
+        reject_button = action_button("Reject", reject_url, color="red")
+        return mark_safe(f"{approve_button} {reject_button}")
+    action_buttons.short_description = "Actions"
+    
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        """
+        Tùy chỉnh giao diện trang chi tiết để thêm nút Approve và Reject
+        """
+        extra_context = extra_context or {}
+        user = self.get_object(request, object_id)
+        if user:
+            approve_url = f"/admin/accounts/landlordapproved/{user.id}/approve/"
+            reject_url = f"/admin/accounts/landlordapproved/{user.id}/reject/"
+            extra_context["custom_buttons"] = mark_safe(
+                f"{action_button('Approve', approve_url, color='green')} "
+                f"{action_button('Reject', reject_url, color='red')}"
+            )
+            
+            extra_context["hide_default_buttons"] = True 
+        return super().change_view(request, object_id, form_url, extra_context)
 
 
 renthub_admin_site.register(LandlordApproved, LandlordApprovedAdmin)
