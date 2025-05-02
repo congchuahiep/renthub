@@ -1,6 +1,7 @@
 from django.db import models
 
 from utils.choices import PropertyStatus, UserType
+from utils.geocoding import get_coordinates
 from utils.models import BaseModel, Image
 
 
@@ -45,10 +46,22 @@ class Property(BaseModel):
     )
 
     name = models.CharField(max_length=256)
-
-    province = models.CharField(max_length=256)
-    district = models.CharField(max_length=256)
-    address = models.CharField(max_length=256)
+    address = models.CharField(max_length=256, null=False, blank=False)
+    
+    def __str__(self):
+        return f"{self.name}"
+    
+    # Toạ độ thực tế (kinh độ và vĩ độ) của dãy trọ
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        """
+        Lưu toạ độ của dãy trọ dựa trên địa chỉ của nó.
+        """
+        if not self.latitude or not self.longitude:
+            self.latitude, self.longitude = get_coordinates(self.address)
+        super().save(*args, **kwargs)
 
 
 class PropertyImage(Image):

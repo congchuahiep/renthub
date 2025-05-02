@@ -186,7 +186,8 @@ cloudinary.config(
     secure=True
 )
 
-
+# Configuration for Google Maps API
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
 # vào debug toolbar ở địa chỉ localhost
