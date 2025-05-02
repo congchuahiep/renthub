@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'properties.apps.PropertiesConfig',
     'comments.apps.CommentsConfig',
     'chats.apps.ChatsConfig',
+    'locations.apps.LocationsConfig',
     # Test app
     'testing.apps.TestingConfig',
     'oauth2_provider',
