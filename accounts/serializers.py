@@ -68,8 +68,6 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
 
     # Property information
     property_name = serializers.CharField()
-    property_province = serializers.CharField()
-    property_district = serializers.CharField()
     property_address = serializers.CharField()
     property_upload_images = serializers.ListField(
         child=serializers.CharField(),
@@ -89,8 +87,6 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             'user': UserSerializer(instance['user']).data,
             'property': {
                 'name': property.name,
-                'province': property.province,
-                'district': property.district,
                 'address': property.address,
                 'images': ImageSerializer(property.images.all(), many=True).data
             }
@@ -110,8 +106,6 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             'avatar',
             'dob',
             'property_name',
-            'property_province',
-            'property_district',
             'property_address',
             'property_upload_images'
         ]
@@ -157,8 +151,6 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
         # Tách dữ liệu thành thông tin `user` và `property`
         property_data = {
             'name': validated_data.pop('property_name'),
-            'province': validated_data.pop('property_province'),
-            'district': validated_data.pop('property_district'),
             'address': validated_data.pop('property_address'),
         }
         property_upload_images = validated_data.pop('property_upload_images', [])
