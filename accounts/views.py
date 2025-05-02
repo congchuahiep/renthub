@@ -2,9 +2,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status, viewsets,parsers
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from accounts.serializers import LandlordRegistrationSerializer, UserSerializer
-
+from .models import  Follow
+from django.db.models import Q
+from accounts.serializers import LandlordRegistrationSerializer, UserSerializer, FollowSerializer
+from . import serializers
 User = get_user_model()
 
 # Create your views here.
@@ -38,3 +39,38 @@ class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class FollowViewSet(viewsets.ViewSet,generics.ListAPIView):
+    serializer_class = FollowSerializer
+    def get_queryset(self):
+        User = self.request.user
+        if User.user_type == 'LR':
+            return Follow.objects.filter(followee = User)       
+        return Follow.objects.filter(follower = User)
+    
+    @action(methods=['get'],detail=False,url_path="get_follow")
+    def follow_get(self,request):
+        if request.method.__eq__("GET"):
+            user=request.user
+            follow = Follow.objects.filter(Q(follower=user)|Q(followee=user))
+            serializer = serializers.FollowSerializer(follow,many=True,context={'request':request}) 
+            return Response(serializer.data)     
+    @action(methods=['post'],detail=True,url_name="follow")
+    def follow_add(self,request,pk):
+        if request.method.__eq__("POST"):
+            if not pk:
+                return Response({"error": "Followee ID is required in the URL."}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                followee = User.objects.get(pk=pk)
+            except User.DoesNotExist:
+                return Response({"error": f"User with id {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = serializers.FollowSerializer(
+                data={},  # Không cần truyền dữ liệu vì follower và followee được xử lý trong serializer
+                context={'request': request, 'followee': followee}
+            )
+            serializer.is_valid(raise_exception=True)
+            follow = serializer.save()
+            return Response(serializers.FollowSerializer(follow, context={'request': request}).data, status=status.HTTP_201_CREATED)
+                    

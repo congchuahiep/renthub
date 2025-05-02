@@ -1,7 +1,8 @@
 from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from django.conf import settings
+from utils.models import BaseModel
 from utils.choices import UserType
 
 # Create your models here.
@@ -64,3 +65,26 @@ class LandlordApproved(User):
     """
     class Meta:
         proxy = True
+
+class Follow(BaseModel):
+    """
+    Model lưu trữ mối quan hệ theo dõi giữa Tenant và Landlord.
+    """
+    follower = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        related_name='following', 
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": UserType.TENANT},
+        null=True
+    )
+    followee = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        related_name='followers', 
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": UserType.LANDLORD},
+        null=True,
+    )
+
+    class Meta:
+        unique_together = ('follower', 'followee')  # Đảm bảo mỗi mối quan hệ là duy nhất
+        db_table = "user_follow"  # Tên bảng trong cơ sở dữ liệu
