@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-
+from accounts.models import Follow
 from properties.models import Property, PropertyImage
 from utils.choices import UserType
 from utils.serializers import ImageSerializer
@@ -64,7 +64,7 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
     """
 
     # User information
-    avatar = serializers.ImageField(required=False)
+    avatar = serializers.CharField(required=False)
 
     # Property information
     property_name = serializers.CharField()
@@ -72,7 +72,7 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
     property_district = serializers.CharField()
     property_address = serializers.CharField()
     property_upload_images = serializers.ListField(
-        child=serializers.ImageField(),
+        child=serializers.CharField(),
         required=False,
         write_only=True
     )
@@ -188,3 +188,37 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             )
 
         return {'user': user, 'property': property}
+
+class FollowSerializer(serializers.ModelSerializer):
+    """
+        serializer cho theo dõi giữa người tìm trọ và người cho thuê
+        người dùng là người tìm trọ sẽ xem được danh sách người cho thuê,
+        và họ sẽ được thông báo khi chủ trọ có bài đăng mới qua email, và ngược lại chủ
+        trọ chỉ coi được người đang follow chính mình 
+    """
+    class Meta:
+        model= Follow
+        fields = ['active','followee']
+
+    def validate(self, attrs):
+        request = self.context['request']
+        follower = request.user
+        followee = self.context.get('followee')  # Đúng: Gọi phương thức get() với khóa 'followee'
+        if follower.user_type == followee.user_type:
+            raise serializers.ValidationError("Người dùng theo dõi không phù hợp.")
+        elif follower.user_type == 'LR':
+            raise serializers.ValidationError("Hành động không hợp lệ.")
+        elif Follow.objects.filter(follower=follower,followee=followee).exists():
+            raise serializers.ValidationError("Cuộc trò chuyện đã tồn tại. ")
+
+
+
+        return attrs
+    def create(self, validated_data):
+        follower = self.context['request'].user
+        followee = self.context.get('followee')
+        validated_data['follower'] = follower
+        validated_data['followee'] = followee
+        follow_instance = super().create(validated_data)
+
+        return follow_instance
