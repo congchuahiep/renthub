@@ -1,4 +1,5 @@
-/// Xử lý logic phụ thuộc giữa các trường tỉnh-huyện-xã trong Django admin
+// Xử lý logic phụ thuộc giữa các trường tỉnh-huyện-xã trong Django admin
+// TODO: Khi trường đã có sẵn giá trị thì các form select tự động enable và load dữ liệu tương ứng
 document.addEventListener("DOMContentLoaded", () => {
     const provinceField = document.getElementById("id_province");
     const districtField = document.getElementById("id_district");
