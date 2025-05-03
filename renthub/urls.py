@@ -42,7 +42,8 @@ urlpatterns = [
     path("admin/", include('admin_site.urls')),
     path('', include('chats.urls')), # chats/
     path('', include('posts.urls')), # rentals/
-    path('', include('accounts.urls')), # rentals/
+    path('', include('accounts.urls')),
+    path('', include('locations.urls')),
 
     # Tests
     path('test/', include('testing.urls')),

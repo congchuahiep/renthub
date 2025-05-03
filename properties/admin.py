@@ -16,7 +16,7 @@ class PropertyAdmin(ModelAdmin):
     fieldsets = [
         ("Status", {"fields": ["status"]}),
         ("Detail", {"fields": ["name", "owner"]}),
-        ("Location", {"fields": ["address", "latitude", "longitude", "map_view"]}),
+        ("Location", {"fields": ["address", "province", "district", "ward", "latitude", "longitude", "map_view"]}),
         ("Images", {"fields": ["image_gallery"]}),
     ]
     
@@ -85,6 +85,9 @@ class PropertyAdmin(ModelAdmin):
         )
 
     map_view.short_description = "Map"
+    
+    class Media:
+        js = ("js/locations.js",)
 
 
 renthub_admin_site.register(Property, PropertyAdmin)

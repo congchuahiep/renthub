@@ -1,6 +1,13 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
 from accounts.models import Follow
+from locations.models import District, Province, Ward
+from locations.serializers import (
+    DistrictSerializer,
+    ProvinceSerializer,
+    WardSerializer,
+)
 from properties.models import Property, PropertyImage
 from utils.choices import UserType
 from utils.serializers import ImageSerializer
@@ -64,13 +71,16 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
     """
 
     # User information
-    avatar = serializers.CharField(required=False)
+    avatar = serializers.ImageField(required=False)
 
     # Property information
     property_name = serializers.CharField()
     property_address = serializers.CharField()
+    property_province = serializers.CharField()
+    property_district = serializers.CharField()
+    property_ward = serializers.CharField()
     property_upload_images = serializers.ListField(
-        child=serializers.CharField(),
+        child=serializers.ImageField(),
         required=False,
         write_only=True
     )
@@ -107,7 +117,10 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             'dob',
             'property_name',
             'property_address',
-            'property_upload_images'
+            'property_upload_images',
+            'property_province',
+            'property_district',
+            'property_ward'
         ]
         extra_kwargs = {
             'password': {
@@ -152,8 +165,19 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
         property_data = {
             'name': validated_data.pop('property_name'),
             'address': validated_data.pop('property_address'),
+            'province': validated_data.pop('property_province'),
+            'district': validated_data.pop('property_district'),
+            'ward': validated_data.pop('property_ward'),
         }
         property_upload_images = validated_data.pop('property_upload_images', [])
+
+        # Lấy thông tin `district`, `province`, `ward` từ database
+        try:
+            property_data['province'] = Province.objects.get(code=property_data['province'])
+            property_data['district'] = District.objects.get(code=property_data['district'])
+            property_data['ward'] = Ward.objects.get(code=property_data['ward'])
+        except (Province.DoesNotExist, District.DoesNotExist, Ward.DoesNotExist) as e:
+            raise serializers.ValidationError(f"Địa chỉ không hợp lệ: {str(e)}")
 
         # Tạo `user` trước, gọi UserSerializer để tạo sẵn tài khoản người dùng
         user_serializer = UserSerializer(data=validated_data)
