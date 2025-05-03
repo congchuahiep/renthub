@@ -40,7 +40,7 @@ class Province(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.full_name
 
 
 class District(models.Model):
@@ -58,7 +58,7 @@ class District(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.full_name
 
 
 class Ward(models.Model):
@@ -76,4 +76,4 @@ class Ward(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.full_name

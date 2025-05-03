@@ -46,6 +46,17 @@ class Property(BaseModel):
     )
 
     name = models.CharField(max_length=256)
+
+    
+    province = models.ForeignKey(
+        "locations.Province", on_delete=models.SET_NULL, null=True, blank=True, related_name="properties"
+    )
+    district = models.ForeignKey(
+        "locations.District", on_delete=models.SET_NULL, null=True, blank=True, related_name="properties"
+    )
+    ward = models.ForeignKey(
+        "locations.Ward", on_delete=models.SET_NULL, null=True, blank=True, related_name="properties"
+    )
     address = models.CharField(max_length=256, null=False, blank=False)
     
     def __str__(self):
@@ -60,7 +71,8 @@ class Property(BaseModel):
         Lưu toạ độ của dãy trọ dựa trên địa chỉ của nó.
         """
         if not self.latitude or not self.longitude:
-            self.latitude, self.longitude = get_coordinates(self.address)
+            address = f"{self.address}, {self.ward}, {self.district}, {self.province}, Việt Nam"
+            self.latitude, self.longitude = get_coordinates(address)
         super().save(*args, **kwargs)
 
 
