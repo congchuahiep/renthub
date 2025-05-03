@@ -70,6 +70,7 @@ class Property(BaseModel):
         """
         Lưu toạ độ của dãy trọ dựa trên địa chỉ của nó.
         """
+        # TODO: Cập nhật toạ độ khi địa chỉ thay đổi
         if not self.latitude or not self.longitude:
             address = f"{self.address}, {self.ward}, {self.district}, {self.province}, Việt Nam"
             self.latitude, self.longitude = get_coordinates(address)
