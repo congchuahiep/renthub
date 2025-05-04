@@ -49,13 +49,13 @@ class Property(BaseModel):
 
     
     province = models.ForeignKey(
-        "locations.Province", on_delete=models.SET_NULL, null=True, blank=True, related_name="properties"
+        "locations.Province", on_delete=models.SET_NULL, null=True, blank=False, related_name="properties"
     )
     district = models.ForeignKey(
-        "locations.District", on_delete=models.SET_NULL, null=True, blank=True, related_name="properties"
+        "locations.District", on_delete=models.SET_NULL, null=True, blank=False, related_name="properties"
     )
     ward = models.ForeignKey(
-        "locations.Ward", on_delete=models.SET_NULL, null=True, blank=True, related_name="properties"
+        "locations.Ward", on_delete=models.SET_NULL, null=True, blank=False, related_name="properties"
     )
     address = models.CharField(max_length=256, null=False, blank=False)
     
