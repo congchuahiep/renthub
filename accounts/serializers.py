@@ -3,11 +3,6 @@ from rest_framework import serializers
 
 from accounts.models import Follow
 from locations.models import District, Province, Ward
-from locations.serializers import (
-    DistrictSerializer,
-    ProvinceSerializer,
-    WardSerializer,
-)
 from properties.models import Property, PropertyImage
 from utils.choices import UserType
 from utils.serializers import ImageSerializer
