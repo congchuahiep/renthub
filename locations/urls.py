@@ -1,7 +1,13 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 from . import views
 
+router = DefaultRouter()
+
+# Register the viewsets with the router
+router.register("districts", viewset=views.DistrictViewSet, basename="district")
+router.register("wards", viewset=views.WardViewSet, basename="ward")
+
 urlpatterns = [
-    path("districts/", views.get_districts, name="get_districts"),
-    path("wards/", views.get_wards, name="get_wards"),
+    path('', include(router.urls)),
 ]

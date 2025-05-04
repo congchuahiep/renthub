@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
 			.then((response) => response.json())
 			.then((data) => {
 				targetField.innerHTML = "";
+				const unSelected = document.createElement("option");
+				unSelected.value = null;
+				unSelected.textContent = "Select value";
+				unSelected.disabled = true;
+				unSelected.selected = true;
+				targetField.appendChild(unSelected);
+
 				// biome-ignore lint/complexity/noForEach: <explanation>
 				data.forEach((item) => {
 					const option = document.createElement("option");
@@ -55,12 +62,20 @@ document.addEventListener("DOMContentLoaded", () => {
 		const provinceId = provinceField.value;
 		if (provinceId) {
 			fetchOptions(`/districts/?province_id=${provinceId}`, districtField);
-            wardField.innerHTML = null; // Xóa dữ liệu ward khi thay đổi province
+
+			// Reset lại giá trị của phường/xã khi tỉnh thay đổi
+			wardField.innerHTML = ""; 
+			const unSelected = document.createElement("option");
+			unSelected.value = null;
+			unSelected.textContent = "Select value";
+			unSelected.disabled = true;
+			unSelected.selected = true;
+			wardField.appendChild(unSelected);
             wardField.disabled = true;
 		} else {
-            districtField.innerHTML = "";
+            districtField.innerHTML = "Select value";
             districtField.disabled = true;
-            wardField.innerHTML = "";
+            wardField.innerHTML = "Select value";
             wardField.disabled = true;
 		}
 	});
@@ -70,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (districtId) {
 			fetchOptions(`/wards/?district_id=${districtId}`, wardField);
 		} else {
-            wardField.innerHTML = null;
+            wardField.innerHTML = "Select value";
             wardField.disabled = true;
 		}
 	});
