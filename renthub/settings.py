@@ -41,7 +41,9 @@ SECRET_KEY = 'django-insecure-%e#ml8*6*k1^$8r%3w4oqwje2)2h^d8$qbq5wgkt=b99xp6*=a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '10.0.2.2'
+]
 
 
 # Application definition
@@ -74,8 +76,11 @@ INSTALLED_APPS = [
     # Test app
     'testing.apps.TestingConfig',
     'oauth2_provider',
+    'corsheaders',
 
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,6 +91,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware', # Debug Toolbar
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'renthub.urls'
@@ -177,8 +183,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # DRF Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ],
 }
@@ -197,7 +203,8 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 # Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
 # vào debug toolbar ở địa chỉ localhost
 INTERNAL_IPS = [
- '127.0.0.1'
+ '127.0.0.1',
+ '10.0.2.2'
  ]
 
 # JWT Configuration
@@ -219,8 +226,8 @@ OAUTH2_PROVIDER = {
     'GRANT_TYPES': ['password', 'refresh_token', 'authorization_code']
 }
 
-CLIENT_ID="83HWSpREmiqNtBgBn4ZqVg7ITRWQgS4hU58cbzxN"
-CLIENT_SECRET="RipPR1uwb9olRLRNROYIUmGp7NwiOs8YZm3UJhIMuGX21GiTqUmDLYtW64phWpQuQ7MzxqqgrKmzU1na2Q62870TgcNIQgNQ2zhY8DqpCun7oL0Fa8ZfqaxsUtpSSo9Z"
+CLIENT_ID="b1I2gmuvv3DroPbU8ca6fF5hxtbu1Rdz23cfXjqS"
+CLIENT_SECRET="TQRxGXRLaVt2kNqXwSGgZs1d5tm8a0UmenBnpQGTDpeyLQHMGXWdRxuuQYKlE1ckkgMCChpbqvdvScf364uKemAo2kKPET64Zj8Nx1ZKQBgmXMVzktLfu8KB0uoLns44"
 
 UNFOLD = {
     "SITE_TITLE": "Renthub Admin",
