@@ -70,10 +70,24 @@ class Property(BaseModel):
         """
         Lưu toạ độ của dãy trọ dựa trên địa chỉ của nó.
         """
-        # TODO: Cập nhật toạ độ khi địa chỉ thay đổi
+        
+        # Nếu chưa có toạ độ, lấy toạ độ từ địa chỉ
         if not self.latitude or not self.longitude:
             address = f"{self.address}, {self.ward}, {self.district}, {self.province}, Việt Nam"
             self.latitude, self.longitude = get_coordinates(address)
+        
+        # Cập nhật toạ độ khi địa chỉ thay đổi
+        if self.pk:
+            old_property = Property.objects.get(pk=self.pk)
+            if (
+                self.address != old_property.address or
+                self.province != old_property.province or
+                self.district != old_property.district or
+                self.ward != old_property.ward
+            ):
+                address = f"{self.address}, {self.ward}, {self.district}, {self.province}, Việt Nam"
+                self.latitude, self.longitude = get_coordinates(address)
+        
         super().save(*args, **kwargs)
 
 
