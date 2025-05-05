@@ -9,14 +9,18 @@
 - **`Django`**: Framework chính
 - **`Django REST Framework`**: Cung cấp khả năng tạo REST API
 - **`Django Unfold`**: Cải thiện giao diện trang Admin
+- **`Django OAuth Tookit`**: Cung cấp khả năng tích hợp OAuth2
 - **`Google Map API`**: Tích hợp khả năng hiển thị bản đồ, đổi địa chỉ thành toạ độ (kinh độ, vĩ độ)
 - **`MySQL`**: Hệ quản trị cơ sở dữ liệu
+- **`Cloudinary`**: Dịch vụ lưu trữ hình ảnh
 
 # Khởi tạo dự án
 
 Dự án này sử dụng `MySQL` làm hệ quản trị dữ liệu. Bạn cần cài đặt một hệ quản trị server `MySQL` trước khi tiến hành khởi tạo RentHub
 
 Ngoài ra bạn cũng cần một `Google Map API` Key để có thể đăng ký sử dụng các dịch vụ của `Google Map API`
+
+RentHub cũng sử dụng OAuth2, nếu bạn chưa đăng ký một ứng dụng OAuth2 nào, bạn có thể thiết lập chúng tại đường dẫn `/o/applications/` khi chạy ứng dụng
 
 ### 1. Tạo biến môi trường
 
@@ -29,7 +33,14 @@ DB_PORT=...
 DB_USER=...
 DB_PASSWORD=...
 
+DJANGO_SECRET_KEY=...   ; Khoá bí mật của cả dự án, khoá này do bạn tự đặt
+
 GOOGLE_MAPS_API_KEY=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+
+OATUH2_CLIENT_ID=...
+OATUH2_CLIENT_SECRET=...
 ```
 
 ### 2. Cài đặt các thư viện phụ thuộc
