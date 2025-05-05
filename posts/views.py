@@ -1,4 +1,4 @@
-from rest_framework import generics, status, viewsets
+from rest_framework import generics, status, viewsets, parsers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -26,7 +26,7 @@ class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retriev
     page_size = 10
 
     # Thêm parser cho file upload, nhưng không hiểu tại sao khi thêm parser thì nó lại không hoạt động
-    # parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     def get_permissions(self):
         """
