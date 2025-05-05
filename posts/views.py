@@ -31,8 +31,8 @@ class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retriev
     def get_permissions(self):
         """
         Cấu hình các permission của view action:
-            - `create()` : IsAuthenticated, IsLandlord
-            - Còn lại : Bất kỳ...
+        - `create()` : IsAuthenticated, IsLandlord
+        - Còn lại : Bất kỳ...
         """
         if self.action == 'create':
             permission_classes = [IsAuthenticated, IsLandlord]

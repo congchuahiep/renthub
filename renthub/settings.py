@@ -36,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%e#ml8*6*k1^$8r%3w4oqwje2)2h^d8$qbq5wgkt=b99xp6*=a'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -185,8 +185,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # DRF Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ],
 }
@@ -194,8 +192,8 @@ REST_FRAMEWORK = {
 # Configuration for Cloudinary
 cloudinary.config(
     cloud_name = "dmt4mvjdx",
-    api_key = "476562764194571",
-    api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
+    api_key = os.getenv("CLOUDINARY_API_KEY"),
+    api_secret = os.getenv("CLOUDINARY_API_SECRET"),
     secure=True
 )
 
@@ -228,8 +226,8 @@ OAUTH2_PROVIDER = {
     'GRANT_TYPES': ['password', 'refresh_token', 'authorization_code']
 }
 
-CLIENT_ID="b1I2gmuvv3DroPbU8ca6fF5hxtbu1Rdz23cfXjqS"
-CLIENT_SECRET="TQRxGXRLaVt2kNqXwSGgZs1d5tm8a0UmenBnpQGTDpeyLQHMGXWdRxuuQYKlE1ckkgMCChpbqvdvScf364uKemAo2kKPET64Zj8Nx1ZKQBgmXMVzktLfu8KB0uoLns44"
+CLIENT_ID=os.getenv("OATUH2_CLIENT_ID")
+CLIENT_SECRET=os.getenv("OATUH2_CLIENT_SECRET")
 
 UNFOLD = {
     "SITE_TITLE": "Renthub Admin",
