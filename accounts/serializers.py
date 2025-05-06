@@ -19,9 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
     Tuy nhiên ta không nên sử dụng trực tiếp `UserSerializer` để đăng ký tài
     khoản, thay vào đó ta nên sử dụng các Serializer chuyên biệt cho việc tạo
     tài khoản:
-    
-        - `LandlordRegistrationSerializer`: Đăng ký tài khoản loại chủ nhà
-        - `TenantRegistrationSerializer`: Đăng ký tài khoản loại người thuê
+    - `LandlordRegistrationSerializer`: Đăng ký tài khoản loại chủ nhà
+    - `TenantRegistrationSerializer`: Đăng ký tài khoản loại người thuê
     """
 
     def to_representation(self, instance):
