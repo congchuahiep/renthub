@@ -8,6 +8,7 @@ from posts.paginators import PostPagination
 from posts.serializers import RentalPostSerializer
 
 
+
 # Create your views here.
 class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView, generics.CreateAPIView):
     """

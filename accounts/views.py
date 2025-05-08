@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status, viewsets,parsers
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import  Follow
@@ -12,7 +13,7 @@ User = get_user_model()
 class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser,parsers.JSONParser]
 
     def get_permissions(self):
         if self.action in ["get_current_user"]:
@@ -42,6 +43,7 @@ class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
     
 class FollowViewSet(viewsets.ViewSet,generics.ListAPIView):
     serializer_class = FollowSerializer
+    permission_classes = [IsAuthenticated]
     def get_queryset(self):
         User = self.request.user
         if User.user_type == 'LR':
