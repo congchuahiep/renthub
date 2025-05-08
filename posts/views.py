@@ -5,9 +5,9 @@ from rest_framework.response import Response
 
 from accounts.perms import IsLandlord
 from posts import paginators
-from posts.models import RentalPost
+from posts.models import Comment, RentalPost
 from posts.paginators import PostPaginator
-from posts.perms import IsRentalPostOwner
+from posts.perms import IsCommentOwner, IsRentalPostOwner
 from posts.serializers import CommentSerializer, RentalPostSerializer
 
 
@@ -110,3 +110,23 @@ class RentalPostViewSet(
             return Response(
                 CommentSerializer(comment).data, status=status.HTTP_201_CREATED
             )
+
+
+class CommentViewSet(
+    viewsets.GenericViewSet,
+    mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin
+):
+    """
+    ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
+    xoá và chỉnh sửa comment
+
+    Endpoints
+    ---------
+    - `DELETE /comments/<id>` : Xoá một Comment
+    - `PUT /comments/<id>` : Sửa toàn bộ một Comment
+    - `PATCH /comments/<id>` : Sửa một phần Comment
+    """
+    queryset = Comment.objects.filter(active=True)
+    serializer_class = CommentSerializer
+    permission_classes = [IsCommentOwner]
