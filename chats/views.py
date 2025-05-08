@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
-# from utils import UserType
+from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 
 User = get_user_model()
@@ -13,6 +13,7 @@ User = get_user_model()
 class ConversationViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Conversation.objects.filter(active=True)
     serializer_class = serializers.ConversationSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -51,21 +52,22 @@ class ConversationViewSet(viewsets.ViewSet, generics.ListAPIView):
 class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Message.objects.all()
     serializer_class = serializers.MessageSerializer
+    permission_classes = [IsAuthenticated]
    
     @action(methods=['get', 'post'], detail=True, url_path='message')
     def message(self,request,pk):
         if request.method == 'GET':
             try:
                 conversation = Conversation.objects.get(pk=pk)
+                if conversation.landlord !=request.user and conversation.tenent !=request.user:
+                    return Response({"error": "You do not have permission to access this conversation."}, status=status.HTTP_403_FORBIDDEN)
             except Conversation.DoesNotExist:
                 return Response({"error": "Conversation not found."}, status=status.HTTP_404_NOT_FOUND)
 
             messages = Message.objects.filter(conversation=conversation)
             serializer = serializers.MessageSerializer(messages, many=True)
             return Response(serializer.data)
-
-    # def create_message(self, request, pk):
-        if request.method == 'POST':
+        else:
             sender_id = self.request.user.id
             try:
                 sender = User.objects.get(pk=sender_id)
@@ -75,7 +77,6 @@ class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
             serializer = serializers.MessageSerializer(data={
                 "content": request.data.get("content"),
                 "conversation": pk,
-                "sender": sender.pk, 
                 "active": True
             }, context={'request': request})
 

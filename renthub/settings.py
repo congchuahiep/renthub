@@ -42,7 +42,9 @@ SECRET_KEY = 'django-insecure-%e#ml8*6*k1^$8r%3w4oqwje2)2h^d8$qbq5wgkt=b99xp6*=a
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '10.0.2.2'
+    '127.0.0.1',
+    '10.17.64.127',  # Nếu bạn đang chạy trên Android Emulator
+    'localhost',  # Nếu bạn truy cập bằng localhost
 ]
 
 
@@ -186,8 +188,11 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        
     ],
 }
+
+
 
 # Configuration for Cloudinary
 cloudinary.config(
@@ -204,7 +209,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 # vào debug toolbar ở địa chỉ localhost
 INTERNAL_IPS = [
  '127.0.0.1',
- '10.0.2.2'
+ '10.17.64.127'
  ]
 
 # JWT Configuration

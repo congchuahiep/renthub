@@ -44,6 +44,7 @@ urlpatterns = [
     path('', include('posts.urls')), # rentals/
     path('', include('accounts.urls')),
     path('', include('locations.urls')),
+    path('', include('properties.urls')),
 
     # Tests
     path('test/', include('testing.urls')),
