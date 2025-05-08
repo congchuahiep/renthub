@@ -176,3 +176,4 @@ cython_debug/
 # VS Code settings
 .vscode/
 .env
+.idea/
