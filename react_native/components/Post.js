@@ -1,21 +1,24 @@
 import * as React from 'react';
 import { Avatar, Button, Card, Text } from 'react-native-paper';
+import typography from '../styles/typography';
+import Carousel from './Carousel';
+import { useTheme } from 'react-native-paper';
+
 
 const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
 
-const Post = ({ title, content }) => (
-    <Card>
-        <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
-        <Card.Title title={title} subtitle={content} left={LeftContent} />
-        <Card.Content>
-            <Text variant="titleLarge">Card title</Text>
-            <Text variant="bodyMedium">Card content</Text>
-        </Card.Content>
-        <Card.Actions>
-            <Button>Cancel</Button>
-            <Button>Ok</Button>
-        </Card.Actions>
-    </Card>
-);
+const Post = ({ title, content, images, price }) => {
+	const theme = useTheme();
+
+	return (
+		<Card>
+			<Card.Content style={{marginBottom: 10}}>
+				{images && <Carousel images={images} />}
+				<Text style={[typography.title, { color: theme.colors.primary }]}>{title}</Text>
+				<Text variant="bodyMedium" style={{ color: theme.colors.secondary }}>{content}</Text>
+			</Card.Content>
+		</Card>
+	)
+};
 
 export default Post;

@@ -1,7 +1,8 @@
 import axios from "axios"
 import { DJANGO_SERVER_URL } from "@env"
 
-const BASE_URL = "http://10.0.2.2:8000/"
+// Nhập biến môi trường, biến đổi thành chuỗi
+const BASE_URL = String(DJANGO_SERVER_URL)
 
 export const endpoints = {
   'rentals': "/rentals/"
