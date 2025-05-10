@@ -41,7 +41,14 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["10.0.2.2", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".ngrok.io",
+    "192.168.1.14",
+    "10.0.2.2",
+    ".vercel.app",
+]
 
 
 # Application definition
@@ -63,7 +70,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "debug_toolbar",
     "oauth2_provider",
-    "corsheaders",
+    # "corsheaders",
     # Các App của Renthub
     "admin_site.apps.AdminSiteConfig",
     "utils.apps.UtilsConfig",
