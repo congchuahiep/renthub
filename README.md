@@ -14,6 +14,14 @@
 - **`MySQL`**: Hệ quản trị cơ sở dữ liệu
 - **`Cloudinary`**: Dịch vụ lưu trữ hình ảnh
 
+### Deploy
+
+Để deploy, ta cần phụ thuộc vào một số thư viện sau:
+
+- **`Gunicorn`**: Cung cấp máy chủ WSGI , giúp chạy ứng dụng Django trong môi trường sản xuất
+
+- **`WhiteNoise`**: Thư viện này giúp Django phục vụ các tệp tĩnh (CSS, JavaScript, hình ảnh) một cách hiệu quả mà không cần máy chủ web riêng như Nginx
+
 # Khởi tạo dự án
 
 Dự án này sử dụng `MySQL` làm hệ quản trị dữ liệu. Bạn cần cài đặt một hệ quản trị server `MySQL` trước khi tiến hành khởi tạo RentHub
