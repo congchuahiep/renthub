@@ -1,3 +1,4 @@
+from properties.serializers import PropertySerializer
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
@@ -64,6 +65,14 @@ class RentalPostSerializer(serializers.ModelSerializer):
         child=serializers.ImageField(), write_only=True, required=False
     )
 
+    def to_representation(self, instance):
+        """
+        Tuỳ chỉnh quá trình Serialize, Trả thêm thông tin `property`
+        """
+        data = super().to_representation(instance)
+        data["property"] = PropertySerializer(instance.property).data
+        return data
+
     class Meta:
         model = RentalPost
         fields = [
@@ -81,6 +90,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
             "number_of_bedrooms",
             "number_of_bathrooms",
             "utilities",
+            "property",
             "upload_images",
         ]
         read_only_fields = ["landlord", "created_at", "updated_at", "status"]

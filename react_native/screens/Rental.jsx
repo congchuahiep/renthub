@@ -3,6 +3,7 @@ import { Button } from "react-native-paper";
 import Post from "../components/Post";
 import { useEffect, useState } from "react";
 import Apis, { endpoints } from "../config/Apis";
+import spacing from "../styles/spacing";
 
 const Rental = () => {
 
@@ -11,7 +12,7 @@ const Rental = () => {
 	const loadRentalPost = async () => {
 		console.log("Chạy trong")
 
-		const response = await Apis.get(endpoints['rentals'])
+		await Apis.get(endpoints['rentals'])
 			.then(res => {
 				console.log(res.data);
 				setRentalPosts(res.data.results)
@@ -19,9 +20,6 @@ const Rental = () => {
 			.catch(err => {
 				console.log(err);
 			});
-
-		// console.log(response.data);
-		// setRentalPosts(response.data.results);
 	}
 
 	useEffect(() => {
@@ -32,14 +30,18 @@ const Rental = () => {
 	return (
 		<>
 			<FlatList
+				style={spacing.p_20}
 				data={rentalPosts}
 				renderItem={({ item }) =>
-					<Post title={item.title} content={item.content} />
+					<Post
+						title={item.title}
+						content={item.content}
+						images={item.post.images}
+						price={item.price}
+						// address={item.property.address + ", " + item.property.ward + ", "} 
+					/>
 				}
 			/>
-			<Button icon="camera" mode="contained" onPress={() => console.log(rentalPosts)}>
-				Nhấn
-			</Button>
 		</>
 
 	)
