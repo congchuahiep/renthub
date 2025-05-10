@@ -9,6 +9,7 @@ from posts.models import Comment, RentalPost
 from posts.paginators import PostPaginator
 from posts.perms import IsCommentOwner, IsRentalPostOwner
 from posts.serializers import CommentSerializer, RentalPostSerializer
+from utils.choices import PostStatus
 
 
 # Create your views here.
@@ -38,7 +39,7 @@ class RentalPostViewSet(
 
     queryset = RentalPost.objects.prefetch_related(
         "post", "utilities", "landlord", "post__images"
-    ).filter(active=True)  # Sử dụng prefetch_related để tối ưu hóa câu truy vấn
+    ).filter(status=PostStatus.APPROVED)  # Sử dụng prefetch_related để tối ưu hóa câu truy vấn
     serializer_class = RentalPostSerializer
     pagination_class = PostPaginator
     page_size = 10
