@@ -38,7 +38,7 @@ const Rental = () => {
 						content={item.content}
 						images={item.post.images}
 						price={item.price}
-						// address={item.property.address + ", " + item.property.ward + ", "} 
+						address={item.property.address + ", " + item.property.ward + ", " + item.property.district + ", " + item.property.province} 
 					/>
 				}
 			/>
