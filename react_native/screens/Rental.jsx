@@ -33,7 +33,13 @@ const Rental = () => {
 				style={spacing.p_20}
 				data={rentalPosts}
 				renderItem={({ item }) =>
-					<Post title={item.title} content={item.content} images={item.post.images} price={item.price} />
+					<Post
+						title={item.title}
+						content={item.content}
+						images={item.post.images}
+						price={item.price}
+						// address={item.property.address + ", " + item.property.ward + ", "} 
+					/>
 				}
 			/>
 		</>

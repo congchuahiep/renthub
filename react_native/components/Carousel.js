@@ -28,7 +28,10 @@ const Carousel = ({ images }) => {
           </View>
         )}
       />
-      {/* Dấu chấm hiển thị số lượng ảnh */}
+      {/* 
+        Dấu chấm hiển thị số lượng ảnh 
+        #TODO: sửa lại dấu chấm trượt cho đúng ảnh
+      */}
       <View style={styles.dotsContainer}>
         {images.map((_, index) => (
           <View
@@ -54,19 +57,20 @@ const Carousel = ({ images }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    aspectRatio: 1, // Đảm bảo khung trượt là hình vuông
+    aspectRatio: 1 / 1, // Đảm bảo khung trượt là hình vuông
     borderRadius: 8, // Bo cong khung trượt
     overflow: 'hidden', // Đảm bảo nội dung bên trong không vượt ra ngoài
   },
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    aspectRatio: 1
+    aspectRatio: 1 / 1, // Đảm bảo khung trượt là hình vuông
+    height: '100%'
   },
   image: {
+    aspectRatio: 1 / 1,
     width: '100%',
-    height: '500',
-    resizeMode: 'contain', // Cắt ảnh để vừa khung hình vuông
+    resizeMode: 'cover', // Cắt ảnh để vừa khung hình vuông
   },
 
   dotsContainer: {

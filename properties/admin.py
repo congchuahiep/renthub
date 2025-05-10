@@ -65,7 +65,7 @@ class PropertyAdmin(ModelAdmin):
                 var marker = new google.maps.Marker({{
                     position: propertyLocation,
                     map: map,
-                    draggable: true,
+                    draggable: false,
                     title: "{property_name}"
                 }});
                 google.maps.event.addListener(marker, 'dragend', function(event) {{
