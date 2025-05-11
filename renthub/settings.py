@@ -45,6 +45,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '10.17.64.127',  # Nếu bạn đang chạy trên Android Emulator
     'localhost',  # Nếu bạn truy cập bằng localhost
+    '192.168.1.8',
 ]
 
 
@@ -209,7 +210,9 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 # vào debug toolbar ở địa chỉ localhost
 INTERNAL_IPS = [
  '127.0.0.1',
- '10.17.64.127'
+ '10.17.64.127',
+ '192.168.1.8'
+
  ]
 
 # JWT Configuration
@@ -231,8 +234,8 @@ OAUTH2_PROVIDER = {
     'GRANT_TYPES': ['password', 'refresh_token', 'authorization_code']
 }
 
-CLIENT_ID="b1I2gmuvv3DroPbU8ca6fF5hxtbu1Rdz23cfXjqS"
-CLIENT_SECRET="TQRxGXRLaVt2kNqXwSGgZs1d5tm8a0UmenBnpQGTDpeyLQHMGXWdRxuuQYKlE1ckkgMCChpbqvdvScf364uKemAo2kKPET64Zj8Nx1ZKQBgmXMVzktLfu8KB0uoLns44"
+CLIENT_ID="hpnqqelKAPairSkG8oYV49ypdMiGAbiLTch3h1Ui"
+CLIENT_SECRET="CIfvykKzUzlWIUZ0JvUBEL16FS5IOi2CKTCtAyptXRvd8VzqsRPcxo3DNmPNuk7ZYrsSK1lH76fdJHg4OOkjq7XQLIRjRvqYQQL7lWr8UbLFcu3CVhqicvg7u7ErHcC8"
 
 UNFOLD = {
     "SITE_TITLE": "Renthub Admin",
