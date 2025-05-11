@@ -109,7 +109,7 @@ class RentalPost(BasePostContent):
 
 
 class RoomSeekingPost(BasePostContent):
-    tenent = models.ForeignKey(
+    tenant = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": UserType.TENANT},

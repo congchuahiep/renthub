@@ -1,11 +1,11 @@
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from accounts.perms import IsLandlord
-from posts.models import RentalPost
+from rest_framework.decorators import action
+from accounts.perms import IsLandlord, IsTenant
+from posts.models import RentalPost, RoomSeekingPost
 from posts.paginators import PostPagination
-from posts.serializers import RentalPostSerializer
+from posts.serializers import RentalPostSerializer, RoomSeekingPostSerializer
 
 
 
@@ -59,3 +59,30 @@ class RentalPostViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Retriev
         nó gắn người đăng bài chính là user hiện tại đang gửi request này
         """
         serializer.save(landlord=self.request.user)  # Gán landlord là user hiện tại
+
+class RoomSeekingPostViewSet(viewsets.ViewSet, generics.GenericAPIView):
+    queryset = RoomSeekingPost.objects.filter(active=True)
+    serializer_class = RoomSeekingPostSerializer
+    pagination_class = PostPagination
+    page_site=10
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [IsAuthenticated,IsTenant]
+        else:
+            permission_classes = []
+        return [permission() for permission in permission_classes]
+    
+    @action(methods=['post','get'],detail=False,url_path="roomseekingpost")
+    def roomseeking(self,request):
+        if request.method.__eq__("POST"):
+            serializer = RoomSeekingPostSerializer(
+                data=request.data,
+                context={'request':request}
+            )
+            if serializer.is_valid():
+                room_seeking_post= serializer.save()
+                return Response(RoomSeekingPostSerializer(room_seeking_post,context={'request':request}).data,status.HTTP_201_CREATED)
+        elif request.method.__eq__("GET"):
+            room_seeking_post = self.get_queryset()
+            serializer = RoomSeekingPostSerializer(room_seeking_post,many=True)
+            return Response(serializer.data)

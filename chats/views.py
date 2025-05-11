@@ -22,7 +22,7 @@ class ConversationViewSet(viewsets.ViewSet, generics.ListAPIView):
         ).filter(
             landlord=user
         ) | Conversation.objects.filter(
-            tenent=user
+            tenant=user
         )
 
     @action(methods=['post'],detail=True, url_path='conversation_post')
@@ -45,7 +45,7 @@ class ConversationViewSet(viewsets.ViewSet, generics.ListAPIView):
         if request.method.__eq__("GET"):    
             """Lấy danh sách cuộc trò chuyện của user hiện tại."""
             user = request.user
-            conversations = Conversation.objects.filter(Q(landlord=user) | Q(tenent=user))
+            conversations = Conversation.objects.filter(Q(landlord=user) | Q(tenant=user))
             serializer = serializers.ConversationSerializer(conversations, many=True,context={'request': request})
             return Response(serializer.data) 
     
@@ -59,7 +59,7 @@ class MessageViewSet(viewsets.ViewSet, generics.ListAPIView):
         if request.method == 'GET':
             try:
                 conversation = Conversation.objects.get(pk=pk)
-                if conversation.landlord !=request.user and conversation.tenent !=request.user:
+                if conversation.landlord !=request.user and conversation.tenant !=request.user:
                     return Response({"error": "You do not have permission to access this conversation."}, status=status.HTTP_403_FORBIDDEN)
             except Conversation.DoesNotExist:
                 return Response({"error": "Conversation not found."}, status=status.HTTP_404_NOT_FOUND)

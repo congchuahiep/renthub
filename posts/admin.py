@@ -45,14 +45,14 @@ class RoomSeekingPostAdmin(ModelAdmin):
     """
     Trang quản lý bài đăng tìm phòng
     """
-    list_display = ["title", "area", "limit_person", "tenent__username", "created_date"]
-    search_fields = ["title", "tenent__username"]
+    list_display = ["title", "area", "limit_person", "tenant__username", "created_date"]
+    search_fields = ["title", "tenant__username"]
     list_filter = ["created_date"]
     sortable_by = ["title"]
 
     fieldsets = [
         ("Status", {"fields": ["status"]}),
-        ("Room seeking post", {"fields": ["title", "area", "limit_person", "tenent"]}),
+        ("Room seeking post", {"fields": ["title", "area", "limit_person", "tenant"]}),
     ]
 
 

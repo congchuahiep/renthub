@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='conversation',
-            name='tenent',
+            name='tenant',
             field=models.ForeignKey(limit_choices_to={'user_type': 'tenant'}, on_delete=django.db.models.deletion.CASCADE, related_name='tenant_convarsation', to=settings.AUTH_USER_MODEL),
         ),
     ]

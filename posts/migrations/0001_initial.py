@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                 ('position', models.CharField(max_length=20)),
                 ('area', models.FloatField()),
                 ('limit_person', models.IntegerField()),
-                ('tenent', models.ForeignKey(limit_choices_to={'user_type': 'tenant'}, on_delete=django.db.models.deletion.CASCADE, related_name='room_seeking_post', to=settings.AUTH_USER_MODEL)),
+                ('tenant', models.ForeignKey(limit_choices_to={'user_type': 'tenant'}, on_delete=django.db.models.deletion.CASCADE, related_name='room_seeking_post', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ['-created_date'],

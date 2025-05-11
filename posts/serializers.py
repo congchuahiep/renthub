@@ -119,28 +119,34 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
 
 class RoomSeekingPostSerializer(serializers.ModelSerializer):
-    tenent = UserSerializer(read_only=True)
+    
 
     class Meta:
         model = RoomSeekingPost
-        fields = [
-            'id',
-            'tenent',
-            'title',
-            'content',
-            'status',
-            'position',
-            'area',
-            'limit_person',
-            'created_date',
-            'updated_date'
-        ]
-        read_only_fields = ['tenent', 'created_date', 'updated_date', 'status']
+        fields = '__all__'
+        extra_kwargs={
+            'tenant':{
+                'read_only':True,
+            },
+        }
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tenant']={
+            'id':instance.tenant.id,
+            'name':f"{instance.tenant.first_name} {instance.tenant.last_name}"
+        }
+
+
+        return data
     def validate(self, attrs):
-        owner = self.context['request']
+        request = self.context['request']
         instance = self.instance
 
-        # if
+        if instance and instance.tenant != request.user:
+            raise serializers.ValidationError("You do not have permission to edit this post.")
+        return attrs
+    
+    def create(self, validated_data):
+        return super().create(validated_data)
 
-        return super().validate(attrs)
