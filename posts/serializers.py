@@ -55,6 +55,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'number_of_bathrooms',
             'utilities',
             'upload_images',
+            'property',
         ]
         read_only_fields = ['landlord', 'created_at', 'updated_at', 'status']
 
@@ -135,3 +136,11 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
             'updated_date'
         ]
         read_only_fields = ['tenent', 'created_date', 'updated_date', 'status']
+
+    def validate(self, attrs):
+        owner = self.context['request']
+        instance = self.instance
+
+        # if
+
+        return super().validate(attrs)

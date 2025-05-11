@@ -7,7 +7,7 @@ from .models import Property, PropertyImage,PropertyStatus
 from rest_framework.decorators import action
 from.  import serializers
 
-class PropertyViewSet(viewsets.ViewSet, generics.ListAPIView):
+class PropertyViewSet(viewsets.ViewSet, generics.GenericAPIView):
     serializer_class = serializers.PropertySerializer
     permission_classes = [IsAuthenticated, IsLandlord] 
 
@@ -26,18 +26,18 @@ class PropertyViewSet(viewsets.ViewSet, generics.ListAPIView):
                 return Response(serializers.PropertySerializer(property,context={'request':request}).data,status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        else:
+        elif request.method.__eq__("GET"):
             properties= self.get_queryset()
             serializer = serializers.PropertySerializer(properties, many=True)
             return Response(serializer.data)
         
-    @action(methods=['put', 'patch'], detail=True, url_path="property")
+    @action(methods=['put', 'patch'], detail=True, url_path="property_put_patch")
     def update_property(self, request, pk=None):
         try:
               property_instance = Property.objects.get(pk=pk)
         except Property.DoesNotExist:
             return Response({"error": "Property not found."}, status=status.HTTP_404_NOT_FOUND)
-
+        
         restricted_fields = ['province', 'district', 'ward', 'owner']
         for field in restricted_fields:
             if field in request.data:
@@ -50,7 +50,7 @@ class PropertyViewSet(viewsets.ViewSet, generics.ListAPIView):
         serializer = serializers.PropertySerializer(
             property_instance,
             data=request.data,
-            partial=True,  # Allow partial updates
+            partial=True,  
             context={'request': request}
         )
         if serializer.is_valid():
@@ -58,6 +58,14 @@ class PropertyViewSet(viewsets.ViewSet, generics.ListAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    @action(methods=["delete"], detail=True, url_path="property")
+    def delete_property(self, request, pk=None):
+        property_instance = self.get_object(pk)
+        if not property_instance:
+            return Response({"error": "Property not found or not owned by you."}, status=status.HTTP_404_NOT_FOUND)
+
+        property_instance.delete()
+        return Response({"message": "Property deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
     
 
