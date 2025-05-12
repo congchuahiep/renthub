@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Image, FlatList, Dimensions, StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { Chip, Icon, useTheme } from 'react-native-paper';
 
-const Carousel = ({ images }) => {
+const Carousel = ({ images, badge }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const screenWidth = Dimensions.get('window').width;
   const theme = useTheme();
@@ -50,6 +50,18 @@ const Carousel = ({ images }) => {
           />
         ))}
       </View>
+
+      {badge &&
+        <Chip
+          icon={"square-rounded-outline"}
+          // mode='outlined'
+          compact={true}
+          style={{ position: 'absolute', bottom: 5, left: 5 }}
+          // textStyle={{ color: theme.colors.primary }}
+        >
+          {badge}m²
+        </Chip>
+      }
     </View>
   );
 };
@@ -60,6 +72,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1, // Đảm bảo khung trượt là hình vuông
     borderRadius: 8, // Bo cong khung trượt
     overflow: 'hidden', // Đảm bảo nội dung bên trong không vượt ra ngoài
+    position: 'relative'
   },
   imageContainer: {
     justifyContent: 'center',

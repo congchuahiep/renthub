@@ -20,17 +20,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.react_native"
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "ac0e5d46-d885-475c-8f18-70a6527c39e9"
-      }
-    },
-    "owner": "congchuahiep"
+    }
   }
 }
