@@ -1,11 +1,11 @@
 import axios from "axios"
-import { DJANGO_SERVER_URL } from "@env"
 
 // Nhập biến môi trường, biến đổi thành chuỗi
-const BASE_URL = String(DJANGO_SERVER_URL)
+const BASE_URL = String(process.env.EXPO_PUBLIC_DJANGO_SERVER_URL)
 
 export const endpoints = {
-  'rentals': "/rentals/"
+  'rentals': "/rentals/",
+  'rental-details': (rentalId) => `/rentals/${rentalId}`
 }
 
 export const authApis = (token) => {
