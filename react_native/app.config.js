@@ -1,6 +1,6 @@
 module.exports = {
   "expo": {
-    "name": "react_native",
+    "name": "RentHub",
     "slug": "react_native",
     "version": "1.0.0",
     "orientation": "portrait",

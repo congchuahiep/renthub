@@ -169,6 +169,7 @@ const RentalDetail = ({ route }) => {
               </Card>
 
               {/* THÔNG TIN CHỦ ĐĂNG BÀI */}
+              {/* TODO: Thêm nút follow */}
               <Card style={style.card}>
                 <Card.Content>
                   <Text style={[style.title_small, { color: theme.colors.primary, marginBottom: 16 }]}>
