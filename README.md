@@ -26,7 +26,7 @@
 
 Dự án này sử dụng `MySQL` làm hệ quản trị dữ liệu. Bạn cần cài đặt một hệ quản trị server `MySQL` trước khi tiến hành khởi tạo RentHub
 
-Ngoài ra bạn cũng cần một `Google Map API` Key để có thể đăng ký sử dụng các dịch vụ của `Google Map API`
+Ngoài ra bạn cũng cần một `Maps JavaScript API` Key để có thể đăng ký sử dụng các dịch vụ của `Google Map API`
 
 RentHub cũng sử dụng OAuth2, nếu bạn chưa đăng ký một ứng dụng OAuth2 nào, bạn có thể thiết lập chúng tại đường dẫn `/o/applications/` khi chạy ứng dụng
 
@@ -84,5 +84,5 @@ Dữ liệu seed các tỉnh thành được cung cấp bởi: [vietnamese-provi
 Sau khi đã hoàn tất các bước trên, bạn có thể chạy dự án bằng lệnh:
 
 ```shell
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver
 ```

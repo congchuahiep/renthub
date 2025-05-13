@@ -22,7 +22,7 @@ const RentalDetail = ({ route }) => {
 
   const { id } = route.params;
 
-  // Cái này dành cho cái nút lien hệ
+  // khi trượt nút liên hệ sẽ thu nhỏ lại
   const onScroll = ({ nativeEvent }) => {
     const currentScrollPosition =
       Math.floor(nativeEvent?.contentOffset?.y) ?? 0;

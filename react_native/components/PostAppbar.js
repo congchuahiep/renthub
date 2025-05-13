@@ -37,7 +37,7 @@ export default function PostAppbar({
                 {
                   flex: 1,
                   height: 42,
-                  backgroundColor: "#fff",
+                  backgroundColor: theme.colors.background,
                   borderColor: theme.colors.primary,
                   borderWidth: 1,
                 }

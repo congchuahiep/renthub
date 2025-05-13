@@ -8,7 +8,7 @@ export default function Navigator() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <TabNavigator />
+        <StackNavigator />
       </NavigationContainer>
     </SafeAreaProvider>
   );

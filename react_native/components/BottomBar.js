@@ -8,14 +8,6 @@ import { useTheme } from "react-native-paper";
 const BottomBar = ({ navigation, state, descriptors, insets }) => {
   const theme = useTheme();
 
-  // Lấy tên màn hình hiện tại
-  const currentRouteName = getFocusedRouteNameFromRoute(state.routes[state.index]) ?? '';
-
-  // Ẩn thanh BottomBar nếu đang ở các màn hình sau:
-  if (currentRouteName === 'rentalDetail') {
-    return null;
-  }
-
   return (
     <BottomNavigation.Bar
       style={{ height: 85, backgroundColor: theme.colors.surface }}
