@@ -12,12 +12,11 @@ from posts.serializers import CommentSerializer, RentalPostSerializer
 from utils.choices import PostStatus
 
 
-
 # Create your views here.
 class RentalPostViewSet(
     viewsets.GenericViewSet,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin, # `GET /rentals/`
+    mixins.RetrieveModelMixin, # `GET /rentals/<id>`
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
