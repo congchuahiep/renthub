@@ -1,7 +1,8 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 import { useTheme } from "react-native-paper";
 
 const useStyle = () => {
+  const colorScheme = useColorScheme();
   const theme = useTheme();
 
   return StyleSheet.create({
@@ -15,7 +16,7 @@ const useStyle = () => {
       backgroundColor: theme.colors.surface, // Sử dụng màu từ theme
       borderRadius: 8,
       boxShadow: "0px 3px rgba(136, 136, 136, 0.5)",
-      borderWidth: 1,
+      borderWidth: colorScheme == 'dark' ? 0 : 1,
       borderColor: theme.colors.secondary
     },
     box_shadow: {
