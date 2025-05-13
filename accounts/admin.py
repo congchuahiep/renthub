@@ -125,7 +125,7 @@ class LandlordApprovedAdmin(UserAdmin):
         return format_html(html)
 
     property_image_gallery.short_description = "Property Image Gallery"
-    
+
     ### XỬ LÝ XÉT DUYỆT/TỪ CHỐI XÉT DUYỆT NGƯỜI DÙNG ###
     def approve_user(self, request, user_id):
         """
@@ -164,7 +164,7 @@ class LandlordApprovedAdmin(UserAdmin):
             path("<int:user_id>/reject/", self.admin_site.admin_view(self.reject_user), name="reject_landlord"),
         ]
         return custom_urls + urls
-    
+
     def action_buttons(self, user):
         """
         Thêm các nút hành động (Approve, Reject) vào danh sách
@@ -175,7 +175,7 @@ class LandlordApprovedAdmin(UserAdmin):
         reject_button = action_button("Reject", reject_url, color="red")
         return mark_safe(f"{approve_button} {reject_button}")
     action_buttons.short_description = "Actions"
-    
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         """
         Tùy chỉnh giao diện trang chi tiết để thêm nút Approve và Reject
@@ -189,18 +189,18 @@ class LandlordApprovedAdmin(UserAdmin):
                 f"{action_button('Approve', approve_url, color='green')} "
                 f"{action_button('Reject', reject_url, color='red')}"
             )
-            
-            extra_context["hide_default_buttons"] = True 
+
+            extra_context["hide_default_buttons"] = True
         return super().change_view(request, object_id, form_url, extra_context)
-    
-    
+
+
     ### XOÁ CÁC CHỨC NĂNG: THÊM, XOÁ, SỬA TÀI KHOẢN ĐANG DUYỆT ###
     def has_add_permission(self, request):
         return False
 
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
     def has_change_permission(self, request, obj=None):
         return False
 

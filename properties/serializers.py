@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
@@ -28,6 +27,13 @@ class PropertySerializer(serializers.ModelSerializer):
             'id': instance.owner.id,
             'name':f"{instance.owner.first_name} {instance.owner.last_name}".strip(),
         }
+        
+        if instance.province:
+            data["province"] = instance.province.full_name
+        if instance.district:
+            data["district"] = instance.district.full_name
+        if instance.ward:
+            data["ward"] = instance.ward.full_name
         return data
     
     def validate(self, attrs):
@@ -49,4 +55,5 @@ class PropertySerializer(serializers.ModelSerializer):
 
 
         
+
 

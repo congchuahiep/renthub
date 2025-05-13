@@ -1,28 +1,58 @@
+from properties.serializers import PropertySerializer
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
-from posts.models import ImagePost, PostReference, RentalPost, RoomSeekingPost, Utilities
+from posts.models import (
+    Comment,
+    ImagePost,
+    PostReference,
+    RentalPost,
+    RoomSeekingPost,
+    Utilities,
+)
 from utils.serializers import ImageSerializer
 
 
 class UtilitiesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilities
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
 
 class PostReferenceSerializer(serializers.ModelSerializer):
+    """
+    Serializer cho `PostReference`. Được sử dụng để tạo một khoá chính cho phép
+    các Model khác trỏ vào
+    """
+
     images = ImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = PostReference
-        fields = '__all__'
+        fields = "__all__"
 
 
 class RentalPostSerializer(serializers.ModelSerializer):
     """
-    Serializer cho RentalPost model. Phục vụ hầu hết các chức năng
-    như tạo, cập nhật, xóa, và lấy thông tin chi tiết của một bài đăng cho thuê.
+    Serializer cho `RentalPost` model
+
+    Serialize
+    ---------
+    - `post`: Khoá chính và các quan hệ của bài đăng (chỉ đọc).
+    - `landlord`: Thông tin của landlord (chỉ đọc).
+    - `utilities`: Danh sách tiện ích liên quan (chỉ đọc).
+    - `created_date`, `updated_date`: Ngày tạo và cập nhật bài đăng (chỉ đọc).
+
+    Deserialize
+    -----------
+    - `upload_images`: Danh sách ảnh được upload (chỉ ghi).
+    - Các trường khác như `title`, `content`, `price`, `area`,... để tạo hoặc cập nhật bài đăng.
+
+    Validation
+    ----------
+    - Giới hạn số lượng ảnh upload (tối đa 10 ảnh).
+    - Giới hạn kích thước ảnh (tối đa 10MB).
+    - Chỉ chấp nhận định dạng ảnh: jpg, jpeg, png.
     """
 
     # Serialize lồng
@@ -32,10 +62,16 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
     # Trường để upload ảnh
     upload_images = serializers.ListField(
-        child=serializers.CharField(),
-        write_only=True,
-        required=False
+        child=serializers.ImageField(), write_only=True, required=False
     )
+
+    def to_representation(self, instance):
+        """
+        Tuỳ chỉnh quá trình Serialize, Trả thêm thông tin `property`
+        """
+        data = super().to_representation(instance)
+        data["property"] = PropertySerializer(instance.property).data
+        return data
 
     class Meta:
         model = RentalPost
@@ -56,9 +92,9 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'utilities',
             'upload_images',
             'property',
-        ]
-        read_only_fields = ['landlord', 'created_at', 'updated_at', 'status']
 
+        ]
+        read_only_fields = ["landlord", "created_at", "updated_at", "status"]
 
     def validate_upload_images(self, value):
         """
@@ -76,7 +112,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
         max_size = 10 * 1024 * 1024  # 10MB in bytes
 
         # Kiểm tra định dạng và kích thước cho từng ảnh
-        allowed_types = ['image/jpeg', 'image/png', 'image/jpg']
+        allowed_types = ["image/jpeg", "image/png", "image/jpg"]
         for image in value:
             # Kiểm tra kích thước
             if image.size > max_size:
@@ -92,27 +128,21 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
         return value
 
-
     def create(self, validated_data):
         # Lấy và xoá ảnh ra từ validated_data
-        upload_images = validated_data.pop('upload_images', [])
+        upload_images = validated_data.pop("upload_images", [])
 
         # Tạo Post base trước
         post = PostReference.objects.create()
 
         # Tạo RentalPost với post reference, nhưng rental post này chưa có ảnh
         print("validated_data:", validated_data)  # Add this line
-        rental_post = RentalPost.objects.create(
-            post=post,
-            **validated_data
-        )
+        rental_post = RentalPost.objects.create(post=post, **validated_data)
 
         # Xử lý từng ảnh được upload
         for image_file in upload_images:
             ImagePost.objects.create(
-                image=image_file,
-                alt=f"Image for {rental_post.title}",
-                post=post
+                image=image_file, alt=f"Image for {rental_post.title}", post=post
             )
 
         return rental_post
@@ -124,16 +154,16 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomSeekingPost
         fields = [
-            'id',
-            'tenent',
-            'title',
-            'content',
-            'status',
-            'position',
-            'area',
-            'limit_person',
-            'created_date',
-            'updated_date'
+            "id",
+            "tenent",
+            "title",
+            "content",
+            "status",
+            "position",
+            "area",
+            "limit_person",
+            "created_date",
+            "updated_date",
         ]
         read_only_fields = ['tenent', 'created_date', 'updated_date', 'status']
 
@@ -144,3 +174,36 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
         # if
 
         return super().validate(attrs)
+        read_only_fields = ["tenent", "created_date", "updated_date", "status"]
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """
+    Serializer cho `Comment` model
+
+    Serialize
+    ---------
+    - `content`: Nội dung của comment
+    - `user`: Thông tin người dùng gửi comment (UserSerializer)
+    - `created_date`, `updated_date`: Ngày tạo và cập nhật comment (chỉ đọc)
+
+    Deserialize
+    -----------
+    - `content`: Nội dung của comment
+    - `user`: Id của người dùng gửi comment
+    - `post`: Id của bài đăng
+    """
+
+    def to_representation(self, instance):
+        """
+        Tuỳ chỉnh quá trình Serialize, Trả về toàn bộ phần thông tin
+        của người dùng thông qua UserSerializer
+        """
+        data = super().to_representation(instance)
+        data["user"] = UserSerializer(instance.user).data
+        return data
+
+    class Meta:
+        model = Comment
+        fields = ["id", "content", "created_date", "updated_date", "user", "post"]
+        extra_kwargs = {"post": {"write_only": True}}
