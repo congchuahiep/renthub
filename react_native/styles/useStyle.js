@@ -14,7 +14,9 @@ const useStyle = () => {
       marginVertical: 8,
       backgroundColor: theme.colors.surface, // Sử dụng màu từ theme
       borderRadius: 8,
-      boxShadow: "0px 3px rgba(136, 136, 136, 0.5)"
+      boxShadow: "0px 3px rgba(136, 136, 136, 0.5)",
+      borderWidth: 1,
+      borderColor: theme.colors.secondary
     },
     box_shadow: {
       boxShadow: "0px 3px rgba(136, 136, 136, 0.5)"
