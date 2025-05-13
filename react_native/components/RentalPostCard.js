@@ -17,13 +17,12 @@ const RentalPostCard = ({ id, title, area, images, price, address, numberOfBed, 
 	const navigation = useNavigation();
 
 	const toRentalDetail = () => {
-		navigation.navigate("rentalDetail", {"id": id, "title": title});
+		navigation.navigate("rentalDetail", { "id": id, "title": title });
 	}
 
 	return (
 		<Card
 			style={style.card}
-			mode='outlined'
 		>
 			<Card.Content>
 				{images && <Carousel images={images} badge={area} />}
@@ -46,9 +45,6 @@ const RentalPostCard = ({ id, title, area, images, price, address, numberOfBed, 
 
 							<Icon source={"shower"} size={16} color={theme.colors.primary} />
 							<Text style={{ marginLeft: 3 }}>{numberOfBathroom}</Text>
-						</View>
-						<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-
 						</View>
 					</View>
 				</Card.Content>
