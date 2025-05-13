@@ -3,7 +3,7 @@ from chats import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register("chats", views.ConversationViewSet,basename="conversations")
+router.register("current_user", views.ConversationViewSet,basename="conversations")
 router.register("chat", views.MessageViewSet,basename="messages")
 
 

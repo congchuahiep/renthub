@@ -42,6 +42,10 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '10.17.64.127',  # Nếu bạn đang chạy trên Android Emulator
+    'localhost',  # Nếu bạn truy cập bằng localhost
+    '192.168.1.8',
     "localhost",
     "127.0.0.1",
     ".ngrok.io",
@@ -193,6 +197,8 @@ REST_FRAMEWORK = {
     ],
 }
 
+
+
 # Configuration for Cloudinary
 cloudinary.config(
     cloud_name="dmt4mvjdx",
@@ -206,6 +212,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
 # vào debug toolbar ở địa chỉ localhost
+
 INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
 
 # JWT Configuration
@@ -226,6 +233,7 @@ OAUTH2_PROVIDER = {
     "ACCESS_TOKEN_EXPIRE_SECONDS": 3600,
     "GRANT_TYPES": ["password", "refresh_token", "authorization_code"],
 }
+
 
 CLIENT_ID = os.getenv("OATUH2_CLIENT_ID")
 CLIENT_SECRET = os.getenv("OATUH2_CLIENT_SECRET")

@@ -84,5 +84,5 @@ Dữ liệu seed các tỉnh thành được cung cấp bởi: [vietnamese-provi
 Sau khi đã hoàn tất các bước trên, bạn có thể chạy dự án bằng lệnh:
 
 ```shell
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
