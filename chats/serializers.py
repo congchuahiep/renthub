@@ -64,19 +64,26 @@ class MessageSerializer(ModelSerializer):
     class Meta:
         model = Message
         fields = '__all__'
+        extra_kwargs={
+            'sender':{
+                'read_only':True
+            }
+        }
+        
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['sender'] = {
             'id': instance.sender.id,
-            'username': instance.sender.username,
+            'name': f"{instance.sender.first_name} {instance.sender.last_name}".strip(),  # Kết hợp first_name và last_name
         }
         data['create_at'] = datetime.strftime(instance.created_date, "%Y-%m-%d %H:%M:%S")
 
         return data
     
     def validate(self, attrs):
-        sender = attrs.get('sender') 
+        request = self.context['request']
+        sender = request.user
         conversation = attrs.get('conversation') 
         if sender != conversation.landlord and sender != conversation.tenent:
             raise serializers.ValidationError("Sender must be a participant of the conversation.")
@@ -84,6 +91,8 @@ class MessageSerializer(ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        request = self.context['request']
+        validated_data['sender'] = request.user 
         return Message.objects.create(**validated_data)
 
 

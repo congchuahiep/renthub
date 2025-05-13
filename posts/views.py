@@ -12,6 +12,7 @@ from posts.serializers import CommentSerializer, RentalPostSerializer
 from utils.choices import PostStatus
 
 
+
 # Create your views here.
 class RentalPostViewSet(
     viewsets.GenericViewSet,
