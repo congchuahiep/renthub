@@ -5,8 +5,10 @@ from django.utils import timezone
 from utils.choices import PostStatus, PropertyStatus, UserType
 from utils.models import BaseModel, Image
 
+
 def default_post_expiration_date():
     return timezone.now() + timezone.timedelta(days=7)
+
 
 # Create your models here.
 class PostReference(models.Model):
@@ -17,7 +19,9 @@ class PostReference(models.Model):
     Ngoài ra các model của BasePost sẽ sử dụng khoá chính của PostReference làm
     khoá chính của bản thân mình
     """
+
     pass
+
 
 class BasePostContent(BaseModel):
     """
@@ -36,18 +40,20 @@ class BasePostContent(BaseModel):
     """
 
     # id được trỏ tới model Post
-    post = models.OneToOneField("PostReference", on_delete=models.CASCADE, primary_key=True)
+    post = models.OneToOneField(
+        "PostReference", on_delete=models.CASCADE, primary_key=True
+    )
 
     # Các trường dữ liệu chung
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
-    status = models.CharField(max_length=10, choices=PostStatus, default=PostStatus.PENDING)
+    status = models.CharField(
+        max_length=10, choices=PostStatus, default=PostStatus.PENDING
+    )
 
     # Tự động thiết lập bài đăng hết hạn sau 7 ngày
     expired_date = models.DateTimeField(
-        default=default_post_expiration_date,
-        null=True,
-        blank=True
+        default=default_post_expiration_date, null=True, blank=True
     )
 
     class Meta:
@@ -56,7 +62,7 @@ class BasePostContent(BaseModel):
 
     def __str__(self):
         return self.title
-        
+
     def save(self, *args, **kwargs):
         """
         Ghi đè phương thức save() để tự động tạo khoá chính `PostReference`
@@ -97,7 +103,7 @@ class RentalPost(BasePostContent):
         "properties.Property",
         on_delete=models.CASCADE,
         null=True,
-        limit_choices_to={"status": PropertyStatus.APPROVED}
+        limit_choices_to={"status": PropertyStatus.APPROVED},
     )
 
     price = models.FloatField(null=True, blank=True)
@@ -105,7 +111,9 @@ class RentalPost(BasePostContent):
     area = models.FloatField()
     number_of_bedrooms = models.IntegerField(null=True, blank=True)
     number_of_bathrooms = models.IntegerField(null=True, blank=True)
-    utilities = models.ManyToManyField("Utilities", related_name="rental_posts", blank=True)
+    utilities = models.ManyToManyField(
+        "Utilities", related_name="rental_posts", blank=True
+    )
 
 
 class RoomSeekingPost(BasePostContent):
@@ -128,6 +136,7 @@ class ImagePost(Image):
         related_name="images",
     )
 
+
 class Utilities(BaseModel):
     """
     Model này dùng để hỗ trợ cho Model RentalPost,
@@ -140,25 +149,23 @@ class Utilities(BaseModel):
     def __str__(self):
         return self.name
 
+
 class Comment(BaseModel):
     """
     Model này định nghĩa một bình luận của một bài đăng
     """
+
     post = models.ForeignKey(
-        "posts.PostReference",
-        on_delete=models.CASCADE,
-        related_name="comments"
+        "posts.PostReference", on_delete=models.CASCADE, related_name="comments"
     )
     user = models.ForeignKey(
-        "accounts.User",
-        on_delete=models.CASCADE,
-        related_name="comments_history"
+        "accounts.User", on_delete=models.CASCADE, related_name="comments_history"
     )
     reply_to = models.ForeignKey(
         "posts.Comment",
         on_delete=models.CASCADE,
         related_name="replies",
         null=True,
-        blank=True
+        blank=True,
     )
     content = models.TextField(max_length=100)

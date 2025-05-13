@@ -65,8 +65,6 @@ urlpatterns = [
         schema_view.with_ui('redoc', cache_timeout=0),
         name='schema-redoc'
     ),
-    path('o/', include('oauth2_provider.urls',
-                       namespace='oauth2_provider')),
 
     #Debug toolbar
     path('__debug__/', include(debug_toolbar.urls)),
@@ -74,4 +72,7 @@ urlpatterns = [
     # JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # OAuth2
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]

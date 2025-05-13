@@ -36,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%e#ml8*6*k1^$8r%3w4oqwje2)2h^d8$qbq5wgkt=b99xp6*=a'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,76 +46,84 @@ ALLOWED_HOSTS = [
     '10.17.64.127',  # Nếu bạn đang chạy trên Android Emulator
     'localhost',  # Nếu bạn truy cập bằng localhost
     '192.168.1.8',
+    "localhost",
+    "127.0.0.1",
+    ".ngrok.io",
+    "192.168.1.14",
+    "10.0.2.2",
+    ".vercel.app",
+    "renthub.up.railway.app"
 ]
 
+CSRF_TRUSTED_ORIGINS = ["https://renthub.up.railway.app"]
 
 # Application definition
 
 INSTALLED_APPS = [
     # Django unfold
-    'unfold',
-    'unfold.contrib.filters',  # Bộ lọc nâng cao (không bắt buộc)
-    'unfold.contrib.forms',  # Form nâng cao (không bắt buộc)
+    "unfold",
+    "unfold.contrib.filters",  # Bộ lọc nâng cao (không bắt buộc)
+    "unfold.contrib.forms",  # Form nâng cao (không bắt buộc)
     # Các App cấu hình Django
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # Các App ngoài bổ sung
-    'drf_yasg',
-    'rest_framework',
-    'debug_toolbar',
+    "drf_yasg",
+    "rest_framework",
+    "debug_toolbar",
+    "oauth2_provider",
+    # "corsheaders",
     # Các App của Renthub
-    'admin_site.apps.AdminSiteConfig',
-    'utils.apps.UtilsConfig',
-    'accounts.apps.AccountsConfig',
-    'posts.apps.PostsConfig',
-    'properties.apps.PropertiesConfig',
-    'comments.apps.CommentsConfig',
-    'chats.apps.ChatsConfig',
-    'locations.apps.LocationsConfig',
+    "admin_site.apps.AdminSiteConfig",
+    "utils.apps.UtilsConfig",
+    "accounts.apps.AccountsConfig",
+    "posts.apps.PostsConfig",
+    "properties.apps.PropertiesConfig",
+    "comments.apps.CommentsConfig",
+    "chats.apps.ChatsConfig",
+    "locations.apps.LocationsConfig",
     # Test app
-    'testing.apps.TestingConfig',
-    'oauth2_provider',
-    'corsheaders',
-
+    "testing.apps.TestingConfig",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware', # Debug Toolbar
-    'corsheaders.middleware.CorsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware', # White noise
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",  # Debug Toolbar
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
-ROOT_URLCONF = 'renthub.urls'
+ROOT_URLCONF = "renthub.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'renthub.wsgi.application'
+WSGI_APPLICATION = "renthub.wsgi.application"
 
 
 # Database
@@ -124,14 +132,13 @@ WSGI_APPLICATION = 'renthub.wsgi.application'
 pymysql.install_as_MySQLdb()
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
         "NAME": os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"),
+        "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT")
-
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -143,16 +150,16 @@ AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -160,9 +167,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -172,7 +179,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # Đường dẫn đến thư mục static của dự án
@@ -181,15 +188,12 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # DRF Configuration
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ],
 }
 
@@ -197,10 +201,10 @@ REST_FRAMEWORK = {
 
 # Configuration for Cloudinary
 cloudinary.config(
-    cloud_name = "dmt4mvjdx",
-    api_key = "476562764194571",
-    api_secret = "y9KWFyN-Cnn2of_k9my16gVtYAI", # Click 'View API Keys' above to copy your API secret
-    secure=True
+    cloud_name="dmt4mvjdx",
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True,
 )
 
 # Configuration for Google Maps API
@@ -208,41 +212,37 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
 # vào debug toolbar ở địa chỉ localhost
-INTERNAL_IPS = [
- '127.0.0.1',
- '10.17.64.127',
- '192.168.1.8'
 
- ]
+INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
 
 # JWT Configuration
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
 }
 
 OAUTH2_PROVIDER = {
-    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,
-    'GRANT_TYPES': ['password', 'refresh_token', 'authorization_code']
+    "SCOPES": {"read": "Read scope", "write": "Write scope"},
+    "ACCESS_TOKEN_EXPIRE_SECONDS": 3600,
+    "GRANT_TYPES": ["password", "refresh_token", "authorization_code"],
 }
 
-CLIENT_ID="hpnqqelKAPairSkG8oYV49ypdMiGAbiLTch3h1Ui"
-CLIENT_SECRET="CIfvykKzUzlWIUZ0JvUBEL16FS5IOi2CKTCtAyptXRvd8VzqsRPcxo3DNmPNuk7ZYrsSK1lH76fdJHg4OOkjq7XQLIRjRvqYQQL7lWr8UbLFcu3CVhqicvg7u7ErHcC8"
+
+CLIENT_ID = os.getenv("OATUH2_CLIENT_ID")
+CLIENT_SECRET = os.getenv("OATUH2_CLIENT_SECRET")
 
 UNFOLD = {
     "SITE_TITLE": "Renthub Admin",
     "SITE_HEADER": "Renthub",
     "SITE_URL": "/",
     "SITE_ICON": None,  # Đường dẫn đến icon của bạn nếu có
-
     # Cấu hình thanh bên - sidebar
     "SIDEBAR": {
         "navigation": [
@@ -255,7 +255,7 @@ UNFOLD = {
                         "title": _("All applications"),
                         "link": reverse_lazy("admin:index"),
                     },
-                ]
+                ],
             },
             {
                 "title": _("User Manager"),
@@ -269,9 +269,11 @@ UNFOLD = {
                     {
                         "icon": "person_add",
                         "title": _("Landlords Approval"),
-                        "link": reverse_lazy("renthub_admin:accounts_landlordapproved_changelist"),
-                    }
-                ]
+                        "link": reverse_lazy(
+                            "renthub_admin:accounts_landlordapproved_changelist"
+                        ),
+                    },
+                ],
             },
             {
                 "title": _("Post Manager"),
@@ -280,14 +282,18 @@ UNFOLD = {
                     {
                         "icon": "news",
                         "title": _("Rentals posts"),
-                        "link": reverse_lazy("renthub_admin:posts_rentalpost_changelist"),
+                        "link": reverse_lazy(
+                            "renthub_admin:posts_rentalpost_changelist"
+                        ),
                     },
                     {
                         "icon": "travel_explore",
                         "title": _("Room seeking posts"),
-                        "link": reverse_lazy("renthub_admin:posts_roomseekingpost_changelist"),
+                        "link": reverse_lazy(
+                            "renthub_admin:posts_roomseekingpost_changelist"
+                        ),
                     },
-                ]
+                ],
             },
             {
                 "separator": True,
@@ -295,17 +301,17 @@ UNFOLD = {
                     {
                         "icon": "real_estate_agent",
                         "title": _("Property"),
-                        "link": reverse_lazy("renthub_admin:properties_property_changelist"),
+                        "link": reverse_lazy(
+                            "renthub_admin:properties_property_changelist"
+                        ),
                     },
-                ]
-            }
+                ],
+            },
         ],
     },
-
     "STYLES": [
         lambda request: static("css/styles.css"),
     ],
-
     "COLORS": {
         "base": {
             "50": "249 250 251",
@@ -333,5 +339,5 @@ UNFOLD = {
             "900": "16 78 100",
             "950": "5 51 69",
         },
-    }
+    },
 }
