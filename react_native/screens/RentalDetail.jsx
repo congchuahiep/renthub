@@ -22,7 +22,7 @@ const RentalDetail = ({ route }) => {
 
   const { id } = route.params;
 
-  // khi trượt nút liên hệ sẽ thu nhỏ lại
+  // Khi trượt nút liên hệ sẽ thu nhỏ lại
   const onScroll = ({ nativeEvent }) => {
     const currentScrollPosition =
       Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
@@ -172,14 +172,27 @@ const RentalDetail = ({ route }) => {
               <Card style={style.card}>
                 <Card.Content>
                   <Text style={[style.title_small, { color: theme.colors.primary, marginBottom: 16 }]}>
-                    Chủ bài đăng
+                    Thông tin liên hệ
                   </Text>
 
-                  <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <View style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 24,
+                    marginBottom: 16
+                  }}>
                     <Avatar.Image source={{ uri: rentalPost.landlord.avatar }} size={96} />
                     <View>
-                      <Text style={[style.title_small, { color: theme.colors.primary, marginBottom: 16 }]}>
+                      <Text style={[style.title_small]}>
+                        {rentalPost.landlord.last_name} {rentalPost.landlord.first_name}
+                      </Text>
+                      <Text>
                         {rentalPost.landlord.email}
+                      </Text>
+                      <Text>
+                        {rentalPost.landlord.phone_number}
                       </Text>
                     </View>
                   </View>
@@ -188,6 +201,7 @@ const RentalDetail = ({ route }) => {
               </Card>
 
               {/* KHUNG BÌNH LUẬN */}
+              {/* TODO: Triển khai bình luận bài đăng */}
               <Card style={style.card}>
                 <Card.Content>
                   <Text style={[style.title_small, { color: theme.colors.primary, marginBottom: 5 }]}>
@@ -195,11 +209,11 @@ const RentalDetail = ({ route }) => {
                   </Text>
 
                   <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                    {/* TODO: Hiển thị avatar người dùng */}
                     <Avatar.Text label="?" size={36} />
                     <TextInput label={"Bình luận của bạn..."} style={{ flexGrow: 1 }} mode="outlined" />
                   </View>
 
+                  
                   {comments ? <Text>TRIỂN KHAI BÌNH LUẬN</Text> : <Text>Không có bình luận nào</Text>}
                 </Card.Content>
 
@@ -210,6 +224,8 @@ const RentalDetail = ({ route }) => {
               <View style={{ height: 120 }} />
 
             </ScrollView >
+
+            {/* TODO: TRIỂN KHAI NÚT LIÊN HỆ */}
             <AnimatedFAB
               icon={'phone'}
               label={'Liên hệ ngay'}
