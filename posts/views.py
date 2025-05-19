@@ -3,20 +3,24 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.perms import IsLandlord,IsTenant
+from accounts.perms import IsLandlord, IsTenant
 from posts import paginators
 from posts.models import Comment, RentalPost, RoomSeekingPost
 from posts.paginators import PostPaginator
-from posts.perms import IsCommentOwner, IsPostOwner 
-from posts.serializers import CommentSerializer, RentalPostSerializer, RoomSeekingPostSerializer
+from posts.perms import IsCommentOwner, IsPostOwner
+from posts.serializers import (
+    CommentSerializer,
+    RentalPostSerializer,
+    RoomSeekingPostSerializer,
+)
 from utils.choices import PostStatus
 
 
 # Create your views here.
 class RentalPostViewSet(
     viewsets.GenericViewSet,
-    mixins.ListModelMixin, # `GET /rentals/`
-    mixins.RetrieveModelMixin, # `GET /rentals/<id>`
+    mixins.ListModelMixin,  # `GET /rentals/`
+    mixins.RetrieveModelMixin,  # `GET /rentals/<id>`
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
@@ -38,8 +42,10 @@ class RentalPostViewSet(
     """
 
     queryset = RentalPost.objects.prefetch_related(
-        "post", "utilities", "landlord", "post__images"
-    ).filter(status=PostStatus.APPROVED)  # Sử dụng prefetch_related để tối ưu hóa câu truy vấn
+        "post", "utilities", "owner", "post__images"
+    ).filter(
+        status=PostStatus.APPROVED
+    )  # Sử dụng prefetch_related để tối ưu hóa câu truy vấn
     serializer_class = RentalPostSerializer
     pagination_class = PostPaginator
     page_size = 10
@@ -114,9 +120,7 @@ class RentalPostViewSet(
 
 
 class CommentViewSet(
-    viewsets.GenericViewSet,
-    mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin
+    viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
 ):
     """
     ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
@@ -128,35 +132,34 @@ class CommentViewSet(
     - `PUT /comments/<id>` : Sửa toàn bộ một Comment
     - `PATCH /comments/<id>` : Sửa một phần Comment
     """
+
     queryset = Comment.objects.filter(active=True)
     serializer_class = CommentSerializer
     permission_classes = [IsCommentOwner]
 
-    
+
 class RoomSeekingPostViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin
+    mixins.UpdateModelMixin,
 ):
     queryset = RoomSeekingPost.objects.filter(active=True)
-    serializer_class= RoomSeekingPostSerializer
+    serializer_class = RoomSeekingPostSerializer
     pagination_class = PostPaginator
     page_size = 10
-    parser_classes=[parsers.MultiPartParser, parsers
-                    .FormParser, parsers.JSONParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     def get_permissions(self):
-        if self.action =="create":
+        if self.action == "create":
             return [IsTenant()]
-        elif self.action in ["destroy", "update","partial_update"]:
+        elif self.action in ["destroy", "update", "partial_update"]:
             return [IsPostOwner()]
         # else phần comments thằng Hiệp làm thằng Tín đéo biết
-        return[AllowAny()]
-    
+        # Hiệp: chấm hỏi =)))?
+        return [AllowAny()]
 
     def perform_create(self, serializer):
-        serializer.save(owner = self.request.user)
-
+        serializer.save(owner=self.request.user)
