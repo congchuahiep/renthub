@@ -2,9 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import qs from 'qs'; // Thêm thư viện qs để chuyển đổi dữ liệu
 import { useContext, useState } from "react";
-import { KeyboardAvoidingView, ScrollView, Text } from "react-native";
+import { KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
 import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
-// import { MyDispatchContext } from "../../configs/context";
 import Apis, { authApis, endpoints } from "../config/Apis";
 import { MyDispatchContext } from "../config/context";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -50,12 +49,11 @@ const Login = () => {
                 valid = false;
             }
         }
-
         setErrors(newErrors);
         return valid;
     };
 
-    const login = async () => {
+    const handleLogin = async () => {
         if (validate() === true) {
             try {
                 setLoading(true);
@@ -109,15 +107,14 @@ const Login = () => {
 
 
                 {info.map(i =>
-                    <>
+                    <View key={i.field}>
                         <TextInput
-                            key={i.field}
+                            autoCapitalize="none"
                             outlineStyle={[style.input, style.box_shadow,
                             {
                                 borderRadius: 4,
                                 marginBottom: 2,
                             }]}
-                            textColor={{ color: !!errors[i.field] && theme.colors.error }}
                             mode="outlined"
                             label={i.label}
                             secureTextEntry={i.secureTextEntry}
@@ -135,7 +132,7 @@ const Login = () => {
                         >
                             {errors[i.field]}
                         </HelperText>
-                    </>
+                    </View>
 
                 )}
 
@@ -146,7 +143,7 @@ const Login = () => {
                 <Button
                     style={{ marginTop: 8, borderRadius: 4 }}
                     contentStyle={{ height: 48 }}
-                    onPress={login}
+                    onPress={handleLogin}
                     disabled={loading}
                     loading={loading}
                     mode="contained">

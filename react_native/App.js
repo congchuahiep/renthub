@@ -1,24 +1,31 @@
 import { useReducer } from 'react';
 import { PaperProvider } from 'react-native-paper';
-import { MyDispatchContext, MyUserContext } from './config/context';
-import themeSetting from './config/theme';
+import { MyDispatchContext, UserContext } from './config/context';
+import themeSetting, { ThemeSettingProvider } from './config/theme';
 import Navigator from './navigation';
 import MyUserReducer from './reducers/MyUserReducer';
 
 
 export default function App() {
   const [user, dispatch] = useReducer(MyUserReducer, null)
-  const theme = themeSetting()
 
   return (
-    <MyUserContext.Provider value={user}>
-      <MyDispatchContext.Provider value={dispatch}>
-        <PaperProvider theme={theme} >
-          <Navigator />
-        </PaperProvider>
-      </MyDispatchContext.Provider>
-    </MyUserContext.Provider>
-
+    <ThemeSettingProvider>
+      <UserContext.Provider value={user}>
+        <MyDispatchContext.Provider value={dispatch}>
+          <ThemeWithPaper >
+            <Navigator />
+          </ThemeWithPaper>
+        </MyDispatchContext.Provider>
+      </UserContext.Provider>
+    </ThemeSettingProvider>
   );
 }
 
+
+// Tạo component này để lấy theme sau khi context đã sẵn sàng
+function ThemeWithPaper({ children }) {
+  const theme = themeSetting();
+  
+  return <PaperProvider theme={theme}>{children}</PaperProvider>;
+}

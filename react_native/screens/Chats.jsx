@@ -3,10 +3,10 @@ import { onValue, ref } from "firebase/database";
 import { useContext, useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { db } from "../config/config";
-import { MyUserContext } from "../config/context";
+import { UserContext } from "../config/context";
 
 const ChatListScreen = () => {
-  const user = useContext(MyUserContext);
+  const user = useContext(UserContext);
   const [chats, setChats] = useState([]);
   const navigation = useNavigation();
 

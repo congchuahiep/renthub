@@ -3,6 +3,8 @@ import { useTheme } from 'react-native-paper';
 import PostAppbar from '../components/PostAppbar';
 import RentalDetail from '../screens/RentalDetail';
 import TabNavigator from './TabNavigator';
+import Setting from '../screens/Setting';
+import AppbarDefault from '../components/Appbar';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,8 +31,18 @@ export default function StackNavigator() {
           title: route.params.title ? route.params.title : "Bài đăng cho thuê trọ",
           headerShown: true,
           header: (props) => <PostAppbar {...props} />,
-        })} />
-        {/* <Stack.Screen/> */}
+        })}
+      />
+      {/* <Stack.Screen/> */}
+      <Stack.Screen
+        name="settings"
+        component={Setting}
+        options={({ route }) => ({
+          title: "Cài đặt",
+          headerShown: true,
+          header: (props) => <AppbarDefault {...props} />
+        })}
+      />
     </Stack.Navigator>
   );
 }
