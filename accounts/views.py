@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Follow
 from django.db.models import Q
+from utils.choices import UserType
 from accounts.serializers import (
     LandlordRegistrationSerializer,
     UserSerializer,
@@ -54,7 +55,7 @@ class FollowViewSet(viewsets.ViewSet, generics.ListAPIView):
 
     def get_queryset(self):
         User = self.request.user
-        if User.user_type == "LR":
+        if User.user_type == UserType.LANDLORD:
             return Follow.objects.filter(followee=User)
         return Follow.objects.filter(follower=User)
 

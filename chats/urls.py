@@ -3,8 +3,7 @@ from chats import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register("current_user", views.ConversationViewSet,basename="conversations")
-router.register("chat", views.MessageViewSet,basename="messages")
+# router.register(r"chats", views.ChatViewSet,basename="chat")
 
 
 urlpatterns = [

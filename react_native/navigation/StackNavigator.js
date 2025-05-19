@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTheme } from 'react-native-paper';
 import PostAppbar from '../components/PostAppbar';
 import RentalDetail from '../screens/RentalDetail';
-import { useTheme } from 'react-native-paper';
 import TabNavigator from './TabNavigator';
 
 const Stack = createNativeStackNavigator();
@@ -30,6 +30,7 @@ export default function StackNavigator() {
           headerShown: true,
           header: (props) => <PostAppbar {...props} />,
         })} />
+        {/* <Stack.Screen/> */}
     </Stack.Navigator>
   );
 }

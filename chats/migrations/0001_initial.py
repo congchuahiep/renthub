@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('created_date', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_date', models.DateTimeField(auto_now=True)),
                 ('landlord', models.ForeignKey(limit_choices_to={'user_type': 'LR'}, on_delete=django.db.models.deletion.CASCADE, related_name='landlord_convarsation', to=settings.AUTH_USER_MODEL)),
-                ('tenent', models.ForeignKey(limit_choices_to={'user_type': 'TN'}, on_delete=django.db.models.deletion.CASCADE, related_name='tenant_convarsation', to=settings.AUTH_USER_MODEL)),
+                ('tenant', models.ForeignKey(limit_choices_to={'user_type': 'TN'}, on_delete=django.db.models.deletion.CASCADE, related_name='tenant_convarsation', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'abstract': False,

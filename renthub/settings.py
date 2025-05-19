@@ -45,14 +45,16 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '10.17.64.127',  # Nếu bạn đang chạy trên Android Emulator
     'localhost',  # Nếu bạn truy cập bằng localhost
-    '192.168.1.8',
+    # '192.168.1.3',
+     "192.168.204.13",
     "localhost",
     "127.0.0.1",
     ".ngrok.io",
     "192.168.1.14",
-    "10.0.2.2",
+    "10.17.64.120",
     ".vercel.app",
-    "renthub.up.railway.app"
+    "renthub.up.railway.app",
+   
 ]
 
 CSRF_TRUSTED_ORIGINS = ["https://renthub.up.railway.app"]

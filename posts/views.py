@@ -3,12 +3,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.perms import IsLandlord
+from accounts.perms import IsLandlord,IsTenant
 from posts import paginators
-from posts.models import Comment, RentalPost
+from posts.models import Comment, RentalPost, RoomSeekingPost
 from posts.paginators import PostPaginator
-from posts.perms import IsCommentOwner, IsRentalPostOwner
-from posts.serializers import CommentSerializer, RentalPostSerializer
+from posts.perms import IsCommentOwner, IsPostOwner 
+from posts.serializers import CommentSerializer, RentalPostSerializer, RoomSeekingPostSerializer
 from utils.choices import PostStatus
 
 
@@ -55,7 +55,7 @@ class RentalPostViewSet(
         if self.action == "create":
             return [IsLandlord()]
         elif self.action in ["destroy", "update", "partial_update"]:
-            return [IsRentalPostOwner()]
+            return [IsPostOwner()]
         elif self.action == "comments" and self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
@@ -66,7 +66,7 @@ class RentalPostViewSet(
         để trở thành chủ sở hữu của bài đăng này
         """
         instance = serializer.save(
-            landlord=self.request.user
+            owner=self.request.user
         )  # Gán landlord là user hiện tại
         # Thêm tin nhắn thông báo đã tạo thành công
         serializer.context["detail"] = (
@@ -131,3 +131,32 @@ class CommentViewSet(
     queryset = Comment.objects.filter(active=True)
     serializer_class = CommentSerializer
     permission_classes = [IsCommentOwner]
+
+    
+class RoomSeekingPostViewSet(
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin
+):
+    queryset = RoomSeekingPost.objects.filter(active=True)
+    serializer_class= RoomSeekingPostSerializer
+    pagination_class = PostPaginator
+    page_size = 10
+    parser_classes=[parsers.MultiPartParser, parsers
+                    .FormParser, parsers.JSONParser]
+
+    def get_permissions(self):
+        if self.action =="create":
+            return [IsTenant()]
+        elif self.action in ["destroy", "update","partial_update"]:
+            return [IsPostOwner()]
+        # else phần comments thằng Hiệp làm thằng Tín đéo biết
+        return[AllowAny()]
+    
+
+    def perform_create(self, serializer):
+        instance = serializer.save(owner = self.request.user)
+

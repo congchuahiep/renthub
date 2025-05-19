@@ -91,7 +91,7 @@ class RentalPost(BasePostContent):
     """
 
     # Chỉ định chỉ cho phép người đăng bài cho thuê nhà là Chủ nhà
-    landlord = models.ForeignKey(
+    owner = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": UserType.LANDLORD},
@@ -117,7 +117,7 @@ class RentalPost(BasePostContent):
 
 
 class RoomSeekingPost(BasePostContent):
-    tenent = models.ForeignKey(
+    owner = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": UserType.TENANT},

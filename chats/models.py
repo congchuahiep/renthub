@@ -12,7 +12,7 @@ class Conversation(BaseModel):
         related_name="landlord_convarsation",
         null=False,
     )
-    tenent = models.ForeignKey(
+    tenant = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": UserType.TENANT},
@@ -21,7 +21,7 @@ class Conversation(BaseModel):
     )
 
     def __str__(self):
-        return f"Chat between [{self.landlord}] and [{self.tenent}]"
+        return f"Chat between [{self.landlord}] and [{self.tenant}]"
 
 
 class Message(BaseModel):
@@ -36,7 +36,7 @@ class Message(BaseModel):
         ordering = ["-created_date"]
 
     def clean(self):
-        if self.sender not in [self.conversation.landlord, self.conversation.tenent]:
+        if self.sender not in [self.conversation.landlord, self.conversation.tenant]:
             raise ValidationError("Người gửi không thuộc cuộc trò chuyện này.")
 
     def save(self, *args, **kwargs):

@@ -12,8 +12,8 @@ class RentalPostAdmin(ModelAdmin):
     Trang quản lý bài đăng cho thuê
     """
 
-    list_display = ["title", "price", "content", "landlord__username", "created_date"]
-    search_fields = ["title", "landlord__username", "content"]
+    list_display = ["title", "price", "content", "owner__username", "created_date"]
+    search_fields = ["title", "owner__username", "content"]
     list_filter = ["created_date"]
     sortable_by = ["title"]
     filter_horizontal = ["utilities"]
@@ -24,7 +24,7 @@ class RentalPostAdmin(ModelAdmin):
         ("Status", {"fields": ["status", "expired_date"]}),
         (
             "Rental post",
-            {"fields": ["title", "price", "area", "content", "landlord"]},
+            {"fields": ["title", "price", "area", "content", "owner"]},
         ),
         ("Images", {"fields": ["image_gallery"]}),
         ("Property", {"fields": ["property", "property_address", "property_map_view"]}),
@@ -101,14 +101,14 @@ class RoomSeekingPostAdmin(ModelAdmin):
     Trang quản lý bài đăng tìm phòng
     """
 
-    list_display = ["title", "area", "limit_person", "tenent__username", "created_date"]
-    search_fields = ["title", "tenent__username"]
+    list_display = ["title", "area", "limit_person", "owner__username", "created_date"]
+    search_fields = ["title", "owner__username"]
     list_filter = ["created_date"]
     sortable_by = ["title"]
 
     fieldsets = [
         ("Status", {"fields": ["status"]}),
-        ("Room seeking post", {"fields": ["title", "area", "limit_person", "tenent"]}),
+        ("Room seeking post", {"fields": ["title", "area", "limit_person", "owner"]}),
     ]
 
 

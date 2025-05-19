@@ -11,6 +11,14 @@ class IsRentalPostOwner(IsAuthenticated):
         is_authenticated = super().has_permission(request, rental_post_view)
         # Kiểm tra nếu người dùng hiện tại là chủ sở hữu bài đăng
         return is_authenticated and rental_post_obj.landlord == request.user
+    
+
+class IsPostOwner(IsAuthenticated):
+
+    def has_object_permission(self, request, view, post_object):
+
+        is_authenticated= super().has_permission(request,view)
+        return is_authenticated and post_object.owner== request.user
 
 
 class IsCommentOwner(IsAuthenticated):

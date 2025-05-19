@@ -39,7 +39,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
     Serialize
     ---------
     - `post`: Khoá chính và các quan hệ của bài đăng (chỉ đọc).
-    - `landlord`: Thông tin của landlord (chỉ đọc).
+    - `owner`: Thông tin của landlord (chỉ đọc).
     - `utilities`: Danh sách tiện ích liên quan (chỉ đọc).
     - `created_date`, `updated_date`: Ngày tạo và cập nhật bài đăng (chỉ đọc).
 
@@ -57,7 +57,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
     # Serialize lồng
     post = PostReferenceSerializer(read_only=True)
-    landlord = UserSerializer(read_only=True)
+    owner = UserSerializer(read_only=True)
     utilities = UtilitiesSerializer(many=True, read_only=True)
 
     # Trường để upload ảnh
@@ -77,7 +77,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
         model = RentalPost
         fields = [
             'post',
-            'landlord',
+            'owner',
             'created_date',
             'updated_date',
             'status',
@@ -94,7 +94,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'property',
 
         ]
-        read_only_fields = ["landlord", "created_at", "updated_at", "status"]
+        read_only_fields = ["owner", "created_at", "updated_at", "status"]
 
     def validate_upload_images(self, value):
         """
@@ -149,33 +149,41 @@ class RentalPostSerializer(serializers.ModelSerializer):
 
 
 class RoomSeekingPostSerializer(serializers.ModelSerializer):
-    tenent = UserSerializer(read_only=True)
+    owner = UserSerializer(read_only=True)
+    post = PostReferenceSerializer(read_only=True)
 
     class Meta:
         model = RoomSeekingPost
-        fields = [
-            "id",
-            "tenent",
-            "title",
-            "content",
-            "status",
-            "position",
-            "area",
-            "limit_person",
-            "created_date",
-            "updated_date",
-        ]
-        read_only_fields = ['tenent', 'created_date', 'updated_date', 'status']
+        fields = '__all__'
+        extra_kwargs={
+            'owner':{
+                'read_only':True,
+            },
+        }
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['owner']={
+            'id':instance.owner.id,
+            'name':f"{instance.owner.first_name} {instance.owner.last_name}"
+        }
+        return data
 
     def validate(self, attrs):
-        owner = self.context['request']
+        request = self.context['request']
         instance = self.instance
 
-        # if
-
-        return super().validate(attrs)
-        read_only_fields = ["tenent", "created_date", "updated_date", "status"]
-
+        if instance and instance.owner != request.user:
+            raise serializers.ValidationError("You do not have permission to edit this post.")
+        return attrs
+    
+    def create(self, validated_data):
+        validated_data['status'] = 'pending'
+        post = PostReference.objects.create()
+        roomSeeking_post = RoomSeekingPost.objects.create(post=post, **validated_data)
+        
+        return roomSeeking_post
+       
 
 class CommentSerializer(serializers.ModelSerializer):
     """

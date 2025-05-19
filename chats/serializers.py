@@ -9,7 +9,7 @@ class ConversationSerializer(ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'landlord': {'required': False},
-            'tenent': {'required': False},
+            'tenant': {'required': False},
         }
 
     def to_representation(self, instance):
@@ -17,10 +17,10 @@ class ConversationSerializer(ModelSerializer):
         user = self.context['request'].user
         if user == instance.landlord:
             data['other_user'] = {
-                'id': instance.tenent.id,
-                'username': instance.tenent.username,
+                'id': instance.tenant.id,
+                'username': instance.tenant.username,
             }
-        elif user == instance.tenent:
+        elif user == instance.tenant:
             data['other_user'] = {
                 'id': instance.landlord.id,
                 'username': instance.landlord.username,
@@ -29,7 +29,7 @@ class ConversationSerializer(ModelSerializer):
             data['other_user'] = None 
 
         data.pop('landlord') 
-        data.pop('tenent') 
+        data.pop('tenant') 
 
         return data
 
@@ -44,9 +44,9 @@ class ConversationSerializer(ModelSerializer):
             raise serializers.ValidationError(f"CanNot create conversation with another {user1.user_type}.")
         
         if Conversation.objects.filter(
-            landlord=user1,tenent=user2
+            landlord=user1,tenant=user2
         ).exists() or Conversation.objects.filter(
-            landlord=user2, tenent=user1
+            landlord=user2, tenant=user1
         ).exists():
             raise serializers.ValidationError(f"Conversation between {user1.id} and {user2.id} was exists.")
         
@@ -56,9 +56,9 @@ class ConversationSerializer(ModelSerializer):
         user1 = self.context['request'].user
         user2 = self.context.get('user2')
         if user1.user_type == 'LR':
-            return Conversation.objects.create(landlord=user1, tenent=user2)
+            return Conversation.objects.create(landlord=user1, tenant=user2)
         else:
-            return Conversation.objects.create(landlord=user2,tenent=user1)
+            return Conversation.objects.create(landlord=user2,tenant=user1)
 
 class MessageSerializer(ModelSerializer):
     class Meta:
@@ -85,7 +85,7 @@ class MessageSerializer(ModelSerializer):
         request = self.context['request']
         sender = request.user
         conversation = attrs.get('conversation') 
-        if sender != conversation.landlord and sender != conversation.tenent:
+        if sender != conversation.landlord and sender != conversation.tenant:
             raise serializers.ValidationError("Sender must be a participant of the conversation.")
 
         return attrs
