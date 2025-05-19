@@ -2,47 +2,58 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import qs from 'qs'; // Thêm thư viện qs để chuyển đổi dữ liệu
 import { useContext, useState } from "react";
-import { ScrollView } from "react-native";
-import { Button, HelperText, TextInput } from "react-native-paper";
+import { KeyboardAvoidingView, ScrollView, Text } from "react-native";
+import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
 // import { MyDispatchContext } from "../../configs/context";
 import Apis, { authApis, endpoints } from "../config/Apis";
 import { MyDispatchContext } from "../config/context";
+import { SafeAreaView } from "react-native-safe-area-context";
+import useStyle from "../styles/useStyle";
+
+
+const info = [{
+    label: 'Tên đăng nhập',
+    field: 'username',
+    icon: 'account',
+    secureTextEntry: false
+}, {
+    label: 'Mật khẩu',
+    field: 'password',
+    icon: 'eye',
+    secureTextEntry: true
+}];
 
 
 const Login = () => {
-    const info = [{
-        label: 'Tên đang nhập',
-        field: 'username',
-        icon: 'account',
-        secureTextEntry: false
-    }, {
-        label: 'Mật khẩu',
-        field: 'password',
-        icon: 'eye',
-        secureTextEntry: true
-    }];
+
+    const style = useStyle();
+    const theme = useTheme();
+
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(false);
-    const [msg, setMsg] = useState();
+    const [errors, setErrors] = useState({});
     const nav = useNavigation();
-    const dispatch = useContext(MyDispatchContext);
+
+    const userDispatch = useContext(MyDispatchContext);
 
     const setState = (value, field) => {
         setUser({ ...user, [field]: value })
     }
+
     const validate = () => {
-        if (Object.values(user).length == 0) {
-            setMsg("Vui lòng nhập thông tin!");
-            return false;
-        }
-        for (let i of info)
-            if (user[i.field] === '') {
-                setMsg(`Vui lòng nhập ${i.label}!`);
-                return false;
+        let newErrors = {};
+        let valid = true;
+
+        for (let i of info) {
+            if (!user[i.field] || user[i.field].trim() === "") {
+                newErrors[i.field] = `Vui lòng nhập ${i.label.toLowerCase()}!`;
+                valid = false;
             }
-        setMsg('');
-        return true;
-    }
+        }
+
+        setErrors(newErrors);
+        return valid;
+    };
 
     const login = async () => {
         if (validate() === true) {
@@ -68,18 +79,19 @@ const Login = () => {
                 await AsyncStorage.setItem('token', res.data.access_token);
 
                 let u = await authApis(res.data.access_token).get(endpoints['current-user']);
-                dispatch({
+
+                userDispatch({
                     type: "login",
                     payload: u.data
                 });
             } catch (ex) {
-                console.error("Login Error:", ex.response?.data || ex.message);
-
+                let newErrors = {};
                 if (ex.response?.data?.error === "invalid_grant") {
-                    setMsg("Đăng nhập thất bại. Vui lòng kiểm tra lại tên đăng nhập hoặc mật khẩu!");
+                    newErrors.general = "Tài khoản hoặc mật khẩu không đúng!";
                 } else {
-                    setMsg(ex.response?.data?.error_description || "Không thể kết nối đến server. Vui lòng thử lại!");
+                    newErrors.general = ex.response?.data?.error_description || "Không thể kết nối đến server. Vui lòng thử lại!";
                 }
+                setErrors(newErrors);
             } finally {
                 setLoading(false);
             }
@@ -87,17 +99,62 @@ const Login = () => {
     }
 
     return (
-        <ScrollView>
-            <HelperText type="error" visible={msg}>
-                {msg}
-            </HelperText>
-            {info.map(i => <TextInput key={i.field} 
-                label={i.label}
-                secureTextEntry={i.secureTextEntry}
-                right={<TextInput.Icon icon={i.icon} />}
-                value={user[i.field]} onChangeText={t => setState(t, i.field)} />)}
-            <Button onPress={login} disabled={loading} loading={loading}  mode="contained">Đăng nhập</Button>
-        </ScrollView>
+
+        <SafeAreaView style={style.container}>
+            <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={0} style={{ flex: 1, justifyContent: "center" }} >
+
+                <Text style={{ fontSize: 24, fontWeight: 700, color: theme.colors.primary, textAlign: "center", marginBottom: 24 }}>
+                    Đăng nhập
+                </Text>
+
+
+                {info.map(i =>
+                    <>
+                        <TextInput
+                            key={i.field}
+                            outlineStyle={[style.input, style.box_shadow,
+                            {
+                                borderRadius: 4,
+                                marginBottom: 2,
+                            }]}
+                            textColor={{ color: !!errors[i.field] && theme.colors.error }}
+                            mode="outlined"
+                            label={i.label}
+                            secureTextEntry={i.secureTextEntry}
+                            right={<TextInput.Icon icon={i.icon} />}
+                            value={user[i.field]} onChangeText={t => setState(t, i.field)}
+                        />
+                        <HelperText
+                            type="error"
+                            visible={!!errors[i.field]}
+                            style={{
+                                minHeight: 0,
+                                height: !!errors[i.field] ? 32 : 8,
+                                fontSize: 12
+                            }}
+                        >
+                            {errors[i.field]}
+                        </HelperText>
+                    </>
+
+                )}
+
+                <HelperText type="error" visible={!!errors.general}>
+                    {errors.general}
+                </HelperText>
+
+                <Button
+                    style={{ marginTop: 8, borderRadius: 4 }}
+                    contentStyle={{ height: 48 }}
+                    onPress={login}
+                    disabled={loading}
+                    loading={loading}
+                    mode="contained">
+                    Đăng nhập
+                </Button>
+            </KeyboardAvoidingView>
+        </SafeAreaView >
+
     )
 }
 

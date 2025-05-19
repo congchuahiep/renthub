@@ -33,6 +33,11 @@ const useStyle = () => {
       fontWeight: 900,
       marginTop: 8,
       color: theme.colors.onPrimaryContainer
+    },
+    input: {
+      backgroundColor: theme.colors.background,
+      borderColor: theme.colors.primary,
+      borderWidth: 1,
     }
   });
 };
