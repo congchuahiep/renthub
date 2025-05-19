@@ -184,16 +184,16 @@ const RentalDetail = ({ route }) => {
                     gap: 24,
                     marginBottom: 16
                   }}>
-                    <Avatar.Image source={{ uri: rentalPost.landlord.avatar }} size={96} />
+                    <Avatar.Image source={{ uri: rentalPost.owner.avatar }} size={96} />
                     <View>
                       <Text style={[style.title_small]}>
-                        {rentalPost.landlord.last_name} {rentalPost.landlord.first_name}
+                        {rentalPost.owner.last_name} {rentalPost.owner.first_name}
                       </Text>
                       <Text>
-                        {rentalPost.landlord.email}
+                        {rentalPost.owner.email}
                       </Text>
                       <Text>
-                        {rentalPost.landlord.phone_number}
+                        {rentalPost.owner.phone_number}
                       </Text>
                     </View>
                   </View>

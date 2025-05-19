@@ -23,7 +23,7 @@ export default function PostAppbar({
 
   return (
     <Appbar.Header mode='center-aligned'>
-      {back ? <Appbar.BackAction onPress={navigation.goBack} /> : <Appbar.Action onPress={() => console.log("Hôm nay bạn đẹp trai lắm ^^")} />}
+      {back ? <Appbar.BackAction onPress={navigation.goBack} /> : <Appbar.Action onPress={() => console.log("Hôm nay bạn đẹp trai lắm ^^: " + process.env.EXPO_PUBLIC_DJANGO_SERVER_URL)} />}
 
       {
         !back ? (

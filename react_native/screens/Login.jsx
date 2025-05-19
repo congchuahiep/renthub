@@ -51,8 +51,8 @@ const Login = () => {
 
                 const requestData = qs.stringify({
                     ...user,
-                    client_id: 'hpnqqelKAPairSkG8oYV49ypdMiGAbiLTch3h1Ui',
-                    client_secret: 'CIfvykKzUzlWIUZ0JvUBEL16FS5IOi2CKTCtAyptXRvd8VzqsRPcxo3DNmPNuk7ZYrsSK1lH76fdJHg4OOkjq7XQLIRjRvqYQQL7lWr8UbLFcu3CVhqicvg7u7ErHcC8',
+                    client_id: process.env.EXPO_PUBLIC_AUTH_CLIENT_ID,
+                    client_secret: process.env.EXPO_PUBLIC_AUTH_CLIENT_SECRET,
                     grant_type: 'password'
                 });
                 console.log("Request data:", requestData);
