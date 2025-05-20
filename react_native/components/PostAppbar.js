@@ -3,6 +3,7 @@ import { Appbar, Menu, Searchbar } from 'react-native-paper';
 import { getHeaderTitle } from '@react-navigation/elements';
 import { useTheme } from 'react-native-paper';
 import card from '../styles/card';
+import useStyle from '../styles/useStyle';
 
 
 export default function PostAppbar({
@@ -11,10 +12,12 @@ export default function PostAppbar({
   options,
   back,
 }) {
+  const theme = useTheme();
+  const style = useStyle();
+
   const [visible, setVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(true);
-  const theme = useTheme();
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
@@ -22,7 +25,7 @@ export default function PostAppbar({
   const title = getHeaderTitle(options, route.name);
 
   return (
-    <Appbar.Header mode='center-aligned'>
+    <Appbar.Header mode='center-aligned' style={style.appBar}>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : <Appbar.Action onPress={() => console.log("Hôm nay bạn đẹp trai lắm ^^: " + process.env.EXPO_PUBLIC_DJANGO_SERVER_URL)} />}
 
       {

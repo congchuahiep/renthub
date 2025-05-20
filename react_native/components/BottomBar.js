@@ -1,16 +1,18 @@
 import { CommonActions, getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { BottomNavigation } from "react-native-paper";
 import { useTheme } from "react-native-paper";
+import useStyle from "../styles/useStyle";
 
 /**
  * Thanh hiển thị dưới màn hình của ứng dụng
  */
 const BottomBar = ({ navigation, state, descriptors, insets }) => {
   const theme = useTheme();
+  const style = useStyle();
 
   return (
     <BottomNavigation.Bar
-      style={{ height: 85, backgroundColor: theme.colors.surface }}
+      style={style.bottomBar}
       compact={true}
       navigationState={state}
       safeAreaInsets={insets}

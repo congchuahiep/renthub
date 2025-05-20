@@ -37,6 +37,7 @@ const Setting = () => {
           title="Tự động màu sắc theo hệ thống "
           titleNumberOfLines={2}
           style={{ paddingRight: 0 }}
+          titleStyle={{ fontWeight: 600 }}
           description={() => <Text>(Material You)</Text>}
           right={() => (
             <Switch value={materialYou} onValueChange={onToggleMaterialYou} />
