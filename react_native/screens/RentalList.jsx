@@ -1,5 +1,5 @@
-import { FlatList, Text, View } from "react-native"
-import { ActivityIndicator, Button } from "react-native-paper";
+import { RefreshControl, FlatList, View } from "react-native"
+import { ActivityIndicator, Button, Text, useTheme } from "react-native-paper";
 import RentalPostCard from "../components/RentalPostCard";
 import { useEffect, useState } from "react";
 import Apis, { endpoints } from "../config/Apis";
@@ -10,11 +10,14 @@ import useStyle from "../styles/useStyle";
 
 
 const RentalList = () => {
-
+	// Style
+	const theme = useTheme();
 	const style = useStyle();
-
-	const [rentalPosts, setRentalPosts] = useState([]);
+	// Các state hiệu ứng
 	const [loading, setLoading] = useState(false);
+	const [refreshing, setRefreshing] = useState(false);
+	// State lưu dữ liệu
+	const [rentalPosts, setRentalPosts] = useState([]);
 
 	const loadRentalPosts = async () => {
 		setLoading(true);
@@ -28,6 +31,7 @@ const RentalList = () => {
 			})
 			.finally(() => {
 				setLoading(false);
+				setRefreshing(false);
 			});
 	}
 
@@ -35,11 +39,23 @@ const RentalList = () => {
 		loadRentalPosts();
 	}, [])
 
+	const onRefresh = () => {
+		setRefreshing(true);
+		loadRentalPosts();
+	}
+
 	return (
 		<>
 			<FlatList
 				style={[style.container]}
 				data={rentalPosts}
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						onRefresh={onRefresh}
+						colors={[theme.colors.primary]}
+						progressBackgroundColor={theme.colors.background}
+					/>}
 				renderItem={({ item }) =>
 					<RentalPostCard
 						id={item.post.id}
@@ -52,8 +68,8 @@ const RentalList = () => {
 						numberOfBathroom={item.number_of_bathrooms}
 					/>
 				}
-				ListEmptyComponent={loading ? <ActivityIndicator /> : <View style={{height: 8}} />}
-				ListFooterComponent={loading ? <ActivityIndicator /> : <View style={{height: 8}} />}
+				ListEmptyComponent={!loading && rentalPosts && <Text>Hiện tại không có bài đăng nào cả 🥲</Text>}
+				ListFooterComponent={loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />}
 			/>
 		</>
 
