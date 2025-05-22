@@ -10,7 +10,7 @@ TechStack
 - **`AsyncStorage`**: Lưu trữ dữ liệu nhỏ và liên tục trên thiết bị. Các dữ liệu này thường là token đăng nhập, cấu hình ứng dụng (ngôn ngữ, chủ đề),...
 - **`Native Stack Navigator`**: Quản lý điều hướng giữa các màn hình (screens)
 - **`Axios`**: Cải thiện khả năng fetch dữ liệu
-- **`react-native-maps`**: Tích hợp map (google map đối với android, apple map đối với apple) vào trong ứng dụng
+- **`Expo maps`**: Tích hợp map (google map đối với android, apple map đối với apple) vào trong ứng dụng
 
 ### Theming
 
