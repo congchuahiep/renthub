@@ -1,12 +1,12 @@
+import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { ActivityIndicator, AnimatedFAB, Avatar, Card, Icon, Text, TextInput, useTheme } from "react-native-paper";
 import Carousel from "../components/Carousel";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
-import { formatDate, getRelativeTime } from "../utils/datetime";
-import { GoogleMaps } from "expo-maps";
 import { toVietNamDong } from "../utils/currency";
+import { formatDate, getRelativeTime } from "../utils/datetime";
 
 
 const RentalDetail = ({ route }) => {
@@ -33,7 +33,6 @@ const RentalDetail = ({ route }) => {
   const loadRentalPost = async () => {
     setLoading(true);
 
-    console.log(id)
 
     await Apis.get(endpoints["rental-details"](id))
       .then((res) => {

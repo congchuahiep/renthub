@@ -6,7 +6,7 @@ router = DefaultRouter()
 
 # Register the viewsets with the router
 router.register("users", viewset=views.UserViewSet, basename="user")
-router.register("follows", viewset=views.FollowViewSet, basename="follow")
+router.register("follower", viewset=views.FollowViewSet, basename="follow")
 
 urlpatterns = [
     path('', include(router.urls)),

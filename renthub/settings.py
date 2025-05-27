@@ -47,6 +47,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     ".vercel.app",
     "renthub.up.railway.app",
+    "192.168.1.3",
 ]
 
 CSRF_TRUSTED_ORIGINS = ["https://renthub.up.railway.app"]
@@ -207,7 +208,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 # Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
 # vào debug toolbar ở địa chỉ localhost
 
-INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
+INTERNAL_IPS = ["127.0.0.1", "10.0.2.2","192.168.1.3"]
 
 # JWT Configuration
 SIMPLE_JWT = {

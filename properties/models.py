@@ -93,7 +93,7 @@ class Property(BaseModel):
 
 class PropertyImage(Image):
     property = models.ForeignKey(
-        "properties.Property",
+        "Property",
         on_delete=models.CASCADE,
         related_name="images",
         null=True

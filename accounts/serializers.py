@@ -23,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
     - `LandlordRegistrationSerializer`: Đăng ký tài khoản loại chủ nhà
     - `TenantRegistrationSerializer`: Đăng ký tài khoản loại người thuê
     """
+    follow_count = serializers.SerializerMethodField()
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -32,6 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "username",
             "first_name",
             "last_name",
@@ -44,8 +46,19 @@ class UserSerializer(serializers.ModelSerializer):
             "province",
             "avatar",
             "dob",
+            "user_type",
+            "follow_count"
         ]
         extra_kwargs = {"password": {"write_only": True}}
+    def get_follow_count(self, obj):
+        """
+        Trả về số lượng người theo dõi hoặc số lượng người đang theo dõi.
+        """
+        if obj.user_type == "tenant":
+            return Follow.objects.filter(follower=obj).count()
+        elif obj.user_type == "landlord":
+            return Follow.objects.filter(followee=obj).count()
+        return 0
 
     def __str__(self) -> str:
         return self.username
@@ -193,6 +206,36 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
 
         return {"user": user, "property": property}
 
+class TenantRegisterSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['avatar'] = instance.avatar.url if instance.avatar else ''
+        return data
+
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'first_name', 'last_name', 'avatar']
+        extra_kwargs = {
+            'password': {
+                'write_only': True
+            }
+        }
+
+    def create(self, validated_data):
+        data = validated_data.copy()
+        u = User(**data)
+        u.set_password(u.password)
+        user_serializer = UserSerializer(data=validated_data)
+        if user_serializer.is_valid():
+            user = user_serializer.save(
+                is_active=True,  
+                user_type=UserType.TENANT,
+            )
+        else:
+            raise serializers.ValidationError(user_serializer.errors)
+        u.save()
+
+        return u
 
 class FollowSerializer(serializers.ModelSerializer):
     """
@@ -204,17 +247,47 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = ["active", "followee"]
+        fields = ["active", "followee","follower"]
+        
+    def to_representation(self, instance):
+        data= super().to_representation(instance)
+        
+        data['follower'] = {
+            'id': instance.follower.id,
+            'name': f"{instance.follower.first_name} {instance.follower.last_name}".strip(),
+            'avatar': instance.follower.avatar.url if instance.follower.avatar else None,
+            'email': instance.follower.email,
+            'address': instance.follower.address,
+            'district': instance.follower.district,
+            'province': instance.follower.province,
+            'phone_number': instance.follower.phone_number,
+        }
+
+        # Thêm thông tin chi tiết của followee
+        data['followee'] = {
+            'id': instance.followee.id,
+            'name': f"{instance.followee.first_name} {instance.followee.last_name}".strip(),
+            'avatar': instance.followee.avatar.url if instance.followee.avatar else None,
+            'email': instance.followee.email,
+            'address': instance.followee.address,
+            'district': instance.followee.district,
+            'province': instance.followee.province,
+            'phone_number': instance.followee.phone_number,
+        }
+
+        return data
 
     def validate(self, attrs):
         request = self.context["request"]
         follower = request.user
         followee = self.context.get(
             "followee"
-        )  # Đúng: Gọi phương thức get() với khóa 'followee'
-        if follower.user_type == followee.user_type:
+        )  
+        if(follower.user_type!="tenant"):
+            raise serializers.ValidationError(f"Người dùng theo dõi không hợp lệ.")
+        elif follower.user_type == followee.user_type:
             raise serializers.ValidationError("Người dùng theo dõi không phù hợp.")
-        elif follower.user_type == "LR":
+        elif follower.user_type == "landlord":
             raise serializers.ValidationError("Hành động không hợp lệ.")
         elif Follow.objects.filter(follower=follower, followee=followee).exists():
             raise serializers.ValidationError("Cuộc trò chuyện đã tồn tại. ")
@@ -227,5 +300,5 @@ class FollowSerializer(serializers.ModelSerializer):
         validated_data["follower"] = follower
         validated_data["followee"] = followee
         follow_instance = super().create(validated_data)
-
+    
         return follow_instance

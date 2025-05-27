@@ -2,11 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import qs from 'qs'; // Thêm thư viện qs để chuyển đổi dữ liệu
 import { useContext, useState } from "react";
-import { KeyboardAvoidingView, ScrollView, Text, View } from "react-native";
+import { KeyboardAvoidingView, Text, View } from "react-native";
 import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { authApis, endpoints } from "../config/Apis";
 import { MyDispatchContext } from "../config/context";
-import { SafeAreaView } from "react-native-safe-area-context";
 import useStyle from "../styles/useStyle";
 
 
@@ -64,7 +64,6 @@ const Login = () => {
                     client_secret: process.env.EXPO_PUBLIC_AUTH_CLIENT_SECRET,
                     grant_type: 'password'
                 });
-                console.log("Request data:", requestData);
 
                 let res = await Apis.post(endpoints['login'], requestData, {
                     headers: {
@@ -72,7 +71,6 @@ const Login = () => {
                     },
                 });
 
-                console.log("Login response:", res.data);
 
                 await AsyncStorage.setItem('token', res.data.access_token);
 

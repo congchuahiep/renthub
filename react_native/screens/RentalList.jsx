@@ -1,10 +1,8 @@
-import { RefreshControl, FlatList, View } from "react-native"
-import { ActivityIndicator, Button, Text, useTheme } from "react-native-paper";
-import RentalPostCard from "../components/RentalPostCard";
 import { useEffect, useState } from "react";
+import { FlatList, RefreshControl, View } from "react-native";
+import { ActivityIndicator, Text, useTheme } from "react-native-paper";
+import RentalPostCard from "../components/RentalPostCard";
 import Apis, { endpoints } from "../config/Apis";
-import spacing from "../styles/spacing";
-import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import useStyle from "../styles/useStyle";
 
 

@@ -8,8 +8,9 @@ import ChatListScreen from '../screens/Chats';
 import Login from '../screens/Login';
 import Profile from '../screens/Profile';
 import PropertyList from '../screens/PropertyList';
+import Register from '../screens/Register';
 import RentalList from '../screens/RentalList';
-import UserInfo from '../screens/UserInfo';
+import Users from '../screens/Users';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,11 +40,11 @@ export default function TabNavigator() {
 				<>
 					<Tab.Screen
 						name="user"
-						component={UserInfo}
+						component={Users}
 						options={{
-							title: "Người dùng",
+							title: "Tìm đối tác",
 							tabBarIcon: ({ color }) => (
-								<MaterialDesignIcons name="users" color={color} size={26} />
+								<MaterialDesignIcons name="account-group" color={color} size={26} />
 							),
 						}} />
 					<Tab.Screen
@@ -51,8 +52,10 @@ export default function TabNavigator() {
 						component={PropertyList}
 						options={{
 							title: "Dãy trọ",
+							headerShown: true,
+							header: (props) => <PostAppbar {...props} />,
 							tabBarIcon: ({ color }) => (
-								<MaterialDesignIcons name="proprerty" color={color} size={26} />
+								<MaterialDesignIcons name="home-group" color={color} size={26} />
 							),
 						}} />
 					<Tab.Screen
@@ -83,6 +86,16 @@ export default function TabNavigator() {
 							title: "Đăng nhập",
 							tabBarIcon: ({ color }) => (
 								<MaterialDesignIcons name="login" color={color} size={26} />
+							),
+						}}
+					/>
+					<Tab.Screen
+						name="register"
+						component={Register}
+						options={{
+							title: "Đăng ký",
+							tabBarIcon: ({ color }) => (
+								<MaterialDesignIcons name="account-plus" color={color} size={26} />
 							),
 						}}
 					/>

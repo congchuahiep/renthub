@@ -1,12 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
-import { Avatar, List, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authApis, endpoints } from "../config/Apis";
-import useStyle from "../styles/useStyle";
 import { MyDispatchContext } from "../config/context";
-import { useNavigation } from "@react-navigation/native";
+import useStyle from "../styles/useStyle";
 
 const Profile = () => {
   const theme = useTheme();
@@ -52,6 +52,25 @@ const Profile = () => {
         <Text style={{ color: theme.colors.secondary, marginTop: 2 }}>
           {user?.email}
         </Text>
+
+        {user?.user_type === "landlord" && (
+          <Button
+            mode="contained"
+            style={{ marginTop: 8 }}
+            onPress={() => navigation.navigate("FollowerList", { userId: user.id, userType: user.user_type })}
+          >
+            Số người theo dõi: {user.follow_count || 0}
+          </Button>
+        )}
+        {user?.user_type === "tenant" && (
+          <Button
+            mode="contained"
+            style={{ marginTop: 8 }}
+            onPress={() => navigation.navigate("FollowerList", { userId: user.id, userType: user.user_type })}
+          >
+            Số người đang theo dõi: {user.follow_count || 0}
+          </Button>
+        )}
       </View>
 
       <View style={{ flex: 1 }}>
@@ -59,12 +78,18 @@ const Profile = () => {
           <List.Item
             title="Thông tin cá nhân"
             left={props => <List.Icon {...props} icon="account" />}
-            onPress={() => navigation.navigate("userInfo")}
+            onPress={() => navigation.navigate("UserInfo", { user })}
           />
           <List.Item
             title="Bài đăng của tôi"
             left={props => <List.Icon {...props} icon="post" />}
-            onPress={() => navigation.navigate("myPosts")}
+            onPress={() => {
+              if (user) {
+                navigation.navigate("detailInfo", { user });
+              } else {
+                alert("Người dùng không tồn tại!");
+              }
+            }}
           />
         </List.Section>
         <List.Section style={style.card}>
