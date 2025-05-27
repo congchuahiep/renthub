@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import NotFound
 from rest_framework import generics, permissions, status, viewsets, parsers, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
@@ -61,14 +62,11 @@ class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
 
 
 
-class FollowViewSet(viewsets.GenericViewSet, mixins.DestroyModelMixin):
+class FollowViewSet(viewsets.GenericViewSet):
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_permissions(self):
-        if self.action in ["destroy"]:
-            return[IsFollower()]
-        return[permissions.AllowAny()]
+    
     def get_queryset(self):
         """
         Trả về danh sách Follow dựa trên người dùng hiện tại hoặc hành động cụ thể.
@@ -143,3 +141,29 @@ class FollowViewSet(viewsets.GenericViewSet, mixins.DestroyModelMixin):
         ).exists()
 
         return Response({"is_following": is_following})
+    
+    @action(detail=True, methods=["delete"], url_path="follower")
+    def delete_by_followee(self, request, pk=None):
+        """
+        Xóa bản ghi Follow mà người dùng hiện tại là follower và followee là người dùng được chỉ định.
+        """
+        try:
+            followee = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Followee not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Lấy bản ghi Follow liên quan đến người dùng hiện tại và followee
+        follows = Follow.objects.filter(follower=request.user, followee=followee)
+
+        if not follows.exists():
+            return Response(
+                {"detail": "No Follow records found for this followee and current user."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Xóa các bản ghi
+        follows.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)  # Không trả về nội dung

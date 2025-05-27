@@ -17,7 +17,11 @@ class IsTenant(permissions.IsAuthenticated):
         is_authenticated = super().has_permission(request, view)
         return is_authenticated and request.user.user_type == UserType.TENANT
 
+
 class IsFollower(permissions.IsAuthenticated):
+    """
+    Chỉ cho phép người dùng là follower của bản ghi Follow được xóa.
+    """
     def has_object_permission(self, request, view, obj):
-        is_authenticated = super().has_permission(request, view)
-        return is_authenticated and view.follower==request.user
+        # Kiểm tra nếu người dùng hiện tại là follower
+        return obj.follower == request.user

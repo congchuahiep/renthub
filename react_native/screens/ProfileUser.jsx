@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Alert, View } from "react-native";
 import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axiosInstance, { authApis, endpoints } from "../config/Apis";
@@ -16,27 +16,27 @@ const ProfileUser = ({ route }) => {
     const navigation = useNavigation();
     const [isFollowing, setIsFollowing] = useState(false);
 
-    const checkFollowStatus = async () => {
-        const token = await AsyncStorage.getItem('token');
-        const currentUserId = await AsyncStorage.getItem('user_id'); 
+    // const checkFollowStatus = async () => {
+    //     const token = await AsyncStorage.getItem('token');
+    //     const currentUserId = await AsyncStorage.getItem('user_id'); 
 
-        try {
-            const res = await authApis(token).get(endpoints["is-follow"](user.id)); 
-            console.log(res.data);
-            if(res.data.is_following==true){
-                setIsFollowing(true);
-            }
-            console.log(isFollowing);
-            
+    //     try {
+    //         const res = await authApis(token).get(endpoints["is-follow"](user.id)); 
+    //         console.log(res.data);
+    //         if(res.data.is_following==true){
+    //             setIsFollowing(true);
+    //         }
+    //         console.log(isFollowing);
 
-        } catch (error) {
-            if (error.response?.status === 404) {
-                setIsFollowing(false);
-            } else {
-                console.error("Lỗi kiểm tra follow:", error);
-            }
-        }
-    };
+
+    //     } catch (error) {
+    //         if (error.response?.status === 404) {
+    //             setIsFollowing(false);
+    //         } else {
+    //             console.error("Lỗi kiểm tra follow:", error);
+    //         }
+    //     }
+    // };
 
 
     const loadCurrentUser = async () => {
@@ -54,7 +54,7 @@ const ProfileUser = ({ route }) => {
         try {
             setLoading(true);
             const response = await axiosInstance.get(endpoints.user(userId));
-            console.log("Thông tin người dùng:", response.data);
+            // console.log("Thông tin người dùng:", response.data);
             setUser(response.data);
         } catch (ex) {
             console.error("Lỗi khi lấy thông tin người dùng:", ex);
@@ -65,29 +65,73 @@ const ProfileUser = ({ route }) => {
     const handleFollow = async () => {
         const token = await AsyncStorage.getItem('token');
         try {
-            if(isFollowing!=true){     
-                const res = await authApis(token).post(endpoints.follow(user.id));
+            if (!isFollowing) {
+                // Gọi API theo dõi
+                const response = await authApis(token).post(endpoints.follow(user.id));
                 alert("Đã theo dõi người dùng!");
-            }
-            else{
-                alert("Đã theo dõi người dùng!");
+                setIsFollowing(true); // Cập nhật trạng thái ngay lập tức
+            } else {
+                // Hiển thị thông báo xác nhận hủy theo dõi
+                console.log("Token:", token);
+                Alert.alert(
+                    "Xác nhận",
+                    "Bạn có muốn hủy theo dõi?",
+                    [
+                        {
+                            text: "Hủy",
+                            style: "cancel",
+                        },
+                        {
+                            text: "Có",
+                            onPress: async () => {
+                                try {
+                                    // Gọi API hủy theo dõi
+                                    const response = await authApis(token).delete(endpoints["follow-delete"](user.id));
+                                    console.log("Phản hồi từ API hủy theo dõi:", response);
+                                    alert("Đã hủy theo dõi người dùng!");
+                                    setIsFollowing(false); // Cập nhật trạng thái ngay lập tức
+                                } catch (err) {
+                                    if (err.response && err.response.status === 204) {
+                                        // Xử lý đặc biệt cho lỗi 204 với nội dung không hợp lệ
+                                        console.warn("Phản hồi 204 với nội dung không hợp lệ, bỏ qua lỗi.");
+                                        setIsFollowing(false); // Cập nhật trạng thái
+                                    } else {
+                                        console.error("Chi tiết lỗi:", err);
+                                        alert("Không thể hủy theo dõi. Vui lòng thử lại.");
+                                    }
+                                }
+                            },
+                        },
+                    ]
+                );
             }
         } catch (err) {
-            console.error("Lỗi khi theo dõi:", err);
-            alert("Không thể theo dõi.");
+            console.error("Lỗi khi thay đổi trạng thái theo dõi:", err);
+            alert("Không thể thay đổi trạng thái theo dõi.");
         }
     };
 
-    useEffect(() => {   
+
+    useEffect(() => {
         loadCurrentUser();
         loadUser();
     }, []);
 
     useEffect(() => {
-        if (user && currentUser) {
+        const checkFollowStatus = async () => {
+            const token = await AsyncStorage.getItem('token');
+            try {
+                const response = await authApis(token).get(endpoints["is-follow"](user.id));
+                setIsFollowing(response.data.is_following); // Cập nhật trạng thái từ API
+            } catch (err) {
+                console.error("Lỗi khi kiểm tra trạng thái theo dõi:", err);
+            }
+        };
+
+        if (user) {
             checkFollowStatus();
         }
-    }, [user, currentUser]);
+    }, [user]);
 
     if (loading) {
         return (
@@ -132,18 +176,14 @@ const ProfileUser = ({ route }) => {
                     </Button>
                 )}
 
-                {user && currentUser && currentUser.user_type === "tenant" &&
-                    user.user_type === "landlord" &&
-                    currentUser.id !== user.id && (
-                        <Button
-                            mode={isFollowing ? "contained" : "outlined"}
-                            style={{ marginTop: 8 }}
-                            buttonColor={isFollowing ? "green" : undefined}
-                            onPress={handleFollow}
-                        >
-                            {isFollowing ? "Đã theo dõi" : "Theo dõi"}
-                        </Button>
-                    )}
+                <Button
+                    mode={isFollowing ? "contained" : "outlined"}
+                    style={{ marginTop: 8 }}
+                    buttonColor={isFollowing ? "green" : undefined}
+                    onPress={handleFollow}
+                >
+                    {isFollowing ? "Đã theo dõi" : "Theo dõi"}
+                </Button>
 
             </View>
             <View style={{ flex: 1 }}>

@@ -18,7 +18,8 @@ export const endpoints = {
   'tenant-register':"/users/tenant-register/",
   'landlord-register':"/users/landlord-register/",
   'follow':(user_id)=>  `/follower/${user_id}/follow/`,
-  'is-follow':(user_id)=> `/follower/${user_id}/is-following`
+  'is-follow':(user_id)=> `/follower/${user_id}/is-following/`,
+  'follow-delete':(user_id)=> `/follower/${user_id}/follower/`,
 
 }
 
