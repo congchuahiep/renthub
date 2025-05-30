@@ -1,10 +1,13 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'react-native-paper';
-import PostAppbar from '../components/PostAppbar';
-import RentalDetail from '../screens/RentalDetail';
-import TabNavigator from './TabNavigator';
-import Setting from '../screens/Setting';
 import AppbarDefault from '../components/Appbar';
+import PostAppbar from '../components/PostAppbar';
+import FollowerList from '../screens/FollowList';
+import ProfileUser from '../screens/ProfileUser';
+import RentalDetail from '../screens/RentalDetail';
+import Setting from '../screens/Setting';
+import UserInfo from '../screens/UserInfo';
+import TabNavigator from './TabNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +35,34 @@ export default function StackNavigator() {
           headerShown: true,
           header: (props) => <PostAppbar {...props} />,
         })}
+      />
+      <Stack.Screen
+        name="UserInfo"
+        component={UserInfo}
+        options={({ route }) => ({
+          headerShown: true,
+          title: route.params.title ? route.params.title : "Thông tin cá nhân",
+          header:(props)=><AppbarDefault{...props}/>
+        })}
+      />
+      <Stack.Screen
+        name="FollowerList"
+        component={FollowerList}
+        options={{
+          title: "Danh sách người theo dõi",
+          headerShown: true,
+          header: (props) => <PostAppbar {...props} />
+
+        }}
+      />
+      <Stack.Screen
+        name="ProfileUser"
+        component={ProfileUser}
+        options={{
+          title: "Thông tin người dùng",
+          headerShown: true,
+          header:(props)=><AppbarDefault{...props}/>
+        }}
       />
       {/* <Stack.Screen/> */}
       <Stack.Screen

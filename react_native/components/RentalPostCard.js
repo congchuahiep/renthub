@@ -1,13 +1,10 @@
-import * as React from 'react';
-import { Avatar, Button, Card, Chip, Icon, Text } from 'react-native-paper';
-import typography from '../styles/typography';
-import Carousel from './Carousel';
-import { useTheme } from 'react-native-paper';
-import { TouchableOpacity, View } from 'react-native';
-import { toVietNamDong } from '../utils/currency';
-import card from '../styles/card';
 import { useNavigation } from '@react-navigation/native';
+import * as React from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { Button, Card, Icon, Text, useTheme } from 'react-native-paper';
 import useStyle from '../styles/useStyle';
+import { toVietNamDong } from '../utils/currency';
+import Carousel from './Carousel';
 
 
 const RentalPostCard = ({ id, title, area, images, price, address, numberOfBed, numberOfBathroom }) => {

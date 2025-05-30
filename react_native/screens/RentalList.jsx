@@ -1,13 +1,9 @@
-import { RefreshControl, FlatList, View } from "react-native"
-import { ActivityIndicator, Button, Text, useTheme } from "react-native-paper";
-import RentalPostCard from "../components/RentalPostCard";
 import { useEffect, useState } from "react";
+import { FlatList, RefreshControl, View } from "react-native";
+import { ActivityIndicator, Text, useTheme } from "react-native-paper";
+import RentalPostCard from "../components/RentalPostCard";
 import Apis, { endpoints } from "../config/Apis";
-import spacing from "../styles/spacing";
-import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import useStyle from "../styles/useStyle";
-
-
 
 const RentalList = () => {
 	// Style
@@ -22,27 +18,27 @@ const RentalList = () => {
 	const loadRentalPosts = async () => {
 		setLoading(true);
 
-		await Apis.get(endpoints['rentals'])
-			.then(res => {
-				setRentalPosts(res.data.results)
+		await Apis.get(endpoints["rentals"])
+			.then((res) => {
+				setRentalPosts(res.data.results);
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.log(err);
 			})
 			.finally(() => {
 				setLoading(false);
 				setRefreshing(false);
 			});
-	}
+	};
 
 	useEffect(() => {
 		loadRentalPosts();
-	}, [])
+	}, []);
 
 	const onRefresh = () => {
 		setRefreshing(true);
 		loadRentalPosts();
-	}
+	};
 
 	return (
 		<>
@@ -55,8 +51,9 @@ const RentalList = () => {
 						onRefresh={onRefresh}
 						colors={[theme.colors.primary]}
 						progressBackgroundColor={theme.colors.background}
-					/>}
-				renderItem={({ item }) =>
+					/>
+				}
+				renderItem={({ item }) => (
 					<RentalPostCard
 						id={item.post.id}
 						title={item.title}
@@ -67,13 +64,17 @@ const RentalList = () => {
 						numberOfBed={item.number_of_bedrooms}
 						numberOfBathroom={item.number_of_bathrooms}
 					/>
+				)}
+				ListEmptyComponent={
+					!loading &&
+					rentalPosts && <Text>Hiện tại không có bài đăng nào cả 🥲</Text>
 				}
-				ListEmptyComponent={!loading && rentalPosts && <Text>Hiện tại không có bài đăng nào cả 🥲</Text>}
-				ListFooterComponent={loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />}
+				ListFooterComponent={
+					loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />
+				}
 			/>
 		</>
-
-	)
-}
+	);
+};
 
 export default RentalList;

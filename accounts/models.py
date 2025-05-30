@@ -46,6 +46,7 @@ class User(AbstractUser):
 
     # Các thông tin khác
     dob = models.DateField(blank=True, null=True)
+    email = models.EmailField(blank=False, null=False, unique=True)
 
     # TODO: GIAI ĐOẠN TESTING NÊN MẤY TRƯỜNG NÀY CÓ THỂ BLANK
     avatar = CloudinaryField(null=True, blank=True)

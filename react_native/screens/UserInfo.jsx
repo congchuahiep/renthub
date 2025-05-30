@@ -1,76 +1,42 @@
-import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
-import axiosInstance, { endpoints } from "../config/Apis";
+import { StyleSheet, View } from "react-native";
+import { Avatar, Text, useTheme } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import useStyle from "../styles/useStyle";
 
+const UserInfo = ({route})=>{
+    const theme = useTheme();
+    const style = useStyle();
 
+    const{user}= route.params;
 
-
-const UserInfo = () => {
-
-    const [user, setUser] = useState([]);
-    // const [cu]
-
-    const fetchUserList = async () => {
-        try {
-            const response = await axiosInstance.get(endpoints.user, {
-
-            });
-            console.log("API Response:", response.data);
-            setUser(response.data.results || response.data);
-        } catch (error) {
-            console.error("Error fetching rentals:", error);
-        }
-    };
-    useEffect(() => {
-        console.log("Fetching user...");
-
-        fetchUserList();
-    }, []);
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Danh sách người dùng trong hệ thống</Text>
-            <FlatList
-                data={user}
-                kkeyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    
-                    <View>
-                        <Text style={styles.itemTitle}>{item.first_name} {item.last_name}</Text>
-                        <Text>{item.email}</Text>
-                        <Text>Loại: {item.user_type}</Text>
-                    </View>
-                        
-                    
-                )}
-            />
-        </View>
-    )
-
+        <SafeAreaView style={style.container}>
+            <View>
+                <Avatar.Image
+                    size={96}
+                    source={user?.avatar?{uri:user.avatar}:null}
+                />
+                <Text style={styles.title}>Thông tin cá nhân</Text>
+                <Text style={styles.info}>Họ và tên: {user.first_name} {user.last_name}</Text>
+                <Text style={styles.info}>Email: {user.email}</Text>
+                <Text style={styles.info}>Số điện thoại: {user.phone || "Chưa cập nhật"}</Text>
+                <Text style={styles.info}>Địa chỉ: {user.address || "Chưa cập nhật"}</Text>
+            </View>
+        </SafeAreaView>
+    );
+    
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: "#fff",
-    },
+    
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 16,
     },
-    item: {
-        marginBottom: 16,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
-    },
-    itemTitle: {
+    info: {
         fontSize: 18,
-        fontWeight: "bold",
+        marginBottom: 8,
     },
 });
-
 export default UserInfo;
