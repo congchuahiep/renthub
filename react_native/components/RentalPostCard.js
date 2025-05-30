@@ -14,7 +14,7 @@ const RentalPostCard = ({ id, title, area, images, price, address, numberOfBed, 
 	const navigation = useNavigation();
 
 	const toRentalDetail = () => {
-		navigation.navigate("rentalDetail", { "id": id, "title": title });
+		navigation.navigate("RentalDetail", { "id": id, "title": title });
 	}
 
 	return (

@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { Link, useNavigation } from "@react-navigation/native";
 import qs from "qs"; // Thêm thư viện qs để chuyển đổi dữ liệu
 import { useContext, useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { authApis, endpoints } from "../config/Apis";
 import { MyDispatchContext } from "../config/context";
 import useStyle from "../styles/useStyle";
+import { Image } from "react-native";
 
 const info = [
 	{
@@ -31,7 +32,7 @@ const Login = () => {
 	const [user, setUser] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [errors, setErrors] = useState({});
-	const nav = useNavigation();
+	const navigation = useNavigation();
 
 	const userDispatch = useContext(MyDispatchContext);
 
@@ -115,19 +116,11 @@ const Login = () => {
 				>
 					Đăng nhập
 				</Text>
-
 				{info.map((i) => (
-					<View key={i.field}>
+					<View key={i.field} style={{}}>
 						<TextInput
 							autoCapitalize="none"
-							outlineStyle={[
-								style.input,
-								style.box_shadow,
-								{
-									borderRadius: 4,
-									marginBottom: 2,
-								},
-							]}
+							outlineStyle={[style.input]}
 							mode="outlined"
 							label={i.label}
 							secureTextEntry={i.secureTextEntry}
@@ -135,23 +128,15 @@ const Login = () => {
 							value={user[i.field]}
 							onChangeText={(t) => setState(t, i.field)}
 						/>
-						<HelperText
-							type="error"
-							visible={!!errors[i.field]}
-							style={{
-								minHeight: 0,
-								height: !!errors[i.field] ? 32 : 8,
-								fontSize: 12,
-							}}
-						>
-							{errors[i.field]}
-						</HelperText>
+						{errors[i.field] && (
+							<HelperText type="error">{errors[i.field]}</HelperText>
+						)}
 					</View>
 				))}
 
-				<HelperText type="error" visible={!!errors.general}>
-					{errors.general}
-				</HelperText>
+				{errors.general && (
+					<HelperText type="error">{errors.general}</HelperText>
+				)}
 
 				<Button
 					style={{ marginTop: 8, borderRadius: 4 }}
@@ -163,6 +148,19 @@ const Login = () => {
 				>
 					Đăng nhập
 				</Button>
+				<Text style={{ marginTop: 4, textAlign: "center" }}>
+					Chưa có tài khoản?{" "}
+					<Link
+						screen="Register"
+						style={{
+							color: theme.colors.primary,
+							textDecorationLine: "underline",
+							fontWeight: 700,
+						}}
+					>
+						Đăng ký ngay
+					</Link>
+				</Text>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
