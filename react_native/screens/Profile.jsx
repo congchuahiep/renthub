@@ -41,50 +41,52 @@ const Profile = () => {
 
 	return (
 		<SafeAreaView style={[style.container, { flex: 1 }]}>
-			<View style={{ alignItems: "center", marginTop: 32, marginBottom: 16 }}>
-				<Avatar.Image
-					size={96}
-					source={user?.avatar ? { uri: user.avatar } : null}
-				/>
-				<Text style={{ fontSize: 22, fontWeight: "bold", marginTop: 12 }}>
-					{user ? `${user.first_name} ${user.last_name}` : ""}
-				</Text>
-				<Text style={{ color: theme.colors.secondary, marginTop: 2 }}>
-					{user?.email}
-				</Text>
-
-				{user?.user_type === "landlord" && (
-					<Button
-						mode="contained"
-						style={{ marginTop: 8 }}
-						onPress={() =>
-							navigation.navigate("FollowerList", {
-								userId: user.id,
-								userType: user.user_type,
-							})
-						}
-					>
-						Số người theo dõi: {user.follow_count || 0}
-					</Button>
-				)}
-				{user?.user_type === "tenant" && (
-					<Button
-						mode="contained"
-						style={{ marginTop: 8 }}
-						onPress={() =>
-							navigation.navigate("FollowerList", {
-								userId: user.id,
-								userType: user.user_type,
-							})
-						}
-					>
-						Số người đang theo dõi: {user.follow_count || 0}
-					</Button>
-				)}
-			</View>
-
 			<View style={{ flex: 1 }}>
 				<List.Section style={style.card}>
+					<View
+						style={{ alignItems: "center", marginTop: 32, marginBottom: 16 }}
+					>
+						<Avatar.Image
+							size={96}
+							source={user?.avatar ? { uri: user.avatar } : null}
+						/>
+						<Text style={{ fontSize: 22, fontWeight: "bold", marginTop: 12 }}>
+							{user ? `${user.first_name} ${user.last_name}` : ""}
+						</Text>
+						<Text style={{ color: theme.colors.secondary, marginTop: 2 }}>
+							{user?.email}
+						</Text>
+
+						{user?.user_type === "landlord" && (
+							<Button
+								mode="contained"
+								style={{ marginTop: 8 }}
+								onPress={() =>
+									navigation.navigate("FollowerList", {
+										userId: user.id,
+										userType: user.user_type,
+									})
+								}
+							>
+								Số người theo dõi: {user.follow_count || 0}
+							</Button>
+						)}
+						{user?.user_type === "tenant" && (
+							<Button
+								mode="contained"
+								style={{ marginTop: 8 }}
+								onPress={() =>
+									navigation.navigate("FollowerList", {
+										userId: user.id,
+										userType: user.user_type,
+									})
+								}
+							>
+								Số người đang theo dõi: {user.follow_count || 0}
+							</Button>
+						)}
+					</View>
+
 					<List.Item
 						title="Thông tin cá nhân"
 						left={(props) => <List.Icon {...props} icon="account" />}
@@ -106,7 +108,7 @@ const Profile = () => {
 					<List.Item
 						title="Cài đặt"
 						left={(props) => <List.Icon {...props} icon="cog" />}
-						onPress={() => navigation.navigate("settings")}
+						onPress={() => navigation.navigate("Settings")}
 					/>
 					<List.Item
 						title="Đổi mật khẩu"

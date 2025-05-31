@@ -1,79 +1,107 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useTheme } from 'react-native-paper';
-import AppbarDefault from '../components/Appbar';
-import PostAppbar from '../components/PostAppbar';
-import FollowerList from '../screens/FollowList';
-import ProfileUser from '../screens/ProfileUser';
-import RentalDetail from '../screens/RentalDetail';
-import Setting from '../screens/Setting';
-import UserInfo from '../screens/UserInfo';
-import TabNavigator from './TabNavigator';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useTheme } from "react-native-paper";
+import AppbarDefault from "../components/Appbar";
+import PostAppbar from "../components/PostAppbar";
+import FollowerList from "../screens/FollowList";
+import ProfileUser from "../screens/ProfileUser";
+import RentalDetail from "../screens/RentalDetail";
+import Setting from "../screens/Setting";
+import UserInfo from "../screens/UserInfo";
+import TabNavigator from "./TabNavigator";
+import RegisterTenant from "../screens/RegisterTenant";
+import { useContext } from "react";
+import { ThemeSettingContext } from "../config/context";
+import RegisterLandlord from "../screens/RegisterLandlord";
+import Register from "../screens/Register";
 
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
-  const theme = useTheme();
+	const { themeMode } = useContext(ThemeSettingContext);
+	const theme = useTheme();
 
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        contentStyle: {
-          backgroundColor: theme.colors.surfaceVariant
-        }
-      }}
-    >
-      <Stack.Screen
-        name="home"
-        component={TabNavigator}
-      />
-      <Stack.Screen
-        name="rentalDetail"
-        component={RentalDetail}
-        options={({ route }) => ({
-          title: route.params.title ? route.params.title : "Bài đăng cho thuê trọ",
-          headerShown: true,
-          header: (props) => <PostAppbar {...props} />,
-        })}
-      />
-      <Stack.Screen
-        name="UserInfo"
-        component={UserInfo}
-        options={({ route }) => ({
-          headerShown: true,
-          title: route.params.title ? route.params.title : "Thông tin cá nhân",
-          header:(props)=><AppbarDefault{...props}/>
-        })}
-      />
-      <Stack.Screen
-        name="FollowerList"
-        component={FollowerList}
-        options={{
-          title: "Danh sách người theo dõi",
-          headerShown: true,
-          header: (props) => <PostAppbar {...props} />
-
-        }}
-      />
-      <Stack.Screen
-        name="ProfileUser"
-        component={ProfileUser}
-        options={{
-          title: "Thông tin người dùng",
-          headerShown: true,
-          header:(props)=><AppbarDefault{...props}/>
-        }}
-      />
-      {/* <Stack.Screen/> */}
-      <Stack.Screen
-        name="settings"
-        component={Setting}
-        options={({ route }) => ({
-          title: "Cài đặt",
-          headerShown: true,
-          header: (props) => <AppbarDefault {...props} />
-        })}
-      />
-    </Stack.Navigator>
-  );
+	return (
+		<Stack.Navigator
+			screenOptions={{
+				headerShown: false,
+				contentStyle: {
+					backgroundColor:
+						themeMode === "dark"
+							? theme.colors.elevation.level5
+							: theme.colors.elevation.level1,
+				},
+			}}
+		>
+			<Stack.Screen name="Home" component={TabNavigator} />
+			<Stack.Screen
+				name="RentalDetail"
+				component={RentalDetail}
+				options={({ route }) => ({
+					title: route.params.title
+						? route.params.title
+						: "Bài đăng cho thuê trọ",
+					headerShown: true,
+					header: (props) => <PostAppbar {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="UserInfo"
+				component={UserInfo}
+				options={({ route }) => ({
+					headerShown: true,
+					title: route.params.title ? route.params.title : "Thông tin cá nhân",
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="FollowerList"
+				component={FollowerList}
+				options={{
+					title: "Danh sách người theo dõi",
+					headerShown: true,
+					header: (props) => <PostAppbar {...props} />,
+				}}
+			/>
+			<Stack.Screen
+				name="ProfileUser"
+				component={ProfileUser}
+				options={{
+					title: "Thông tin người dùng",
+					headerShown: true,
+					header: (props) => <AppbarDefault {...props} />,
+				}}
+			/>
+			{/* <Stack.Screen/> */}
+			<Stack.Screen
+				name="Settings"
+				component={Setting}
+				options={({ route }) => ({
+					title: "Cài đặt",
+					headerShown: true,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen name="Register" component={Register} />
+			<Stack.Screen
+				name="RegisterTenant"
+				component={RegisterTenant}
+				options={({ route }) => ({
+					title: "Đăng ký tài khoản tìm trọ",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="RegisterLandlord"
+				component={RegisterLandlord}
+				options={({ route }) => ({
+					title: "Đăng ký tài khoản chủ trọ",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+		</Stack.Navigator>
+	);
 }
