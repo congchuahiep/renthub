@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, Animated, Easing, View } from "react-native";
+import { Alert, Animated, Easing, View } from "react-native";
 import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axiosInstance, { authApis, endpoints } from "../config/Apis";
@@ -42,16 +42,38 @@ const ProfileUser = ({ route }) => {
     //     }
     // };
 
+	// const loadUser = async () => {
+	// 	const { userId } = route.params;
+	// 	try {
+	// 		setLoading(true);
+	// 		const response = await axiosInstance.get(endpoints.user(userId));
+	// 		console.log("Thông tin người dùng:", response.data);
+	// 		setUser(response.data);
+	// 	} catch (ex) {
+	// 		console.error("Lỗi khi lấy thông tin người dùng:", ex);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
+	// const handleFollow = async () => {
+	// 	const token = await AsyncStorage.getItem("token");
+	// 	try {
+	// 		if (isFollowing != true) {
+	// 			const res = await authApis(token).post(endpoints.follow(user.id));
+	// 			alert("Đã theo dõi người dùng!");
+	// 		} else {
+	// 			alert("Đã theo dõi người dùng!");
+	// 		}
+	// 	} catch (err) {
+	// 		console.error("Lỗi khi theo dõi:", err);
+	// 		alert("Không thể theo dõi.");
+	// 	}
+	// };
 
-    const loadCurrentUser = async () => {
-        const token = await AsyncStorage.getItem('token');
-        try {
-            const res = await authApis(token).get(endpoints["current-user"]);
-            setCurrentUser(res.data);
-        } catch (err) {
-            console.error("Lỗi khi lấy currentUser:", err);
-        }
-    };
+	// useEffect(() => {
+	// 	loadCurrentUser();
+	// 	loadUser();
+	// }, []);
 
     const loadUser = async () => {
         const { userId } = route.params;
@@ -142,13 +164,34 @@ const ProfileUser = ({ route }) => {
         }
     }, [user]);
 
-    if (loading) {
-        return (
-            <SafeAreaView style={[style.container, { flex: 1, justifyContent: "center", alignItems: "center" }]}>
-                <ActivityIndicator size="large" color={theme.colors.primary} />
-            </SafeAreaView>
-        );
-    }
+				{user?.user_type === "landlord" && (
+					<Button
+						mode="contained"
+						style={{ marginTop: 8 }}
+						onPress={() =>
+							navigation.navigate("FollowerList", {
+								userId: user.id,
+								userType: user.user_type,
+							})
+						}
+					>
+						Số người theo dõi: {user.follow_count || 0}
+					</Button>
+				)}
+				{user?.user_type === "tenant" && (
+					<Button
+						mode="contained"
+						style={{ marginTop: 8 }}
+						onPress={() =>
+							navigation.navigate("FollowerList", {
+								userId: user.id,
+								userType: user.user_type,
+							})
+						}
+					>
+						Số người đang theo dõi: {user.follow_count || 0}
+					</Button>
+				)}
 
     return (
         <SafeAreaView style={[style.container, { flex: 1 }]}>

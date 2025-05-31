@@ -5,8 +5,6 @@ import RentalPostCard from "../components/RentalPostCard";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
 
-
-
 const RentalList = () => {
 	// Style
 	const theme = useTheme();
@@ -20,27 +18,27 @@ const RentalList = () => {
 	const loadRentalPosts = async () => {
 		setLoading(true);
 
-		await Apis.get(endpoints['rentals'])
-			.then(res => {
-				setRentalPosts(res.data.results)
+		await Apis.get(endpoints["rentals"])
+			.then((res) => {
+				setRentalPosts(res.data.results);
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.log(err);
 			})
 			.finally(() => {
 				setLoading(false);
 				setRefreshing(false);
 			});
-	}
+	};
 
 	useEffect(() => {
 		loadRentalPosts();
-	}, [])
+	}, []);
 
 	const onRefresh = () => {
 		setRefreshing(true);
 		loadRentalPosts();
-	}
+	};
 
 	return (
 		<>
@@ -53,8 +51,9 @@ const RentalList = () => {
 						onRefresh={onRefresh}
 						colors={[theme.colors.primary]}
 						progressBackgroundColor={theme.colors.background}
-					/>}
-				renderItem={({ item }) =>
+					/>
+				}
+				renderItem={({ item }) => (
 					<RentalPostCard
 						id={item.post.id}
 						title={item.title}
@@ -65,13 +64,17 @@ const RentalList = () => {
 						numberOfBed={item.number_of_bedrooms}
 						numberOfBathroom={item.number_of_bathrooms}
 					/>
+				)}
+				ListEmptyComponent={
+					!loading &&
+					rentalPosts && <Text>Hiện tại không có bài đăng nào cả 🥲</Text>
 				}
-				ListEmptyComponent={!loading && rentalPosts && <Text>Hiện tại không có bài đăng nào cả 🥲</Text>}
-				ListFooterComponent={loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />}
+				ListFooterComponent={
+					loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />
+				}
 			/>
 		</>
-
-	)
-}
+	);
+};
 
 export default RentalList;

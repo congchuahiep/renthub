@@ -8,7 +8,7 @@ import ChatListScreen from '../screens/Chats';
 import Login from '../screens/Login';
 import Profile from '../screens/Profile';
 import PropertyList from '../screens/PropertyList';
-import Register from '../screens/Register';
+import Register from '../screens/RegisterTenant';
 import RentalList from '../screens/RentalList';
 import RoomSeekingList from '../screens/RoomSeekingList';
 import Users from '../screens/Users';
@@ -101,16 +101,6 @@ export default function TabNavigator() {
 							title: "Đăng nhập",
 							tabBarIcon: ({ color }) => (
 								<MaterialDesignIcons name="login" color={color} size={26} />
-							),
-						}}
-					/>
-					<Tab.Screen
-						name="register"
-						component={Register}
-						options={{
-							title: "Đăng ký",
-							tabBarIcon: ({ color }) => (
-								<MaterialDesignIcons name="account-plus" color={color} size={26} />
 							),
 						}}
 					/>

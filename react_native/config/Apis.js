@@ -1,8 +1,8 @@
 import axios from "axios";
 
 // // Nhập biến môi trường
-const BASE_URL = 'http://192.168.1.10:8000'
-// process.env.EXPO_PUBLIC_DJANGO_SERVER_URL;
+const BASE_URL = 'http://192.168.1.10:8000';
+// 
 
 export const endpoints = {
   'rentals': "/rentals/",
@@ -26,14 +26,14 @@ export const endpoints = {
 }
 
 export const authApis = (token) => {
-  return axios.create({
-    baseURL: BASE_URL,
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-}
+	return axios.create({
+		baseURL: BASE_URL,
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+};
 
 export default axios.create({
-  baseURL: BASE_URL
+	baseURL: BASE_URL,
 });

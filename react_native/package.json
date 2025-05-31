@@ -39,7 +39,7 @@
     "react-native-screens": "^4.10.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.1"
-  },
-  "private": true
+    "@babel/core": "^7.27.1",
+    "typescript": "~5.8.3"
+  }
 }

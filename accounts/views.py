@@ -9,11 +9,12 @@ from django.db.models import Q
 from utils.choices import UserType
 from accounts.serializers import (
     LandlordRegistrationSerializer,
+    TenantRegisterSerializer,
     UserSerializer,
     FollowSerializer,
 )
 from . import serializers
-from.perms import IsFollower
+from .perms import IsFollower
 
 User = get_user_model()
 
@@ -34,6 +35,8 @@ class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
     def get_serializer_class(self):
         if self.action in ["landlord_register"]:
             return LandlordRegistrationSerializer
+        if self.action in ["tenant_register"]:
+            return TenantRegisterSerializer
 
         return super().get_serializer_class()
 
@@ -49,24 +52,27 @@ class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+    # TODO: Hoàn thiện chức năng đăng ký người dùng thuê nhà
+    # [] Tạo Serializer
     @action(methods=["post"], detail=False, url_path="tenant-register")
-    def tenant_register(self,request):
+    def tenant_register(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
-
-
 
 class FollowViewSet(viewsets.GenericViewSet):
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
 
-    
+    def get_permissions(self):
+        if self.action in ["destroy"]:
+            return [IsFollower()]
+        return [permissions.AllowAny()]
+
     def get_queryset(self):
         """
         Trả về danh sách Follow dựa trên người dùng hiện tại hoặc hành động cụ thể.
@@ -89,10 +95,10 @@ class FollowViewSet(viewsets.GenericViewSet):
             return Follow.objects.filter(followee=user)
         return Follow.objects.filter(follower=user)
 
-    @action(methods=["get","post"], detail=True, url_path="follow")
+    @action(methods=["get", "post"], detail=True, url_path="follow")
     def follow(self, request, pk):
         if request.method.__eq__("GET"):
-            user = User.objects.get(pk=pk)  
+            user = User.objects.get(pk=pk)
             follow = Follow.objects.filter(Q(follower=user) | Q(followee=user))
             serializer = serializers.FollowSerializer(
                 follow, many=True, context={"request": request}
@@ -124,6 +130,7 @@ class FollowViewSet(viewsets.GenericViewSet):
                 serializers.FollowSerializer(follow, context={"request": request}).data,
                 status=status.HTTP_201_CREATED,
             )
+
     @action(detail=True, methods=["get"], url_path="is-following")
     def is_following(self, request, pk=None):
         """
@@ -132,12 +139,14 @@ class FollowViewSet(viewsets.GenericViewSet):
         try:
             followee = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
 
         is_following = Follow.objects.filter(
             follower=request.user,
             followee=followee,
-            active=True  # Nếu bạn dùng trường `active` để xác định follow đang bật
+            active=True,  # Nếu bạn dùng trường `active` để xác định follow đang bật
         ).exists()
 
         return Response({"is_following": is_following})
