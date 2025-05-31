@@ -1,12 +1,14 @@
 import axios from "axios";
 
 // // Nhập biến môi trường
-const BASE_URL = 'http://192.168.1.3:8000'
+const BASE_URL = 'http://192.168.1.10:8000'
 // process.env.EXPO_PUBLIC_DJANGO_SERVER_URL;
 
 export const endpoints = {
   'rentals': "/rentals/",
   'rental-details': (rentalId) => `/rentals/${rentalId}`,
+  'roomseekings':"/roomseekings/",
+  'roomseekings-details': (roomseekingId)=> `/roomseekings/${roomseekingId}`,
   'login':"/o/token/",
   // 'chat':"/chats/chat/",
   // 'messages':(chat_id) =>  `/chats/${chat_id}`,

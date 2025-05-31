@@ -92,6 +92,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
             'utilities',
             'upload_images',
             'property',
+            
 
         ]
         read_only_fields = ["owner", "created_at", "updated_at", "status"]
@@ -165,7 +166,8 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['owner']={
             'id':instance.owner.id,
-            'name':f"{instance.owner.first_name} {instance.owner.last_name}"
+            'name':f"{instance.owner.first_name} {instance.owner.last_name}",
+            'avatar':instance.owner.avatar,
         }
         return data
 

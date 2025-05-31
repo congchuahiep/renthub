@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Alert, Animated, Easing, View } from "react-native";
 import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axiosInstance, { authApis, endpoints } from "../config/Apis";
@@ -15,6 +15,10 @@ const ProfileUser = ({ route }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const navigation = useNavigation();
     const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
+    const spinAnim = useRef(new Animated.Value(0)).current;
+
+
 
     // const checkFollowStatus = async () => {
     //     const token = await AsyncStorage.getItem('token');
@@ -63,53 +67,58 @@ const ProfileUser = ({ route }) => {
         }
     };
     const handleFollow = async () => {
+        runSpinAnimation();
         const token = await AsyncStorage.getItem('token');
+        setFollowLoading(true);
+
         try {
             if (!isFollowing) {
-                // Gọi API theo dõi
-                const response = await authApis(token).post(endpoints.follow(user.id));
-                alert("Đã theo dõi người dùng!");
-                setIsFollowing(true); // Cập nhật trạng thái ngay lập tức
+                await authApis(token).post(endpoints.follow(user.id));
+                setIsFollowing(true);
             } else {
-                // Hiển thị thông báo xác nhận hủy theo dõi
-                console.log("Token:", token);
                 Alert.alert(
                     "Xác nhận",
                     "Bạn có muốn hủy theo dõi?",
                     [
-                        {
-                            text: "Hủy",
-                            style: "cancel",
-                        },
+                        { text: "Hủy", style: "cancel", onPress: () => setFollowLoading(false) },
                         {
                             text: "Có",
                             onPress: async () => {
                                 try {
-                                    // Gọi API hủy theo dõi
-                                    const response = await authApis(token).delete(endpoints["follow-delete"](user.id));
-                                    console.log("Phản hồi từ API hủy theo dõi:", response);
-                                    alert("Đã hủy theo dõi người dùng!");
-                                    setIsFollowing(false); // Cập nhật trạng thái ngay lập tức
+                                    await authApis(token).delete(endpoints["follow-delete"](user.id));
+                                    setIsFollowing(false);
                                 } catch (err) {
-                                    if (err.response && err.response.status === 204) {
-                                        // Xử lý đặc biệt cho lỗi 204 với nội dung không hợp lệ
-                                        console.warn("Phản hồi 204 với nội dung không hợp lệ, bỏ qua lỗi.");
-                                        setIsFollowing(false); // Cập nhật trạng thái
-                                    } else {
-                                        console.error("Chi tiết lỗi:", err);
-                                        alert("Không thể hủy theo dõi. Vui lòng thử lại.");
-                                    }
+                                    alert("Không thể hủy theo dõi.");
+                                } finally {
+                                    setFollowLoading(false);
                                 }
                             },
                         },
                     ]
                 );
+                return;
             }
         } catch (err) {
-            console.error("Lỗi khi thay đổi trạng thái theo dõi:", err);
-            alert("Không thể thay đổi trạng thái theo dõi.");
+            alert("Không thể thay đổi trạng thái.");
+        } finally {
+            if (!isFollowing) setFollowLoading(false);
         }
     };
+
+    const runSpinAnimation = () => {
+        spinAnim.setValue(0);
+        Animated.timing(spinAnim, {
+            toValue: 1,
+            duration: 200, // 0.2s
+            easing: Easing.linear,
+            useNativeDriver: true,
+        }).start();
+    };
+    const spin = spinAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '360deg'],
+    });
+
 
 
     useEffect(() => {
@@ -176,14 +185,24 @@ const ProfileUser = ({ route }) => {
                     </Button>
                 )}
 
-                <Button
-                    mode={isFollowing ? "contained" : "outlined"}
-                    style={{ marginTop: 8 }}
-                    buttonColor={isFollowing ? "green" : undefined}
-                    onPress={handleFollow}
-                >
-                    {isFollowing ? "Đã theo dõi" : "Theo dõi"}
-                </Button>
+                {currentUser?.user_type === "tenant" && user?.user_type === "landlord" && (
+                    <Button
+                        mode={isFollowing ? "contained" : "outlined"}
+                        style={{ marginTop: 8, flexDirection: "row", alignItems: "center" }}
+                        buttonColor={isFollowing ? "green" : undefined}
+                        onPress={handleFollow}
+                        disabled={followLoading}
+                        icon={() =>
+                            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                                <Avatar.Icon size={20} icon={isFollowing ? "check" : "plus"} />
+                            </Animated.View>
+                        }
+                    >
+                        {isFollowing ? "Đã theo dõi" : "Theo dõi"}
+                    </Button>
+
+                )}
+
 
             </View>
             <View style={{ flex: 1 }}>

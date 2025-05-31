@@ -10,6 +10,7 @@ import Profile from '../screens/Profile';
 import PropertyList from '../screens/PropertyList';
 import Register from '../screens/Register';
 import RentalList from '../screens/RentalList';
+import RoomSeekingList from '../screens/RoomSeekingList';
 import Users from '../screens/Users';
 
 const Tab = createBottomTabNavigator();
@@ -36,6 +37,29 @@ export default function TabNavigator() {
 					),
 				}}
 			/>
+			<Tab.Screen
+				name="roomseekings"
+				component={RoomSeekingList}
+				options={{
+					title: "Tìm trọ",
+					headerShown: true,
+					header: (props) => <PostAppbar {...props} />,
+					tabBarIcon: ({ color }) => (
+						<MaterialDesignIcons name="home-outline" color={color} size={26} />
+					),
+				}}
+			/>
+			<Tab.Screen
+				name="propertylist"
+				component={PropertyList}
+				options={{
+					title: "Dãy trọ",
+					headerShown: true,
+					header: (props) => <PostAppbar {...props} />,
+					tabBarIcon: ({ color }) => (
+						<MaterialDesignIcons name="home-group" color={color} size={26} />
+					),
+				}} />
 			{user !== null ?
 				<>
 					<Tab.Screen
@@ -47,17 +71,7 @@ export default function TabNavigator() {
 								<MaterialDesignIcons name="account-group" color={color} size={26} />
 							),
 						}} />
-					<Tab.Screen
-						name="propertylist"
-						component={PropertyList}
-						options={{
-							title: "Dãy trọ",
-							headerShown: true,
-							header: (props) => <PostAppbar {...props} />,
-							tabBarIcon: ({ color }) => (
-								<MaterialDesignIcons name="home-group" color={color} size={26} />
-							),
-						}} />
+
 					<Tab.Screen
 						name="chats"
 						component={ChatListScreen}
@@ -77,6 +91,7 @@ export default function TabNavigator() {
 							),
 						}}
 					/>
+
 				</> : <>
 
 					<Tab.Screen
