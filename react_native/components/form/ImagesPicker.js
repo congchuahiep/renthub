@@ -8,18 +8,13 @@ const ImagesPicker = ({ images, onPick, error, label }) => {
 		<View
 			style={{
 				marginVertical: 4,
-				borderRadius: 4,
-				borderWidth: 1,
-				padding: 4,
 				borderColor: theme.colors.secondary,
-				backgroundColor: theme.colors.elevation.level1,
 			}}
 		>
 			<Button
 				mode="outlined"
 				onPress={onPick}
 				icon="camera"
-				style={{ backgroundColor: theme.colors.background }}
 			>
 				{label || "Chọn ảnh"}
 			</Button>
@@ -28,7 +23,6 @@ const ImagesPicker = ({ images, onPick, error, label }) => {
 					flexDirection: "row",
 					flexWrap: "wrap",
 					marginTop: 8,
-					height: 64,
 				}}
 			>
 				{images.map((img, idx) => (

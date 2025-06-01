@@ -80,7 +80,7 @@ export default function TabNavigator() {
 				</> : <>
 
 					<Tab.Screen
-						name="login"
+						name="Login"
 						component={Login}
 						options={{
 							title: "Đăng nhập",

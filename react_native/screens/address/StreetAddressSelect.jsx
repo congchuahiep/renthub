@@ -12,7 +12,7 @@ import {
 import { TextInput, useTheme, Text, Divider, Button } from "react-native-paper";
 import BottomSafeAreaView from "../../components/BottomSafeAreaView";
 
-const StreetAddressSelectScreen = ({ route, navigation }) => {
+const StreetAddressSelect = ({ route, navigation }) => {
 	const { region_address } = route.params;
 
 	const theme = useTheme();
@@ -221,4 +221,4 @@ const StreetAddressSelectScreen = ({ route, navigation }) => {
 	);
 };
 
-export default StreetAddressSelectScreen;
+export default StreetAddressSelect;

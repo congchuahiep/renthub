@@ -4,7 +4,7 @@ import { Button, Text, useTheme } from "react-native-paper";
 import Apis, { endpoints } from "../../config/Apis";
 import BottomSafeAreaView from "../../components/BottomSafeAreaView";
 
-const RegionAddressSelectScreen = ({ navigation, route }) => {
+const RegionAddressSelect = ({ navigation, route }) => {
 	const theme = useTheme();
 
 	const [provinces, setProvinces] = useState([]);
@@ -189,4 +189,4 @@ const RegionAddressSelectScreen = ({ navigation, route }) => {
 	);
 };
 
-export default RegionAddressSelectScreen;
+export default RegionAddressSelect;

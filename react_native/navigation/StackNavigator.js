@@ -12,9 +12,9 @@ import RegisterTenant from "../screens/RegisterTenant";
 import RentalDetail from "../screens/RentalDetail";
 import Setting from "../screens/Setting";
 import UserInfo from "../screens/UserInfo";
-import RegionAddressSelectScreen from "../screens/address/RegionAddressSelectScreen";
+import RegionAddressSelect from "../screens/address/RegionAddressSelect";
 import TabNavigator from "./TabNavigator";
-import StreetAddressSelectScreen from "../screens/address/StreetAddressSelectScreen";
+import StreetAddressSelect from "../screens/address/StreetAddressSelect";
 
 const Stack = createNativeStackNavigator();
 
@@ -106,7 +106,7 @@ export default function StackNavigator() {
 			/>
 			<Stack.Screen
 				name="RegionAddressSelect"
-				component={RegionAddressSelectScreen}
+				component={RegionAddressSelect}
 				options={({ route }) => ({
 					title: "Chọn tỉnh/huyện/xã",
 					headerShown: true,
@@ -116,7 +116,7 @@ export default function StackNavigator() {
 			/>
 			<Stack.Screen
 				name="StreetAddressSelect"
-				component={StreetAddressSelectScreen}
+				component={StreetAddressSelect}
 				options={({ route }) => ({
 					title: "Chọn số nhà, vị trí cụ thể",
 					headerShown: true,

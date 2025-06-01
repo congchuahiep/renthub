@@ -1,5 +1,5 @@
 import { TouchableOpacity, View } from "react-native";
-import { Button, HelperText, Text, useTheme } from "react-native-paper";
+import { HelperText, Text, useTheme } from "react-native-paper";
 
 const ScreenPickerButton = ({
 	value,
@@ -8,6 +8,7 @@ const ScreenPickerButton = ({
 	style,
 	error,
 	disabled,
+	disabledText = "Chưa chọn",
 }) => {
 	const theme = useTheme();
 	return (
@@ -17,11 +18,7 @@ const ScreenPickerButton = ({
 					style,
 					{
 						borderWidth: error ? 2 : 1,
-						borderColor: disabled
-							? theme.colors.surfaceDisabled
-							: error
-							? theme.colors.error
-							: theme.colors.secondary,
+						borderColor: error ? theme.colors.error : theme.colors.secondary,
 						borderRadius: 4,
 						borderRadius: 4,
 						padding: 12,
@@ -45,6 +42,8 @@ const ScreenPickerButton = ({
 				<View style={{ flex: 1 }}>
 					{value ? (
 						<Text>{value}</Text>
+					) : disabled ? (
+						<Text>{disabledText}</Text>
 					) : (
 						<Text style={{ color: theme.colors.secondary }}>Chưa chọn</Text>
 					)}
