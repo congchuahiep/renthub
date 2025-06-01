@@ -10,5 +10,5 @@ router.register("districts", viewset=views.DistrictViewSet, basename="district")
 router.register("wards", viewset=views.WardViewSet, basename="ward")
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]

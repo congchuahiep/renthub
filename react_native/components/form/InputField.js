@@ -10,6 +10,7 @@ const InputField = ({
 	icon = null,
 	error = null,
 	style = null,
+    keyboardType = "default",
 	...props
 }) => (
 	<View style={{ marginBottom: 4 }}>
@@ -24,6 +25,7 @@ const InputField = ({
 			error={!!error}
 			style={style}
 			autoCapitalize="none"
+            keyboardType={keyboardType}
 			{...props}
 		/>
 		{error && (

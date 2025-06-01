@@ -18,6 +18,10 @@ export const endpoints = {
 	"landlord-register": "/users/landlord-register/",
 	follow: (user_id) => `/follower/${user_id}/follow/`,
 	"is-follow": (user_id) => `/follower/${user_id}/is-following`,
+
+	provinces: "/provinces/",
+	districts: "/districts/",
+	wards: "/wards/",
 };
 
 export const authApis = (token) => {

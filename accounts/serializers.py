@@ -87,6 +87,8 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
     property_province = serializers.CharField()
     property_district = serializers.CharField()
     property_ward = serializers.CharField()
+    property_latitude = serializers.FloatField()
+    property_longitude = serializers.FloatField()
     property_upload_images = serializers.ListField(
         child=serializers.ImageField(), required=False, write_only=True
     )
@@ -170,6 +172,8 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             "province": validated_data.pop("property_province"),
             "district": validated_data.pop("property_district"),
             "ward": validated_data.pop("property_ward"),
+            "latitude": validated_data.pop("property_latitude"),
+            "longitude": validated_data.pop("property_longitude"),
         }
         property_upload_images = validated_data.pop("property_upload_images", [])
 

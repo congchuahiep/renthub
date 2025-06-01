@@ -17,22 +17,8 @@ def get_coordinates(address) -> tuple:
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
+        print(data)
         if data['results']:
             location = data['results'][0]['geometry']['location']
             return location['lat'], location['lng']
     return None, None
-
-
-# React Native => Trình duyệt (dev) => Ứng dụng (development build) => Tải về chạy
-
-# Map (thành phần Native), firebase => (build) tạo lại ứng dụng mới (10-50p)
-
-
-
-# Expo Go => Vẫn là trình duyệt => Ứng dụng đã build
-# Google Map => 
-
-
-# Expo Go (trinhf duyeejt) 
-
-# LAN 

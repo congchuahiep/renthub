@@ -161,6 +161,17 @@ const Login = () => {
 						Đăng ký ngay
 					</Link>
 				</Text>
+				<Button
+					onPress={() => {
+						navigation.navigate("StreetAddressSelect", {
+							returnScreen: "Login",
+							region_address:
+								"Phường 26, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
+						});
+					}}
+				>
+					TEST
+				</Button>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
