@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register("rentals", viewset=views.RentalPostViewSet, basename="rental")
 router.register("roomseekings", viewset=views.RoomSeekingPostViewSet, basename="roomseeking")
 router.register("comments", viewset=views.CommentViewSet, basename="comment")
+router.register("utilities", viewset=views.UtilitiesViewSet, basename="utility")
 
 urlpatterns = [
     path('', include(router.urls)),
