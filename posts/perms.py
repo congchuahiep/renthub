@@ -2,6 +2,9 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class IsPostOwner(IsAuthenticated):
+
+    message = "Bạn không có quyền thực hiện thao tác này trên bài đăng không phải của bạn!"
+
     def has_object_permission(self, request, post_view, post_object):
         is_authenticated = super().has_permission(request, post_view)
         # Kiểm tra nếu người dùng hiện tại là chủ sở hữu bài đăng
@@ -13,7 +16,7 @@ class IsCommentOwner(IsAuthenticated):
     Chỉ cho phép chủ sở hữu bình luận truy cập.
     """
 
-    message = "You are not the owner of this comment!"
+    message = "Bạn không có quyền thực hiện thao tác này trên bình luận không phải của bạn!"
 
     def has_object_permission(self, request, comment_view, comment_obj):
         is_authenticated = super().has_permission(request, comment_view)
