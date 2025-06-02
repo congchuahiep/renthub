@@ -5,13 +5,14 @@ from rest_framework.response import Response
 
 from accounts.perms import IsLandlord, IsTenant
 from posts import paginators
-from posts.models import Comment, RentalPost, RoomSeekingPost
+from posts.models import Comment, RentalPost, RoomSeekingPost, Utilities
 from posts.paginators import PostPaginator
 from posts.perms import IsCommentOwner, IsPostOwner
 from posts.serializers import (
     CommentSerializer,
     RentalPostSerializer,
     RoomSeekingPostSerializer,
+    UtilitiesSerializer,
 )
 from utils.choices import PostStatus
 
@@ -54,7 +55,7 @@ class RentalPostViewSet(
     def get_permissions(self):
         """
         Cấu hình các permission của view action:
-        - `IsLandlord`: create, POST comments
+        - `IsLandlord`, `IsPropertyOwner`: create, POST comments
         - `IsRentalPostOwner`: destroy, update, partial_update
         - Không có permission: list, retrieve, GET /comments/
         """
@@ -117,25 +118,6 @@ class RentalPostViewSet(
             return Response(
                 CommentSerializer(comment).data, status=status.HTTP_201_CREATED
             )
-
-
-class CommentViewSet(
-    viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
-):
-    """
-    ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
-    xoá và chỉnh sửa comment
-
-    Endpoints
-    ---------
-    - `DELETE /comments/<id>` : Xoá một Comment
-    - `PUT /comments/<id>` : Sửa toàn bộ một Comment
-    - `PATCH /comments/<id>` : Sửa một phần Comment
-    """
-
-    queryset = Comment.objects.filter(active=True)
-    serializer_class = CommentSerializer
-    permission_classes = [IsCommentOwner]
 
 
 class RoomSeekingPostViewSet(
@@ -202,3 +184,35 @@ class RoomSeekingPostViewSet(
             return Response(
                 CommentSerializer(comment).data, status=status.HTTP_201_CREATED
             )
+
+
+class CommentViewSet(
+    viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
+):
+    """
+    ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
+    xoá và chỉnh sửa comment
+
+    Endpoints
+    ---------
+    - `DELETE /comments/<id>` : Xoá một Comment
+    - `PUT /comments/<id>` : Sửa toàn bộ một Comment
+    - `PATCH /comments/<id>` : Sửa một phần Comment
+    """
+
+    queryset = Comment.objects.filter(active=True)
+    serializer_class = CommentSerializer
+    permission_classes = [IsCommentOwner]
+
+
+class UtilitiesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """
+    ViewSet này dùng để xem các danh sách các Utilities có sẵn
+
+    Endpoints
+    ---------
+    - `GET /utilities/` : Lấy danh sách các utility
+    """
+
+    queryset = Utilities.objects.filter(active=True)
+    serializer_class = UtilitiesSerializer

@@ -93,6 +93,8 @@ const Login = () => {
 					payload: u.data,
 				});
 			} catch (ex) {
+        console.log(ex);
+
 				let newErrors = {};
 				if (ex.response?.data?.error === "invalid_grant") {
 					newErrors.general = "Tài khoản hoặc mật khẩu không đúng!";

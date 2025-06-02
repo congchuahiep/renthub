@@ -7,19 +7,17 @@ import { MyDispatchContext, UserContext } from "../config/context";
 import useStyle from "../styles/useStyle";
 
 const Profile = () => {
-  const theme = useTheme();
-  const style = useStyle();
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
-  const navigation = useNavigation();
-  const userDispatch = useContext(MyDispatchContext);
-  const currentUser = useContext(UserContext);
+	const theme = useTheme();
+	const style = useStyle();
+	const [loading, setLoading] = useState(false);
+	const [user, setUser] = useState(null);
+	const navigation = useNavigation();
+	const userDispatch = useContext(MyDispatchContext);
+	const currentUser = useContext(UserContext);
 
-  const profile = async () => {
-    
-      setUser(currentUser);
-    
-  };
+	const profile = async () => {
+		setUser(currentUser);
+	};
 
 	useEffect(() => {
 		profile();

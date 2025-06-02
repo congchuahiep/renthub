@@ -18,6 +18,7 @@ const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
 	const user = useContext(UserContext)
+    
 	return (
 		<Tab.Navigator
 			screenOptions={{

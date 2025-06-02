@@ -75,6 +75,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class LandlordRegistrationSerializer(serializers.ModelSerializer):
     """
+    **Deserialize-only**
+
     Serializer chuyên biệt cho việc đăng ký tài khoản chủ nhà
     """
 
