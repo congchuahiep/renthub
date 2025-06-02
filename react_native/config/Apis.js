@@ -1,23 +1,32 @@
 import axios from "axios";
 
-// Nhập biến môi trường
+// // Nhập biến môi trường
 const BASE_URL = process.env.EXPO_PUBLIC_DJANGO_SERVER_URL;
 
 export const endpoints = {
 	rentals: "/rentals/",
-	"rental-details": (rentalId) => `/rentals/${rentalId}`,
+	rentalDetails: (rentalId) => `/rentals/${rentalId}`,
+
+	roomseekings: "/roomseekings/",
+	roomseekingsDetails: (roomseekingId) => `/roomseekings/${roomseekingId}`,
+
 	login: "/o/token/",
 	// 'chat':"/chats/chat/",
 	// 'messages':(chat_id) =>  `/chats/${chat_id}`,
+
 	user: (id) => `/users/${id}`,
 	users: "/users/",
-	"current-user": "/users/current-user/",
+	currentUser: "/users/current-user/",
+
 	properties: "/properties/",
-	"property-details": (property_id) => `/properties/${property_id}/`,
-	"tenant-register": "/users/tenant-register/",
-	"landlord-register": "/users/landlord-register/",
+	propertyDetails: (property_id) => `/properties/${property_id}/`,
+
+	tenantRegister: "/users/tenant-register/",
+	landlordRegister: "/users/landlord-register/",
+
 	follow: (user_id) => `/follower/${user_id}/follow/`,
-	"is-follow": (user_id) => `/follower/${user_id}/is-following`,
+	"is-follow": (user_id) => `/follower/${user_id}/is-following/`,
+	"follow-delete": (user_id) => `/follower/${user_id}/follower/`,
 
 	provinces: "/provinces/",
 	districts: "/districts/",

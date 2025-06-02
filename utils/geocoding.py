@@ -17,7 +17,6 @@ def get_coordinates(address) -> tuple:
     response = requests.get(url, params=params)
     if response.status_code == 200:
         data = response.json()
-        print(data)
         if data['results']:
             location = data['results'][0]['geometry']['location']
             return location['lat'], location['lng']

@@ -1,35 +1,25 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { authApis, endpoints } from "../config/Apis";
-import { MyDispatchContext } from "../config/context";
+import { MyDispatchContext, UserContext } from "../config/context";
 import useStyle from "../styles/useStyle";
 
 const Profile = () => {
-	const theme = useTheme();
-	const style = useStyle();
-	const [loading, setLoading] = useState(false);
-	const [user, setUser] = useState(null);
-	const navigation = useNavigation();
+  const theme = useTheme();
+  const style = useStyle();
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigation = useNavigation();
+  const userDispatch = useContext(MyDispatchContext);
+  const currentUser = useContext(UserContext);
 
-	const userDispatch = useContext(MyDispatchContext);
-
-	const profile = async () => {
-		const token = await AsyncStorage.getItem("token");
-		try {
-			setLoading(true);
-			let response = await authApis(token).get(endpoints["current-user"]);
-			console.log("Thông tin người dùng", response.data);
-			setUser(response.data);
-		} catch (ex) {
-			console.error(ex);
-		} finally {
-			setLoading(false);
-		}
-	};
+  const profile = async () => {
+    
+      setUser(currentUser);
+    
+  };
 
 	useEffect(() => {
 		profile();

@@ -163,3 +163,42 @@ class RoomSeekingPostViewSet(
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    @action(detail=True, methods=["get", "post"], url_path="comments")
+    def comments(self, request, pk=None):
+        """
+        Quản lý comment của một bài viết:
+        - `GET /rentals/<id>/comments/`: Lấy danh sách comment của bài viết
+        - `POST /rentals/<id>/comments/`: Thêm comment vào bài viết
+        """
+        rental_post = self.get_object()
+
+        if request.method == "GET":
+            comments = rental_post.post.comments.select_related("user").filter(
+                active=True
+            )
+            paginator = paginators.CommentPaginator()
+
+            # Danh sách bình luận đã được phân trang
+            paginated_comments = paginator.paginate_queryset(comments, self.request)
+
+            if paginated_comments is not None:
+                serializer = CommentSerializer(paginated_comments, many=True)
+                return paginator.get_paginated_response(serializer.data)
+            else:
+                serializer = CommentSerializer(comments, many=True)
+                return Response(serializer.data)
+
+        elif request.method == "POST":
+            serializer = CommentSerializer(
+                data={
+                    "content": request.data.get("content"),
+                    "user": request.user.pk,
+                    "post": pk,
+                }
+            )
+            serializer.is_valid(raise_exception=True)
+            comment = serializer.save()
+            return Response(
+                CommentSerializer(comment).data, status=status.HTTP_201_CREATED
+            )

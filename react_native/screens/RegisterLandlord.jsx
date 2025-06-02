@@ -236,7 +236,7 @@ const RegisterLandlord = ({ navigation, route }) => {
 				}
 			});
 
-			await Apis.post(endpoints["landlord-register"], formDataToSend, {
+			await Apis.post(endpoints.landlordRegister, formDataToSend, {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 
