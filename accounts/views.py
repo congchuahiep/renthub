@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework.exceptions import NotFound
-from rest_framework import generics, permissions, status, viewsets, parsers, mixins
+from rest_framework import generics, permissions, status, viewsets, parsers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -150,7 +149,7 @@ class FollowViewSet(viewsets.GenericViewSet):
         ).exists()
 
         return Response({"is_following": is_following})
-    
+
     @action(detail=True, methods=["delete"], url_path="follower")
     def delete_by_followee(self, request, pk=None):
         """
@@ -169,7 +168,9 @@ class FollowViewSet(viewsets.GenericViewSet):
 
         if not follows.exists():
             return Response(
-                {"detail": "No Follow records found for this followee and current user."},
+                {
+                    "detail": "No Follow records found for this followee and current user."
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
 
