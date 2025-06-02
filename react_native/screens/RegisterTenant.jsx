@@ -137,7 +137,7 @@ const RegisterTenant = () => {
 			}
 
 			// Tiến hành chạy api đăng ký người dùng
-			await Apis.post(endpoints["tenant-register"], form, {
+			await Apis.post(endpoints.tenantRegister, form, {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 

@@ -1,18 +1,20 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useContext } from "react";
 import { useTheme } from "react-native-paper";
 import AppbarDefault from "../components/Appbar";
 import PostAppbar from "../components/PostAppbar";
+import { ThemeSettingContext } from "../config/context";
 import FollowerList from "../screens/FollowList";
 import ProfileUser from "../screens/ProfileUser";
+import Register from "../screens/Register";
+import RegisterLandlord from "../screens/RegisterLandlord";
+import RegisterTenant from "../screens/RegisterTenant";
 import RentalDetail from "../screens/RentalDetail";
 import Setting from "../screens/Setting";
 import UserInfo from "../screens/UserInfo";
+import RegionAddressSelect from "../screens/address/RegionAddressSelect";
 import TabNavigator from "./TabNavigator";
-import RegisterTenant from "../screens/RegisterTenant";
-import { useContext } from "react";
-import { ThemeSettingContext } from "../config/context";
-import RegisterLandlord from "../screens/RegisterLandlord";
-import Register from "../screens/Register";
+import StreetAddressSelect from "../screens/address/StreetAddressSelect";
 
 const Stack = createNativeStackNavigator();
 
@@ -97,6 +99,26 @@ export default function StackNavigator() {
 				component={RegisterLandlord}
 				options={({ route }) => ({
 					title: "Đăng ký tài khoản chủ trọ",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="RegionAddressSelect"
+				component={RegionAddressSelect}
+				options={({ route }) => ({
+					title: "Chọn tỉnh/huyện/xã",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="StreetAddressSelect"
+				component={StreetAddressSelect}
+				options={({ route }) => ({
+					title: "Chọn số nhà, vị trí cụ thể",
 					headerShown: true,
 					headerTransparent: false,
 					header: (props) => <AppbarDefault {...props} />,

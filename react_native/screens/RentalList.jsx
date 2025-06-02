@@ -18,7 +18,7 @@ const RentalList = () => {
 	const loadRentalPosts = async () => {
 		setLoading(true);
 
-		await Apis.get(endpoints["rentals"])
+		await Apis.get(endpoints.rentals)
 			.then((res) => {
 				setRentalPosts(res.data.results);
 			})
@@ -41,39 +41,57 @@ const RentalList = () => {
 	};
 
 	return (
-		<>
-			<FlatList
-				style={[style.container]}
-				data={rentalPosts}
-				refreshControl={
-					<RefreshControl
-						refreshing={refreshing}
-						onRefresh={onRefresh}
-						colors={[theme.colors.primary]}
-						progressBackgroundColor={theme.colors.background}
-					/>
-				}
-				renderItem={({ item }) => (
-					<RentalPostCard
-						id={item.post.id}
-						title={item.title}
-						area={item.area}
-						images={item.post.images}
-						price={item.price}
-						address={item.property.district + ", " + item.property.province}
-						numberOfBed={item.number_of_bedrooms}
-						numberOfBathroom={item.number_of_bathrooms}
-					/>
-				)}
-				ListEmptyComponent={
-					!loading &&
-					rentalPosts && <Text>Hiện tại không có bài đăng nào cả 🥲</Text>
-				}
-				ListFooterComponent={
-					loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />
-				}
-			/>
-		</>
+		<FlatList
+			style={[style.container]}
+			data={rentalPosts}
+			refreshControl={
+				<RefreshControl
+					refreshing={refreshing}
+					onRefresh={onRefresh}
+					colors={[theme.colors.primary]}
+					progressBackgroundColor={theme.colors.background}
+				/>
+			}
+			renderItem={({ item }) => (
+				<RentalPostCard
+					id={item.post.id}
+					title={item.title}
+					area={item.area}
+					images={item.post.images}
+					price={item.price}
+					address={item.property.district + ", " + item.property.province}
+					numberOfBed={item.number_of_bedrooms}
+					numberOfBathroom={item.number_of_bathrooms}
+				/>
+			)}
+			ListEmptyComponent={
+				!loading &&
+				rentalPosts && (
+					<View
+						style={{
+							flex: 1,
+							alignItems: "center",
+							justifyContent: "center",
+              
+							paddingVertical: 40,
+						}}
+					>
+						<Text
+							style={{
+								fontSize: 16,
+								textAlign: "center",
+								color: theme.colors.outline,
+							}}
+						>
+							Không có bài đăng nào cả 🥲
+						</Text>
+					</View>
+				)
+			}
+			ListFooterComponent={
+				loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />
+			}
+		/>
 	);
 };
 

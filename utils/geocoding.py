@@ -21,18 +21,3 @@ def get_coordinates(address) -> tuple:
             location = data['results'][0]['geometry']['location']
             return location['lat'], location['lng']
     return None, None
-
-
-# React Native => Trình duyệt (dev) => Ứng dụng (development build) => Tải về chạy
-
-# Map (thành phần Native), firebase => (build) tạo lại ứng dụng mới (10-50p)
-
-
-
-# Expo Go => Vẫn là trình duyệt => Ứng dụng đã build
-# Google Map => 
-
-
-# Expo Go (trinhf duyeejt) 
-
-# LAN 

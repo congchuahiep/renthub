@@ -1,9 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, useNavigation } from "@react-navigation/native";
+import { Link, useNavigation, useRoute } from "@react-navigation/native";
 import qs from "qs"; // Thêm thư viện qs để chuyển đổi dữ liệu
 import { useContext, useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
-import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
+import {
+	Button,
+	HelperText,
+	Surface,
+	TextInput,
+	useTheme,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { authApis, endpoints } from "../config/Apis";
 import { MyDispatchContext } from "../config/context";
@@ -26,6 +32,10 @@ const info = [
 ];
 
 const Login = () => {
+	const route = useRoute();
+
+	// const { message } = route?.params ? route?.params : null;
+
 	const style = useStyle();
 	const theme = useTheme();
 
@@ -75,7 +85,7 @@ const Login = () => {
 				await AsyncStorage.setItem("token", res.data.access_token);
 
 				let u = await authApis(res.data.access_token).get(
-					endpoints["current-user"]
+					endpoints.currentUser
 				);
 
 				userDispatch({
@@ -83,6 +93,8 @@ const Login = () => {
 					payload: u.data,
 				});
 			} catch (ex) {
+        console.log(ex);
+
 				let newErrors = {};
 				if (ex.response?.data?.error === "invalid_grant") {
 					newErrors.general = "Tài khoản hoặc mật khẩu không đúng!";
@@ -103,7 +115,7 @@ const Login = () => {
 			<KeyboardAvoidingView
 				behavior="padding"
 				keyboardVerticalOffset={0}
-				style={{ flex: 1, justifyContent: "center" }}
+				style={{ flex: 1, justifyContent: "center", gap: 2 }}
 			>
 				<Text
 					style={{
@@ -116,6 +128,28 @@ const Login = () => {
 				>
 					Đăng nhập
 				</Text>
+				{route?.params?.message && (
+					<View
+						style={{
+							backgroundColor: theme.colors.elevation.level3,
+							padding: 16,
+							borderRadius: 8,
+							marginBottom: 16,
+							borderLeftWidth: 4,
+							borderLeftColor: theme.colors.primary,
+						}}
+					>
+						<Text
+							style={{
+								color: theme.colors.onSurfaceVariant,
+								lineHeight: 20,
+							}}
+							numberOfLines={4}
+						>
+							{route?.params?.message}
+						</Text>
+					</View>
+				)}
 				{info.map((i) => (
 					<View key={i.field} style={{}}>
 						<TextInput
@@ -148,7 +182,7 @@ const Login = () => {
 				>
 					Đăng nhập
 				</Button>
-				<Text style={{ marginTop: 4, textAlign: "center" }}>
+				<Text style={{ marginTop: 12, textAlign: "center" }}>
 					Chưa có tài khoản?{" "}
 					<Link
 						screen="Register"
