@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Appbar, Menu, Searchbar } from "react-native-paper";
 import { getHeaderTitle } from "@react-navigation/elements";
 import { useTheme } from "react-native-paper";
-import card from "../styles/card";
 import useStyle from "../styles/useStyle";
+import { useAuth } from "../config/auth";
 
 export default function PostAppbar({ navigation, route, options, back }) {
 	const theme = useTheme();
 	const style = useStyle();
+
+    const { user } = useAuth();
 
 	const [visible, setVisible] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -24,12 +26,13 @@ export default function PostAppbar({ navigation, route, options, back }) {
 				<Appbar.BackAction onPress={navigation.goBack} />
 			) : (
 				<Appbar.Action
-					onPress={() =>
+					onPress={() => {
 						console.log(
 							"Hôm nay bạn đẹp trai lắm ^^: " +
 								process.env.EXPO_PUBLIC_DJANGO_SERVER_URL
-						)
-					}
+						);
+						console.log(user);
+					}}
 				/>
 			)}
 

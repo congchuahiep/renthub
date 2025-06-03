@@ -144,7 +144,7 @@ const ProfileUser = ({ route }) => {
 
 
     useEffect(() => {
-        loadCurrentUser();
+        // loadCurrentUser();
         loadUser();
     }, []);
 

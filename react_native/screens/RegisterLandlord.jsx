@@ -105,6 +105,7 @@ const RegisterLandlord = ({ navigation, route }) => {
 								propertyImages,
 								navigation,
 								formData,
+                returnScreen: "RegisterLandlord",
 								style,
 							})
 						)}

@@ -12,9 +12,13 @@ import RentalPostCard from "../components/RentalPostCard";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../config/auth";
 
 const RentalList = () => {
 	const navigation = useNavigation();
+
+	const { user } = useAuth();
+
 	// Style
 	const theme = useTheme();
 	const style = useStyle();
@@ -111,14 +115,18 @@ const RentalList = () => {
 				}
 				onScroll={handleOnScroll}
 			/>
-			<AnimatedFAB
-				label={"Thêm bài đăng"}
-				animateFrom={"right"}
-				extended={isPhoneButtonExtended}
-				style={{ position: "absolute", right: 24, bottom: 24 }}
-				icon="plus"
-				onPress={() => navigation.navigate("CreateRental", { property_id: 11 })}
-			/>
+			{user?.user_type === "landlord" && (
+				<AnimatedFAB
+					label={"Thêm bài đăng"}
+					animateFrom={"right"}
+					extended={isPhoneButtonExtended}
+					style={{ position: "absolute", right: 24, bottom: 24 }}
+					icon="plus"
+					onPress={() =>
+						navigation.navigate("RentalCreate")
+					}
+				/>
+			)}
 		</View>
 	);
 };

@@ -1,45 +1,38 @@
-import { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Button, Card, Text } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Dimensions } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Card, Text } from "react-native-paper";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
 import StepBottomBar from "../components/StepBottomBar";
 import UtilitySelector from "../components/form/UtilitySelector";
+import Apis, { authApis, endpoints } from "../config/Apis";
 import { stepFields, stepsInfo } from "../form_data/createRentalDataForm";
-import { renderFormField } from "../utils/form";
-import Apis, { endpoints, authApis } from "../config/Apis";
 import useStyle from "../styles/useStyle";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { renderFormField } from "../utils/form";
 
-const CreateRental = ({ navigation, route }) => {
+const RentalCreate = ({ navigation, route }) => {
 	const style = useStyle();
 	const flatListRef = useRef(null);
 	const scrollX = useRef(new Animated.Value(0)).current;
 	const { width } = Dimensions.get("window");
 
 	const [currentStep, setCurrentStep] = useState(0);
-	const [formData, setFormData] = useState({
-		property_id: route.params?.property_id,
-	});
+	const [formData, setFormData] = useState({});
 
 	const [errors, setErrors] = useState({});
-	const [loading, setLoading] = useState(false);
-	const [propertyDetail, setPropertyDetail] = useState({});
+	const [submitLoading, setSubmitLoading] = useState(false);
+
 	const [rentalImages, setRentalImages] = useState([]);
 	const [utilities, setUtilities] = useState([]);
 	const [selectedUtilities, setSelectedUtilities] = useState([]);
-  
-  const updateDataForm = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
-  };
 
-	useEffect(() => {
-    loadUtilities();
-		loadProperty();
-	}, []);
+	const updateDataForm = (field, value) => {
+		setFormData((prev) => ({ ...prev, [field]: value }));
+		setErrors((prev) => ({ ...prev, [field]: undefined }));
+	};
 
 	const loadUtilities = async () => {
 		try {
@@ -50,18 +43,24 @@ const CreateRental = ({ navigation, route }) => {
 		}
 	};
 
-	const loadProperty = async () => {
-		try {
-			const res = await Apis.get(
-				endpoints.propertyDetails(route.params?.property_id)
-			);
-			console.log(res.data);
-      updateDataForm("property_name", res.data.name)
-			setPropertyDetail(res.data);
-		} catch (err) {
-			console.error(err);
+	useEffect(() => {
+		loadUtilities();
+	}, []);
+
+	// Nhận params từ màn hình chọn dãy trọ
+	useEffect(() => {
+		if (route?.params) {
+			const { property_id, property_name } = route.params;
+
+			if (property_id && property_name) {
+				setFormData((prev) => ({
+					...prev,
+					property_id,
+					property_name,
+				}));
+			}
 		}
-	};
+	}, [route?.params]);
 
 	const handlePickImage = async () => {
 		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -81,8 +80,7 @@ const CreateRental = ({ navigation, route }) => {
 		}
 	};
 
-
-	const goToStep = (stepIndex) => {
+	const handleGoToStep = (stepIndex) => {
 		if (stepIndex < 0 || stepIndex >= stepsInfo?.length) return;
 
 		flatListRef.current?.scrollToIndex({
@@ -103,11 +101,32 @@ const CreateRental = ({ navigation, route }) => {
 		setErrors((prev) => ({ ...prev, utilities_ids: undefined }));
 	};
 
-  /**
-   * Kế xuất các trang theo step
-   */
+	const handleValidateStep = () => {
+		const fields = stepFields[currentStep];
+		const newErrors = {};
+		let isValid = true;
+
+		fields.forEach((field) => {
+			const value = formData[field.field];
+
+			if (
+				field.required !== false &&
+				(!value || value.toString().trim() === "")
+			) {
+				newErrors[field.field] = `Vui lòng nhập ${field.label.toLowerCase()}`;
+				isValid = false;
+			}
+		});
+
+		setErrors(newErrors);
+		return isValid;
+	};
+
+	/**
+	 * Kế xuất các trang theo step
+	 */
 	const renderStep = ({ item, index }) => {
-    const step = index + 1;
+		const step = index + 1;
 
 		if (step === 3) {
 			return (
@@ -140,7 +159,7 @@ const CreateRental = ({ navigation, route }) => {
 			<KeyboardAwareScrollView
 				style={{ width }}
 				keyboardShouldPersistTaps="handled"
-				contentContainerStyle={{ padding: 16 }}
+				contentContainerStyle={{ paddingHorizontal: 16 }}
 				enableOnAndroid
 			>
 				<Card style={style.card}>
@@ -157,6 +176,8 @@ const CreateRental = ({ navigation, route }) => {
 								onChange: (value) => updateDataForm(field.field, value),
 								onImagePick: handlePickImage,
 								propertyImages: rentalImages,
+								navigation: navigation,
+								returnScreen: "RentalCreate",
 								style,
 							})
 						)}
@@ -173,7 +194,7 @@ const CreateRental = ({ navigation, route }) => {
 		}
 
 		try {
-			setLoading(true);
+			setSubmitLoading(true);
 			const formDataToSend = new FormData();
 
 			Object.entries(formData).forEach(([key, value]) => {
@@ -203,12 +224,12 @@ const CreateRental = ({ navigation, route }) => {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 
-			// navigation.goBack();
+			navigation.goBack();
 		} catch (error) {
 			console.error(error);
 			alert("Có lỗi xảy ra khi tạo bài đăng!");
 		} finally {
-			setLoading(false);
+			setSubmitLoading(false);
 		}
 	};
 
@@ -229,18 +250,18 @@ const CreateRental = ({ navigation, route }) => {
 				scrollEnabled={false}
 			/>
 
-			<Button onPress={() => console.log(formData)}>DATA</Button>
+			{/* <Button onPress={() => console.log(formData)}>DATA</Button> */}
 
 			<StepBottomBar
 				step={currentStep + 1}
 				steps={stepsInfo}
-				onBack={() => goToStep(currentStep - 1)}
-				onNext={() => goToStep(currentStep + 1)}
+				onBack={() => handleGoToStep(currentStep - 1)}
+				onNext={() => handleValidateStep() && handleGoToStep(currentStep + 1)}
 				onFinish={handleSubmit}
-				loading={loading}
+				loading={submitLoading}
 			/>
 		</BottomSafeAreaView>
 	);
 };
 
-export default CreateRental;
+export default RentalCreate;

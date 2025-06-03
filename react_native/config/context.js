@@ -2,9 +2,9 @@ import { createContext } from "react";
 
 export const AuthContext = createContext({
 	user: {},
-	loading: false,
-	login: () => {},
-	logout: () => {},
+	userLoading: false,
+	login: async () => {},
+	logout: async () => {},
 });
 
 export const ThemeSettingContext = createContext({

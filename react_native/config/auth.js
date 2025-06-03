@@ -5,7 +5,7 @@ import { AuthContext } from "./context";
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
+	const [userLoading, setUserLoading] = useState(true);
 
 	// Khôi phục session khi mở app
 	useEffect(() => {
@@ -17,12 +17,12 @@ export const AuthProvider = ({ children }) => {
 			const token = await AsyncStorage.getItem("token");
 			if (token) {
 				const response = await authApis(token).get(endpoints.currentUser);
-				setUser({ ...response.data, token });
+				setUser(response.data)
 			}
 		} catch (error) {
 			await AsyncStorage.removeItem("token");
 		} finally {
-			setLoading(false);
+			setUserLoading(false);
 		}
 	};
 
@@ -38,15 +38,13 @@ export const AuthProvider = ({ children }) => {
 			grant_type: "password",
 		};
 
-		console.log("1");
 		const response = await Apis.post(endpoints.login, requestData, {
 			headers: {
 				"Content-Type": "application/x-www-form-urlencoded",
 			},
 		});
-		console.log(response);
-		const token = response.data.access_token;
 
+		const token = response.data.access_token;
 		await AsyncStorage.setItem("token", token);
 		const userResponse = await authApis(token).get(endpoints.currentUser);
 
@@ -66,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 		<AuthContext.Provider
 			value={{
 				user,
-				loading,
+				userLoading,
 				login,
 				logout,
 			}}

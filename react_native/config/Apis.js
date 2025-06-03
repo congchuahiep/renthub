@@ -20,6 +20,7 @@ export const endpoints = {
 
 	properties: "/properties/",
 	propertyDetails: (property_id) => `/properties/${property_id}/`,
+    propertiesUserList: "/properties/my-properties/",
 
 	tenantRegister: "/users/tenant-register/",
 	landlordRegister: "/users/landlord-register/",

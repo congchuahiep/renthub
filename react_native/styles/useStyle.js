@@ -54,6 +54,9 @@ const useStyle = () => {
 		text_primary: {
 			color: theme.colors.primary,
 		},
+		text_primary_dark: {
+			color: theme.colors.onPrimaryContainer,
+		},
 		text_secondary: {
 			color: theme.colors.secondary,
 		},

@@ -18,7 +18,7 @@ const UtilitySelector = ({
 				style={{
 					margin: 4,
 					backgroundColor: isSelected
-						? theme.colors.primaryContainer
+						? theme.colors.primary
 						: theme.colors.elevation.level1,
 					width: "30%",
 					aspectRatio: 1,
@@ -33,7 +33,7 @@ const UtilitySelector = ({
 						size={32}
 						color={
 							isSelected
-								? theme.colors.onPrimaryContainer
+								? theme.colors.onPrimary
 								: theme.colors.outline
 						}
 					/>
@@ -43,7 +43,7 @@ const UtilitySelector = ({
 							marginTop: 8,
               fontSize: 11,
 							color: isSelected
-								? theme.colors.onPrimaryContainer
+								? theme.colors.onPrimary
 								: theme.colors.outline,
 						}}
 						numberOfLines={2}

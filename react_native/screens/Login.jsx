@@ -1,21 +1,15 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, useNavigation, useRoute } from "@react-navigation/native";
-import qs from "qs"; // Thêm thư viện qs để chuyển đổi dữ liệu
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
 import {
-	Button,
-	HelperText,
-	Surface,
-	TextInput,
-	useTheme,
+  Button,
+  HelperText,
+  TextInput,
+  useTheme
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Apis, { authApis, endpoints } from "../config/Apis";
-import { MyDispatchContext } from "../config/context";
-import useStyle from "../styles/useStyle";
-import { Image } from "react-native";
 import { useAuth } from "../config/auth";
+import useStyle from "../styles/useStyle";
 
 const info = [
 	{

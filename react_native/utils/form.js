@@ -13,6 +13,7 @@ export const renderFormField = ({
 	propertyImages,
 	navigation,
 	formData,
+	returnScreen,
 	style,
 }) => {
 	if (field.hidden) return null;
@@ -59,7 +60,7 @@ export const renderFormField = ({
 					value={formData.property_region_address}
 					onPress={() =>
 						navigation.navigate("RegionAddressSelect", {
-							returnScreen: "RegisterLandlord",
+							returnScreen,
 						})
 					}
 					error={error}
@@ -74,7 +75,7 @@ export const renderFormField = ({
 					value={value}
 					onPress={() =>
 						navigation.navigate("StreetAddressSelect", {
-							returnScreen: "RegisterLandlord",
+							returnScreen,
 							region_address: formData.property_region_address,
 						})
 					}
@@ -90,12 +91,11 @@ export const renderFormField = ({
 					key={field.field}
 					label={field.label}
 					value={value}
-					// onPress={() =>
-					// 	navigation.navigate("PropertySelectSelect", {
-					// 		returnScreen: "RegisterLandlord",
-					// 		region_address: formData.property_region_address,
-					// 	})
-					// }
+					onPress={() =>
+						navigation.navigate("PropertySelect", {
+							returnScreen,
+						})
+					}
 					error={error}
 				/>
 			);
