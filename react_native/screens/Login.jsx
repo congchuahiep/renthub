@@ -33,6 +33,7 @@ const info = [
 
 const Login = () => {
 	const route = useRoute();
+	const navigation = useNavigation();
 
 	// const { message } = route?.params ? route?.params : null;
 
@@ -42,7 +43,6 @@ const Login = () => {
 	const [user, setUser] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [errors, setErrors] = useState({});
-	const navigation = useNavigation();
 
 	const userDispatch = useContext(MyDispatchContext);
 

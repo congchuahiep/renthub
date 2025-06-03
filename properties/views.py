@@ -75,7 +75,7 @@ class PropertyViewSet(
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     @action(
         detail=False,
         methods=["get"],
@@ -88,9 +88,7 @@ class PropertyViewSet(
         """
         try:
             queryset = self.get_queryset().filter(
-                owner_id=user_id,
-                active=True,
-                status='approved'
+                owner_id=user_id, active=True, status="approved"
             )
             page = self.paginate_queryset(queryset)
             if page is not None:
@@ -103,5 +101,5 @@ class PropertyViewSet(
         except User.DoesNotExist:
             return Response(
                 {"detail": "Không tìm thấy người dùng này"},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )

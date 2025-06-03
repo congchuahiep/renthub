@@ -15,6 +15,7 @@ import UserInfo from "../screens/UserInfo";
 import RegionAddressSelect from "../screens/address/RegionAddressSelect";
 import TabNavigator from "./TabNavigator";
 import StreetAddressSelect from "../screens/address/StreetAddressSelect";
+import CreateRental from "../screens/RentalCreate";
 
 const Stack = createNativeStackNavigator();
 
@@ -119,6 +120,16 @@ export default function StackNavigator() {
 				component={StreetAddressSelect}
 				options={({ route }) => ({
 					title: "Chọn số nhà, vị trí cụ thể",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="CreateRental"
+				component={CreateRental}
+				options={({ route }) => ({
+					title: "Đăng bài cho thuê",
 					headerShown: true,
 					headerTransparent: false,
 					header: (props) => <AppbarDefault {...props} />,

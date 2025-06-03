@@ -79,7 +79,23 @@ export const renderFormField = ({
 						})
 					}
 					disabled={!formData.property_region_address}
-                    disabledText="Chọn tỉnh/huyện/xã trước"
+					disabledText="Chọn tỉnh/huyện/xã trước"
+					error={error}
+				/>
+			);
+
+		case "property":
+			return (
+				<ScreenPickerButton
+					key={field.field}
+					label={field.label}
+					value={value}
+					// onPress={() =>
+					// 	navigation.navigate("PropertySelectSelect", {
+					// 		returnScreen: "RegisterLandlord",
+					// 		region_address: formData.property_region_address,
+					// 	})
+					// }
 					error={error}
 				/>
 			);

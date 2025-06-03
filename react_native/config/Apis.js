@@ -31,6 +31,8 @@ export const endpoints = {
 	provinces: "/provinces/",
 	districts: "/districts/",
 	wards: "/wards/",
+
+    utilities: "/utilities/"
 };
 
 export const authApis = (token) => {

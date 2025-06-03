@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
 	button: {
 		marginHorizontal: 4,
 		minWidth: 100,
+        borderWidth: 1
 	},
 });
 
