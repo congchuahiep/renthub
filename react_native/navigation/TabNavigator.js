@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useContext } from 'react';
 import BottomBar from '../components/BottomBar';
 import PostAppbar from '../components/PostAppbar';
-import { UserContext } from '../config/context';
 import ChatListScreen from '../screens/Chats';
 import Login from '../screens/Login';
 import Profile from '../screens/Profile';
@@ -12,12 +11,13 @@ import Register from '../screens/RegisterTenant';
 import RentalList from '../screens/RentalList';
 import RoomSeekingList from '../screens/RoomSeekingList';
 import Users from '../screens/Users';
+import { useAuth } from '../config/auth';
 
 const Tab = createBottomTabNavigator();
 
 
 export default function TabNavigator() {
-	const user = useContext(UserContext)
+	const { user } = useAuth();
     
 	return (
 		<Tab.Navigator
@@ -73,7 +73,7 @@ export default function TabNavigator() {
 							),
 						}} />
 
-					<Tab.Screen
+					{/* <Tab.Screen
 						name="chats"
 						component={ChatListScreen}
 						options={{
@@ -81,7 +81,7 @@ export default function TabNavigator() {
 							tabBarIcon: ({ color }) => (
 								<MaterialDesignIcons name="chat" color={color} size={26} />
 							),
-						}} />
+						}} /> */}
 					<Tab.Screen
 						name="profile"
 						component={Profile}

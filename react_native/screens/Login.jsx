@@ -15,6 +15,7 @@ import Apis, { authApis, endpoints } from "../config/Apis";
 import { MyDispatchContext } from "../config/context";
 import useStyle from "../styles/useStyle";
 import { Image } from "react-native";
+import { useAuth } from "../config/auth";
 
 const info = [
 	{
@@ -35,19 +36,17 @@ const Login = () => {
 	const route = useRoute();
 	const navigation = useNavigation();
 
-	// const { message } = route?.params ? route?.params : null;
+	const { login } = useAuth();
 
 	const style = useStyle();
 	const theme = useTheme();
 
-	const [user, setUser] = useState({});
+	const [userLoginData, setUserLoginData] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [errors, setErrors] = useState({});
 
-	const userDispatch = useContext(MyDispatchContext);
-
-	const setState = (value, field) => {
-		setUser({ ...user, [field]: value });
+	const updateUserLoginData = (value, field) => {
+		setUserLoginData({ ...userLoginData, [field]: value });
 	};
 
 	const validate = () => {
@@ -55,7 +54,7 @@ const Login = () => {
 		let valid = true;
 
 		for (let i of info) {
-			if (!user[i.field] || user[i.field].trim() === "") {
+			if (!userLoginData[i.field] || userLoginData[i.field].trim() === "") {
 				newErrors[i.field] = `Vui lòng nhập ${i.label.toLowerCase()}!`;
 				valid = false;
 			}
@@ -69,33 +68,13 @@ const Login = () => {
 			try {
 				setLoading(true);
 
-				const requestData = qs.stringify({
-					...user,
-					client_id: process.env.EXPO_PUBLIC_AUTH_CLIENT_ID,
-					client_secret: process.env.EXPO_PUBLIC_AUTH_CLIENT_SECRET,
-					grant_type: "password",
-				});
-
-				let res = await Apis.post(endpoints["login"], requestData, {
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded",
-					},
-				});
-
-				await AsyncStorage.setItem("token", res.data.access_token);
-
-				let u = await authApis(res.data.access_token).get(
-					endpoints.currentUser
-				);
-
-				userDispatch({
-					type: "login",
-					payload: u.data,
-				});
+        console.log(userLoginData)
+				await login(userLoginData.username, userLoginData.password);
+				// Đăng nhập thành công sẽ tự động navigate qua màn hình chính
 			} catch (ex) {
-        console.log(ex);
-
+				console.log(ex);
 				let newErrors = {};
+
 				if (ex.response?.data?.error === "invalid_grant") {
 					newErrors.general = "Tài khoản hoặc mật khẩu không đúng!";
 				} else {
@@ -159,8 +138,8 @@ const Login = () => {
 							label={i.label}
 							secureTextEntry={i.secureTextEntry}
 							right={<TextInput.Icon icon={i.icon} />}
-							value={user[i.field]}
-							onChangeText={(t) => setState(t, i.field)}
+							value={userLoginData[i.field]}
+							onChangeText={(t) => updateUserLoginData(t, i.field)}
 						/>
 						{errors[i.field] && (
 							<HelperText type="error">{errors[i.field]}</HelperText>
