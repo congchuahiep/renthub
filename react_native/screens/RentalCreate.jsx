@@ -2,7 +2,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Card, Text } from "react-native-paper";
+import { Button, Card, Text } from "react-native-paper";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
@@ -108,6 +108,8 @@ const RentalCreate = ({ navigation, route }) => {
 
 		fields.forEach((field) => {
 			const value = formData[field.field];
+
+      // TODO: HẠN CHẾ SỐ LƯỢNG NHÀ TẮM, NHÀ VỆ SINH CÁC THỨ
 
 			if (
 				field.required !== false &&
@@ -224,7 +226,7 @@ const RentalCreate = ({ navigation, route }) => {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 
-			navigation.goBack();
+			navigation.popToTop();
 		} catch (error) {
 			console.error(error);
 			alert("Có lỗi xảy ra khi tạo bài đăng!");
@@ -249,8 +251,6 @@ const RentalCreate = ({ navigation, route }) => {
 				)}
 				scrollEnabled={false}
 			/>
-
-			{/* <Button onPress={() => console.log(formData)}>DATA</Button> */}
 
 			<StepBottomBar
 				step={currentStep + 1}
