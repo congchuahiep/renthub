@@ -1,12 +1,7 @@
 import { Link, useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
-import {
-  Button,
-  HelperText,
-  TextInput,
-  useTheme
-} from "react-native-paper";
+import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../config/auth";
 import useStyle from "../styles/useStyle";
@@ -62,7 +57,7 @@ const Login = () => {
 			try {
 				setLoading(true);
 
-        console.log(userLoginData)
+				console.log(userLoginData);
 				await login(userLoginData.username, userLoginData.password);
 				// Đăng nhập thành công sẽ tự động navigate qua màn hình chính
 			} catch (ex) {
@@ -168,6 +163,9 @@ const Login = () => {
 						Đăng ký ngay
 					</Link>
 				</Text>
+				<Button onPress={() => navigation.navigate("RentalPostMapping")}>
+					TESTMAP
+				</Button>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
