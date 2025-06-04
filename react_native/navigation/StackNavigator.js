@@ -11,10 +11,12 @@ import RegisterLandlord from "../screens/RegisterLandlord";
 import RegisterTenant from "../screens/RegisterTenant";
 import RentalDetail from "../screens/RentalDetail";
 import Setting from "../screens/Setting";
-import UserInfo from "../screens/UserInfo";
+import ProfileDetail from "../screens/ProfileDetail";
 import RegionAddressSelect from "../screens/address/RegionAddressSelect";
 import TabNavigator from "./TabNavigator";
 import StreetAddressSelect from "../screens/address/StreetAddressSelect";
+import RentalCreate from "../screens/RentalCreate";
+import PropertySellect from "../screens/property/PropertySelect";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,8 +49,8 @@ export default function StackNavigator() {
 				})}
 			/>
 			<Stack.Screen
-				name="UserInfo"
-				component={UserInfo}
+				name="ProfileDetail"
+				component={ProfileDetail}
 				options={({ route }) => ({
 					headerShown: true,
 					title: route.params.title ? route.params.title : "Thông tin cá nhân",
@@ -119,6 +121,26 @@ export default function StackNavigator() {
 				component={StreetAddressSelect}
 				options={({ route }) => ({
 					title: "Chọn số nhà, vị trí cụ thể",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="RentalCreate"
+				component={RentalCreate}
+				options={({ route }) => ({
+					title: "Đăng bài cho thuê",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="PropertySelect"
+				component={PropertySellect}
+				options={({ route }) => ({
+					title: "Chọn dãy trọ",
 					headerShown: true,
 					headerTransparent: false,
 					header: (props) => <AppbarDefault {...props} />,

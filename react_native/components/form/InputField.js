@@ -11,6 +11,7 @@ const InputField = ({
 	error = null,
 	style = null,
     keyboardType = "default",
+    multiline = false,
 	...props
 }) => (
 	<View style={{ marginBottom: 4 }}>
@@ -23,9 +24,10 @@ const InputField = ({
 			right={icon ? <TextInput.Icon icon={icon} /> : null}
 			mode="outlined"
 			error={!!error}
-			style={style}
+			style={[style, { minHeight: multiline && 160}]}
 			autoCapitalize="none"
             keyboardType={keyboardType}
+            multiline={multiline}
 			{...props}
 		/>
 		{error && (

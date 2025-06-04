@@ -1,12 +1,15 @@
 import { createContext } from "react";
 
-export const UserContext= createContext();
-
-export const MyDispatchContext= createContext();
+export const AuthContext = createContext({
+	user: {},
+	userLoading: false,
+	login: async () => {},
+	logout: async () => {},
+});
 
 export const ThemeSettingContext = createContext({
-  themeMode: "auto",
-  materialYou: true,
-  setThemeMode: () => {},
-  setMaterialYou: () => {},
+	themeMode: "auto",
+	materialYou: true,
+	setThemeMode: () => {},
+	setMaterialYou: () => {},
 });

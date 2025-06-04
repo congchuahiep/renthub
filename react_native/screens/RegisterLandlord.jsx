@@ -105,6 +105,7 @@ const RegisterLandlord = ({ navigation, route }) => {
 								propertyImages,
 								navigation,
 								formData,
+                returnScreen: "RegisterLandlord",
 								style,
 							})
 						)}
@@ -171,8 +172,8 @@ const RegisterLandlord = ({ navigation, route }) => {
 					}
 					break;
 				case "property_upload_images":
-					if (!propertyImages.length) {
-						newErrors[field.field] = "Vui lòng chọn ít nhất 1 ảnh";
+					if (propertyImages.length < 3 ) {
+						newErrors[field.field] = "Vui lòng chọn ít nhất 3 ảnh về dãy trọ";
 						isValid = false;
 					}
 					break;

@@ -128,6 +128,8 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
             "property_name",
             "property_address",
             "property_upload_images",
+            "property_latitude",
+            "property_longitude",
             "property_province",
             "property_district",
             "property_ward",

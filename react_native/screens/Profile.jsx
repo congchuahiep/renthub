@@ -3,28 +3,20 @@ import { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MyDispatchContext, UserContext } from "../config/context";
 import useStyle from "../styles/useStyle";
+import { useAuth } from "../config/auth";
 
 const Profile = () => {
 	const theme = useTheme();
 	const style = useStyle();
+
+	const { user, logout } = useAuth();
+
 	const [loading, setLoading] = useState(false);
-	const [user, setUser] = useState(null);
 	const navigation = useNavigation();
-	const userDispatch = useContext(MyDispatchContext);
-	const currentUser = useContext(UserContext);
-
-	const profile = async () => {
-		setUser(currentUser);
-	};
-
-	useEffect(() => {
-		profile();
-	}, []);
 
 	const handleLogout = async () => {
-		userDispatch({ type: "logout" });
+		logout();
 	};
 
 	return (
@@ -78,7 +70,9 @@ const Profile = () => {
 					<List.Item
 						title="Thông tin cá nhân"
 						left={(props) => <List.Icon {...props} icon="account" />}
-						onPress={() => navigation.navigate("UserInfo", { user })}
+						onPress={() =>
+							navigation.navigate("ProfileDetail", { userData: user })
+						}
 					/>
 					<List.Item
 						title="Bài đăng của tôi"

@@ -13,6 +13,7 @@ export const renderFormField = ({
 	propertyImages,
 	navigation,
 	formData,
+	returnScreen,
 	style,
 }) => {
 	if (field.hidden) return null;
@@ -59,7 +60,7 @@ export const renderFormField = ({
 					value={formData.property_region_address}
 					onPress={() =>
 						navigation.navigate("RegionAddressSelect", {
-							returnScreen: "RegisterLandlord",
+							returnScreen,
 						})
 					}
 					error={error}
@@ -74,12 +75,27 @@ export const renderFormField = ({
 					value={value}
 					onPress={() =>
 						navigation.navigate("StreetAddressSelect", {
-							returnScreen: "RegisterLandlord",
+							returnScreen,
 							region_address: formData.property_region_address,
 						})
 					}
 					disabled={!formData.property_region_address}
-                    disabledText="Chọn tỉnh/huyện/xã trước"
+					disabledText="Chọn tỉnh/huyện/xã trước"
+					error={error}
+				/>
+			);
+
+		case "property":
+			return (
+				<ScreenPickerButton
+					key={field.field}
+					label={field.label}
+					value={value}
+					onPress={() =>
+						navigation.navigate("PropertySelect", {
+							returnScreen,
+						})
+					}
 					error={error}
 				/>
 			);
