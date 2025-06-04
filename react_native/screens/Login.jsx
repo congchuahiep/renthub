@@ -1,7 +1,7 @@
 import { Link, useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
-import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
+import { Button, HelperText, Modal, Portal, TextInput, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../config/auth";
 import useStyle from "../styles/useStyle";
@@ -33,6 +33,8 @@ const Login = () => {
 	const [userLoginData, setUserLoginData] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [errors, setErrors] = useState({});
+
+  const [openModel, setOpenModel] = useState(false);
 
 	const updateUserLoginData = (value, field) => {
 		setUserLoginData({ ...userLoginData, [field]: value });
@@ -166,6 +168,22 @@ const Login = () => {
 				<Button onPress={() => navigation.navigate("RentalPostMapping")}>
 					TESTMAP
 				</Button>
+				<Button onPress={() => setOpenModel(true)}>
+					TESTMODEL
+				</Button>
+
+				<Portal>
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={openModel}
+						onDismiss={() => setOpenModel(false)}
+					>
+						<View>
+							<Text>HI</Text>
+						</View>
+					</Modal>
+				</Portal>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
