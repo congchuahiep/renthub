@@ -1,5 +1,5 @@
 import { GoogleMaps } from "expo-maps";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
 	Dimensions,
 	StyleSheet,
@@ -11,6 +11,7 @@ import {
 import {
 	ActivityIndicator,
 	Button,
+	Chip,
 	Icon,
 	Portal,
 	Text,
@@ -22,6 +23,8 @@ import RentalPostCard from "../components/RentalPostCard";
 import Carousel from "../components/Carousel";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
+import debounce from "lodash.debounce";
+import { getRadiusInMeters } from "../utils/geography";
 
 const RentalPostMapping = () => {
 	const windowHeight = Dimensions.get("window").height;
@@ -29,41 +32,51 @@ const RentalPostMapping = () => {
 	const style = useStyle();
 
 	const [rentalPostMarkers, setRentalPostMarkers] = useState([]);
+	const [markerLoading, setMarkerLoading] = useState(false);
+
 	const [selectedRentalPost, setSelectedRentalPost] = useState(null);
 	const [selectedRentalPostId, setSelectedRentalPostId] = useState(null);
-
 	const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 	const [bottomSheetLoading, setBottomSheetLoading] = useState(false);
 
-	const loadRentalPostMarker = async () => {
-		try {
-			const res = await Apis.get(endpoints.rentals);
+	const loadRentalPostMarker = useCallback(
+		debounce(async (latitude, longitude, radius) => {
+			try {
+				console.log("⏳ Tìm kiếm nhà trọ quanh bán kính: ", radius);
+				setMarkerLoading(true);
+				const res = await Apis.get(endpoints.rentals, {
+					params: { latitude, longitude, radius },
+				});
 
-			setRentalPostMarkers(
-				res.data.results.map((post) => {
-					const latitude = post?.property?.latitude;
-					const longitude = post?.property?.longitude;
+				setRentalPostMarkers(
+					res.data.results.map((post) => {
+						const latitude = post?.property?.latitude;
+						const longitude = post?.property?.longitude;
 
-					console.log(post.post.id);
+						console.log(post.post.id);
 
-					if (typeof latitude === "number" && typeof longitude === "number") {
-						return {
-							id: post.post.id.toString(), // ??? VÌ MỘT LÝ DO GÌ ĐÓ NÓ PHẢI ĐỔI SANG CHUỖI
-							title: post.title,
-							coordinates: {
-								latitude,
-								longitude,
-							},
-						};
-					}
+						if (typeof latitude === "number" && typeof longitude === "number") {
+							return {
+								id: post.post.id.toString(), // ??? VÌ MỘT LÝ DO GÌ ĐÓ NÓ PHẢI ĐỔI SANG CHUỖI
+								title: post.title,
+								coordinates: {
+									latitude,
+									longitude,
+								},
+							};
+						}
 
-					return null;
-				})
-			);
-		} catch (ex) {
-			console.log(ex);
-		}
-	};
+						return null;
+					})
+				);
+			} catch (ex) {
+				console.log(ex);
+			} finally {
+				setMarkerLoading(false);
+			}
+		}, 1000),
+		[]
+	);
 
 	const loadRentalPost = async (id) => {
 		setBottomSheetLoading(true);
@@ -103,18 +116,42 @@ const RentalPostMapping = () => {
 
 	return (
 		<BottomSafeAreaView style={{ flex: 1 }}>
-			<GoogleMaps.View
-				style={{ flex: 1 }}
-				cameraPosition={{
-					coordinates: { latitude: 16.15, longitude: 106 },
-					zoom: 6,
-				}}
-				markers={rentalPostMarkers}
-				onMarkerClick={(marker) => {
-					handleOpenBottomSheet();
-					setSelectedRentalPostId(marker.id);
-				}}
-			/>
+			<View style={{ flex: 1, position: "relative" }}>
+				<GoogleMaps.View
+					style={{ flex: 1 }}
+					cameraPosition={{
+						coordinates: { latitude: 16.15, longitude: 106 },
+						zoom: 6,
+					}}
+					markers={rentalPostMarkers}
+					onMarkerClick={(marker) => {
+						handleOpenBottomSheet();
+						setSelectedRentalPostId(marker.id);
+					}}
+					onCameraMove={({ coordinates, zoom }) => {
+						const { latitude, longitude } = coordinates;
+						// Tính toán bán kính của vùng cần fetch các bài đăng dựa trên
+						// có bán kính bằng nửa chiều dài của màn hình
+						const radius =
+							getRadiusInMeters(latitude, zoom, windowHeight) / 1000; // Đổi mét sang km
+						// Gọi debounce hàm fetch
+						loadRentalPostMarker(latitude, longitude, radius);
+					}}
+				/>
+				{markerLoading && (
+					<Chip
+						style={{
+							position: "absolute",
+							top: 10,
+							width: 128,
+							alignSelf: "center",
+						}}
+					>
+						<ActivityIndicator style={{ height: 11, paddingRight: 8 }} />
+						Đang tải
+					</Chip>
+				)}
+			</View>
 
 			{/* Drawer */}
 
