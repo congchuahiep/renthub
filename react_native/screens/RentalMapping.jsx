@@ -1,35 +1,35 @@
 import { GoogleMaps } from "expo-maps";
+import debounce from "lodash.debounce";
 import { useCallback, useEffect, useState } from "react";
 import {
 	Dimensions,
-	StyleSheet,
-	View,
 	Modal,
+	StyleSheet,
 	TouchableOpacity,
-	TouchableWithoutFeedback,
+	View,
 } from "react-native";
 import {
 	ActivityIndicator,
 	Button,
 	Chip,
 	Icon,
-	Portal,
 	Text,
 	useTheme,
 } from "react-native-paper";
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
-import Apis, { endpoints } from "../config/Apis";
-import RentalPostCard from "../components/RentalPostCard";
 import Carousel from "../components/Carousel";
+import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
-import debounce from "lodash.debounce";
 import { getRadiusInMeters } from "../utils/geography";
+import { useNavigation } from "@react-navigation/native";
 
-const RentalPostMapping = () => {
+const RentalMapping = () => {
 	const windowHeight = Dimensions.get("window").height;
 	const theme = useTheme();
 	const style = useStyle();
+
+	const navigation = useNavigation();
 
 	const [rentalPostMarkers, setRentalPostMarkers] = useState([]);
 	const [markerLoading, setMarkerLoading] = useState(false);
@@ -142,7 +142,7 @@ const RentalPostMapping = () => {
 					<Chip
 						style={{
 							position: "absolute",
-							top: 10,
+							top: 110,
 							width: 128,
 							alignSelf: "center",
 						}}
@@ -172,7 +172,7 @@ const RentalPostMapping = () => {
 						left: 0,
 						right: 0,
 						justifyContent: "flex-start",
-						backgroundColor: theme.colors.elevation.level1,
+						backgroundColor: theme.colors.background,
 						borderTopLeftRadius: 12,
 						borderTopRightRadius: 12,
 						padding: 16,
@@ -277,7 +277,18 @@ const RentalPostMapping = () => {
 										</Text>
 									</View>
 								</View>
-								<Button mode="contained">Xem chi tiết</Button>
+								<Button
+									mode="contained"
+									onPress={() => {
+										handleCloseBottomSheet();
+										navigation.navigate("RentalDetail", {
+											id: selectedRentalPost.post.id,
+											title: selectedRentalPost.title,
+										});
+									}}
+								>
+									Xem chi tiết
+								</Button>
 							</>
 						)
 					)}
@@ -287,50 +298,4 @@ const RentalPostMapping = () => {
 	);
 };
 
-export default RentalPostMapping;
-
-const styles = StyleSheet.create({
-	container: {
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	modalContainer: {
-		backgroundColor: "white",
-		padding: 20,
-		marginHorizontal: 20,
-		borderRadius: 8,
-	},
-	openButton: {
-		width: "90%",
-		alignItems: "center",
-		justifyContent: "center",
-		borderWidth: 1,
-		borderColor: "#86827e",
-		paddingVertical: 12,
-		borderRadius: 8,
-	},
-	bottomSheet: {
-		position: "absolute",
-		left: 0,
-		right: 0,
-		justifyContent: "flex-start",
-		alignItems: "center",
-		backgroundColor: "white",
-		borderTopLeftRadius: 10,
-		borderTopRightRadius: 10,
-		paddingVertical: 23,
-		paddingHorizontal: 25,
-		bottom: 0,
-		borderWidth: 1,
-		borderColor: "#e0e0e0",
-	},
-	header: {
-		width: "100%",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		marginBottom: 12,
-	},
-	content: {
-		width: "100%",
-	},
-});
+export default RentalMapping;

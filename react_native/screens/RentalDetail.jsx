@@ -39,7 +39,7 @@ const RentalDetail = ({ route }) => {
 
 	const loadRentalPost = async () => {
 		setLoading(true);
-
+    
 		await Apis.get(endpoints.rentalDetails(id))
 			.then((res) => {
 				console.log(res.data);

@@ -165,7 +165,7 @@ const Login = () => {
 						Đăng ký ngay
 					</Link>
 				</Text>
-				<Button onPress={() => navigation.navigate("RentalPostMapping")}>
+				<Button onPress={() => navigation.navigate("RentalMapping")}>
 					TESTMAP
 				</Button>
 				<Button onPress={() => setOpenModel(true)}>

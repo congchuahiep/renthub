@@ -17,7 +17,8 @@ import TabNavigator from "./TabNavigator";
 import StreetAddressSelect from "../screens/address/StreetAddressSelect";
 import RentalCreate from "../screens/RentalCreate";
 import PropertySellect from "../screens/property/PropertySelect";
-import RentalPostMapping from "../screens/RentalPostMapping";
+import RentalMapping from "../screens/RentalMapping";
+import RentalMapAppbar from "../components/RentalMapAppbar";
 
 const Stack = createNativeStackNavigator();
 
@@ -148,13 +149,13 @@ export default function StackNavigator() {
 				})}
 			/>
 			<Stack.Screen
-				name="RentalPostMapping"
-				component={RentalPostMapping}
+				name="RentalMapping"
+				component={RentalMapping}
 				options={({ route }) => ({
 					title: "Tìm kiếm dãy trọ",
 					headerShown: true,
-					headerTransparent: false,
-					header: (props) => <AppbarDefault {...props} />,
+					headerTransparent: true,
+					header: (props) => <RentalMapAppbar {...props} />,
 				})}
 			/>
 		</Stack.Navigator>
