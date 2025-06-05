@@ -68,8 +68,8 @@ export default function RentalAppbar({
 					</Button>
 
 					<Appbar.Action
-						icon={ isFiltered ? "filter" : "filter-outline"}
-						color={isFiltered ? theme.colors.surface : theme.colors.onSurface}
+						icon={isFiltered ? "filter" : "filter-outline"}
+						color={isFiltered ? theme.colors.surface : theme.colors.secondary}
 						style={[
 							style.box_shadow,
 							{

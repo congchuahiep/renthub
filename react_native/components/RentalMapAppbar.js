@@ -1,20 +1,16 @@
-import { getHeaderTitle } from "@react-navigation/elements";
 import { Appbar, Searchbar, useTheme } from "react-native-paper";
 import useStyle from "../styles/useStyle";
-import { useGoogleAutocomplete } from "@appandflow/react-native-google-autocomplete";
-import { useRef } from "react";
 
 export default function RentalMapAppbar({
 	navigation,
-	route,
-	options,
 	back,
 	setTerm,
 	searchRef,
 	setShowAutocomplete,
 	onSubmit,
+	isFiltered,
+	setShowFilterModal,
 }) {
-	const title = getHeaderTitle(options, route.name);
 	const theme = useTheme();
 	const style = useStyle();
 
@@ -61,9 +57,24 @@ export default function RentalMapAppbar({
 				iconColor={theme.colors.onSurfaceVariant}
 				inputStyle={{ minHeight: 42, height: 42 }}
 			/>
+      
 			<Appbar.Action
-				style={{ borderRadius: 16, backgroundColor: theme.colors.background }}
-				icon="filter-outline"
+				icon={isFiltered ? "filter" : "filter-outline"}
+				color={isFiltered ? theme.colors.surface : theme.colors.onSurface}
+				style={[
+					style.box_shadow,
+					{
+						backgroundColor: isFiltered
+							? theme.colors.primary
+							: theme.colors.background,
+						borderWidth: 1,
+						borderColor: theme.colors.secondary,
+						borderRadius: 16,
+					},
+				]}
+				onPress={() => {
+					setShowFilterModal(true);
+				}}
 			/>
 		</Appbar.Header>
 	);

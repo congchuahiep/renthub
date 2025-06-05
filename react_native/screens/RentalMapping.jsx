@@ -1,36 +1,35 @@
+import { useGoogleAutocomplete } from "@appandflow/react-native-google-autocomplete";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useNavigation } from "@react-navigation/native";
+import { geocodeAsync } from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import debounce from "lodash.debounce";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-	Dimensions,
-	FlatList,
-	Keyboard,
-	Modal,
-	StyleSheet,
-	TouchableOpacity,
-	TouchableWithoutFeedback,
-	View,
+  Dimensions,
+  FlatList,
+  Keyboard,
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
 } from "react-native";
 import {
-	ActivityIndicator,
-	Button,
-	Chip,
-	Divider,
-	Icon,
-	Text,
-	useTheme,
+  ActivityIndicator,
+  Button,
+  Chip,
+  Divider,
+  Icon,
+  Text,
+  useTheme
 } from "react-native-paper";
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
 import Carousel from "../components/Carousel";
+import RentalMapAppbar from "../components/RentalMapAppbar";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { getRadiusInMeters } from "../utils/geography";
-import { useNavigation } from "@react-navigation/native";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useGoogleAutocomplete } from "@appandflow/react-native-google-autocomplete";
-import RentalMapAppbar from "../components/RentalMapAppbar";
-import { geocodeAsync } from "expo-location";
 
 const RentalMapping = () => {
 	const windowHeight = Dimensions.get("window").height;
@@ -222,6 +221,11 @@ const RentalMapping = () => {
 							const radius =
 								getRadiusInMeters(latitude, zoom, windowHeight) / 1000; // Đổi mét sang km
 							loadRentalPostMarker(latitude, longitude, radius); // Gọi debounce hàm fetch
+						}}
+						uiSettings={{
+							tiltGesturesEnabled: false,
+							rotationGesturesEnabled: false,
+							compassEnabled: false,
 						}}
 					/>
 					{markerLoading && (
