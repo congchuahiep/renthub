@@ -1,8 +1,19 @@
 import { getHeaderTitle } from "@react-navigation/elements";
 import { Appbar, Searchbar, useTheme } from "react-native-paper";
 import useStyle from "../styles/useStyle";
+import { useGoogleAutocomplete } from "@appandflow/react-native-google-autocomplete";
+import { useRef } from "react";
 
-export default function RentalMapAppbar({ navigation, route, options, back }) {
+export default function RentalMapAppbar({
+	navigation,
+	route,
+	options,
+	back,
+	setTerm,
+	searchRef,
+	setShowAutocomplete,
+	onSubmit,
+}) {
 	const title = getHeaderTitle(options, route.name);
 	const theme = useTheme();
 	const style = useStyle();
@@ -31,9 +42,16 @@ export default function RentalMapAppbar({ navigation, route, options, back }) {
 
 			{/* <Appbar.Content title={title} /> */}
 			<Searchbar
+				ref={searchRef}
 				placeholder="Tìm kiếm..."
-				// onChangeText={setSearchQuery}
-				// value={searchQuery}
+				onChangeText={(text) => {
+					setTerm(text);
+					setShowAutocomplete(true);
+				}}
+				onSubmitEditing={({ nativeEvent }) => {
+					onSubmit(nativeEvent.text);
+					setShowAutocomplete(false);
+				}}
 				style={{
 					flex: 1,
 					height: 42,
