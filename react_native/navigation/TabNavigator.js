@@ -1,24 +1,23 @@
-import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useContext } from 'react';
-import BottomBar from '../components/BottomBar';
-import PostAppbar from '../components/PostAppbar';
-import ChatListScreen from '../screens/Chats';
-import Login from '../screens/Login';
-import Profile from '../screens/Profile';
-import PropertyList from '../screens/PropertyList';
-import Register from '../screens/RegisterTenant';
-import RentalList from '../screens/RentalList';
-import RoomSeekingList from '../screens/RoomSeekingList';
-import Users from '../screens/Users';
-import { useAuth } from '../config/auth';
+import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useContext } from "react";
+import BottomBar from "../components/BottomBar";
+import RentalAppbar from "../components/RentalAppbar";
+import ChatListScreen from "../screens/Chats";
+import Login from "../screens/Login";
+import Profile from "../screens/Profile";
+import PropertyList from "../screens/PropertyList";
+import Register from "../screens/RegisterTenant";
+import RentalList from "../screens/RentalList";
+import RoomSeekingList from "../screens/RoomSeekingList";
+import Users from "../screens/Users";
+import { useAuth } from "../config/auth";
 
 const Tab = createBottomTabNavigator();
 
-
 export default function TabNavigator() {
 	const { user } = useAuth();
-    
+
 	return (
 		<Tab.Navigator
 			screenOptions={{
@@ -32,7 +31,8 @@ export default function TabNavigator() {
 				options={{
 					title: "Khám phá",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					headerTransparent: true,
+					header: (props) => <RentalAppbar {...props} />,
 					tabBarIcon: ({ color }) => (
 						<MaterialDesignIcons name="home-search" color={color} size={26} />
 					),
@@ -44,7 +44,8 @@ export default function TabNavigator() {
 				options={{
 					title: "Tìm trọ",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					headerTransparent: true,
+					header: (props) => <RentalAppbar {...props} />,
 					tabBarIcon: ({ color }) => (
 						<MaterialDesignIcons name="home-outline" color={color} size={26} />
 					),
@@ -56,12 +57,13 @@ export default function TabNavigator() {
 				options={{
 					title: "Dãy trọ",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					header: (props) => <RentalAppbar {...props} />,
 					tabBarIcon: ({ color }) => (
 						<MaterialDesignIcons name="home-group" color={color} size={26} />
 					),
-				}} />
-			{user !== null ?
+				}}
+			/>
+			{user !== null ? (
 				<>
 					<Tab.Screen
 						name="user"
@@ -69,9 +71,14 @@ export default function TabNavigator() {
 						options={{
 							title: "Tìm đối tác",
 							tabBarIcon: ({ color }) => (
-								<MaterialDesignIcons name="account-group" color={color} size={26} />
+								<MaterialDesignIcons
+									name="account-group"
+									color={color}
+									size={26}
+								/>
 							),
-						}} />
+						}}
+					/>
 
 					{/* <Tab.Screen
 						name="chats"
@@ -92,9 +99,9 @@ export default function TabNavigator() {
 							),
 						}}
 					/>
-
-				</> : <>
-
+				</>
+			) : (
+				<>
 					<Tab.Screen
 						name="Login"
 						component={Login}
@@ -105,7 +112,8 @@ export default function TabNavigator() {
 							),
 						}}
 					/>
-				</>}
+				</>
+			)}
 		</Tab.Navigator>
 	);
 }

@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useContext } from "react";
 import { useTheme } from "react-native-paper";
 import AppbarDefault from "../components/Appbar";
-import PostAppbar from "../components/PostAppbar";
+import RentalAppbar from "../components/RentalAppbar";
 import { ThemeSettingContext } from "../config/context";
 import FollowerList from "../screens/FollowList";
 import ProfileUser from "../screens/ProfileUser";
@@ -47,7 +47,7 @@ export default function StackNavigator() {
 						? route.params.title
 						: "Bài đăng cho thuê trọ",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					header: (props) => <RentalAppbar {...props} />,
 				})}
 			/>
 			<Stack.Screen
@@ -65,7 +65,7 @@ export default function StackNavigator() {
 				options={{
 					title: "Danh sách người theo dõi",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					header: (props) => <RentalAppbar {...props} />,
 				}}
 			/>
 			<Stack.Screen

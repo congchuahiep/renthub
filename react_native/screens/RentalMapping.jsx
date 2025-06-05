@@ -59,7 +59,7 @@ const RentalMapping = () => {
 		useGoogleAutocomplete(process.env.EXPO_PUBLIC_GOOGLE_MAP_AUTOCOMPLETE_API, {
 			language: "vi",
 			components: "country:vn",
-			queryTypes: "(cities)",
+			queryTypes: "(regions)",
 		});
 
 	const loadRentalPostMarker = useCallback(
@@ -142,6 +142,7 @@ const RentalMapping = () => {
 	}, [navigation]);
 
 	useEffect(() => console.log("NÓ: ", term), [term]);
+	useEffect(() => console.log("NÓ: ", locationResults), [locationResults]);
 
 	const handlePlaceSelect = async (place) => {
 		const placeDetails = await searchDetails(place.place_id);
