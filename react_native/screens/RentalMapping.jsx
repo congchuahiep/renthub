@@ -401,6 +401,13 @@ const RentalMapping = () => {
 										mode="contained"
 										onPress={() => {
 											handleCloseBottomSheet();
+											setMapPosition({
+												coordinates: {
+													latitude: selectedRentalPost.property.latitude,
+													longitude: selectedRentalPost.property.longitude,
+												},
+												zoom: 14,
+											});
 											navigation.navigate("RentalDetail", {
 												id: selectedRentalPost.post.id,
 												title: selectedRentalPost.title,
