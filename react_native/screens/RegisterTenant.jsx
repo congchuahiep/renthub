@@ -1,19 +1,15 @@
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { Image, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
 	Button,
-	HelperText,
-	Text,
-	TextInput,
-	useTheme,
+	useTheme
 } from "react-native-paper";
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
-import Apis, { endpoints } from "../config/Apis";
-import useStyle from "../styles/useStyle";
 import AvatarPicker from "../components/form/AvatarPicker";
 import InputField from "../components/form/InputField";
+import Apis, { endpoints } from "../config/Apis";
+import useStyle from "../styles/useStyle";
 
 // CÁC TRƯỜNG THÔNG TIN ĐĂNG KÝ TÀI KHOẢN TÌM TRỌ
 export const tenantInfo = [
@@ -86,6 +82,12 @@ const RegisterTenant = () => {
 		if (!result.canceled) {
 			updateUserField(result.assets[0], "avatar");
 		}
+		for (let i of tenantInfo) {
+			if (!user[i.field] || user[i.field].toString().trim() === "") {
+				newErrors[i.field] = `Vui lòng nhập ${i.label.toLowerCase()}!`;
+				valid = false;
+			}
+		}
 	};
 
 	// Xoá ảnh avatar hiện tại
@@ -112,6 +114,8 @@ const RegisterTenant = () => {
 	 * Xử lý đăng ký người dùng
 	 */
 	const registerHandle = async () => {
+		console.log("User data:", user);
+		console.log("Validation passed:", validate());
 		if (!validate()) return; // Validate dữ liệu đăng ký
 
 		try {
@@ -135,6 +139,7 @@ const RegisterTenant = () => {
 				}
 				form.append(key, user[key]);
 			}
+			console.log(form.data);
 
 			// Tiến hành chạy api đăng ký người dùng
 			await Apis.post(endpoints["tenant-register"], form, {

@@ -7,7 +7,6 @@ router = DefaultRouter()
 # Register the viewsets with the router
 router.register("rentals", viewset=views.RentalPostViewSet, basename="rental")
 router.register("roomseekings", viewset=views.RoomSeekingPostViewSet, basename="roomseeking")
-router.register("comments", viewset=views.CommentViewSet, basename="comment")
 
 urlpatterns = [
     path('', include(router.urls)),

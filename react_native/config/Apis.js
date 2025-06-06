@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // // Nhập biến môi trường
-const BASE_URL = 'http://192.168.1.10:8000';
+const BASE_URL = 'http://192.168.1.3:8000';
 // 
 
 export const endpoints = {
@@ -10,8 +10,6 @@ export const endpoints = {
   'roomseekings':"/roomseekings/",
   'roomseekings-details': (roomseekingId)=> `/roomseekings/${roomseekingId}`,
   'login':"/o/token/",
-  // 'chat':"/chats/chat/",
-  // 'messages':(chat_id) =>  `/chats/${chat_id}`,
   'user':(id) => `/users/${id}`,
   'users':"/users/",
   'current-user':"/users/current-user/",
@@ -22,6 +20,14 @@ export const endpoints = {
   'follow':(user_id)=>  `/follower/${user_id}/follow/`,
   'is-follow':(user_id)=> `/follower/${user_id}/is-following/`,
   'follow-delete':(user_id)=> `/follower/${user_id}/follower/`,
+  'provinces': "/provinces/",
+	'districts': "/districts/",
+	'wards': "/wards/",
+  'rental-comments':(rentalId)=>`/rentals/${rentalId}/comments/`,
+  'rental-comments-replies':(rentalId, commentId)=>`/rentals/${rentalId}/comments/${commentId}/replies/`,
+  'roomseeking-comments':(roomseekingId)=>`/roomseekings/${roomseekingId}/comments/`,
+  'roomseeking-comments-replies':(roomseekingId, commentId)=>`/roomseekings/${roomseekingId}/comments/${commentId}/replies/`,
+  
 
 }
 

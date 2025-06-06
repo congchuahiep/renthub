@@ -152,6 +152,7 @@ class RentalPostSerializer(serializers.ModelSerializer):
 class RoomSeekingPostSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     post = PostReferenceSerializer(read_only=True)
+    
 
     class Meta:
         model = RoomSeekingPost
@@ -169,15 +170,28 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
             'name':f"{instance.owner.first_name} {instance.owner.last_name}",
             'avatar':instance.owner.avatar,
         }
+
+        if instance.province:
+            data["province"] = instance.province.full_name
+        if instance.district:
+            data["district"] = instance.district.full_name
         return data
 
     def validate(self, attrs):
         request = self.context['request']
         instance = self.instance
 
-        if instance and instance.owner != request.user:
-            raise serializers.ValidationError("You do not have permission to edit this post.")
+        if instance:  
+            if instance.owner != request.user:
+                raise serializers.ValidationError("You do not have permission to edit this post.")
+
+        price_min = attrs.get("price_min", 0)
+        price_max = attrs.get("price_max", 0)
+        if price_min < 0 or price_max < 0 or price_max < price_min:
+            raise serializers.ValidationError("Giá trị không hợp lệ.")
+
         return attrs
+
     
     def create(self, validated_data):
         validated_data['status'] = 'pending'
@@ -188,6 +202,7 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
        
 
 class CommentSerializer(serializers.ModelSerializer):
+    
     """
     Serializer cho `Comment` model
 
@@ -203,6 +218,15 @@ class CommentSerializer(serializers.ModelSerializer):
     - `user`: Id của người dùng gửi comment
     - `post`: Id của bài đăng
     """
+    reply_to = serializers.PrimaryKeyRelatedField(
+        queryset=Comment.objects.all(),
+        allow_null=True,
+        required=False
+    )
+
+    class Meta:
+        model = Comment
+        fields = "__all__"
 
     def to_representation(self, instance):
         """
@@ -210,10 +234,17 @@ class CommentSerializer(serializers.ModelSerializer):
         của người dùng thông qua UserSerializer
         """
         data = super().to_representation(instance)
-        data["user"] = UserSerializer(instance.user).data
+        # data["user"] = UserSerializer(instance.user).data
+        data['user']={
+            'id':instance.user.id,
+            'name':f"{instance.user.first_name} {instance.user.last_name}",
+            'avatar':instance.user.avatar,
+        }
         return data
+    
 
-    class Meta:
-        model = Comment
-        fields = ["id", "content", "created_date", "updated_date", "user", "post"]
-        extra_kwargs = {"post": {"write_only": True}}
+    
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    

@@ -124,6 +124,14 @@ class RoomSeekingPost(BasePostContent):
         related_name="room_seeking_post",
         null=False,
     )
+    price_min = models.FloatField(null=True, blank=True)
+    price_max = models.FloatField(null=True, blank=True)
+    province = models.ForeignKey(
+        "locations.Province", on_delete=models.SET_NULL, null=True, blank=False, related_name="roomseekingpost"
+    )
+    district = models.ForeignKey(
+        "locations.District", on_delete=models.SET_NULL, null=True, blank=False, related_name="roomseekingpost"
+    )
     position = models.CharField(max_length=20)
     area = models.FloatField(null=False)
     limit_person = models.IntegerField()

@@ -3,7 +3,7 @@ from renthub import settings
 from unfold.admin import ModelAdmin
 
 from admin_site.site import renthub_admin_site
-from posts.models import RentalPost, RoomSeekingPost, Utilities
+from posts.models import RentalPost, RoomSeekingPost, Utilities, PropertyStatus, PostReference
 
 
 # Register your models here.
@@ -95,21 +95,43 @@ class RentalPostAdmin(ModelAdmin):
     property_address.short_description = "Property Address"
     image_gallery.short_description = "Image Gallery"
 
+    def save_model(self, request, obj, form, change):
+        if "status" in form.changed_data:  # Chỉ khi status bị thay đổi
+            if obj.status == PropertyStatus.APPROVED:
+                obj.active = True
+            else:
+                obj.active = False
+        super().save_model(request, obj, form, change)
+
 
 class RoomSeekingPostAdmin(ModelAdmin):
     """
     Trang quản lý bài đăng tìm phòng
     """
 
-    list_display = ["title", "area", "limit_person", "owner__username", "created_date"]
+    list_display = ["title", "area","province","district","limit_person", "owner__username", "created_date"]
     search_fields = ["title", "owner__username"]
     list_filter = ["created_date"]
     sortable_by = ["title"]
 
     fieldsets = [
         ("Status", {"fields": ["status"]}),
-        ("Room seeking post", {"fields": ["title", "area", "limit_person", "owner"]}),
+        ("Room seeking post", {"fields": ["title","area", "limit_person", "owner","price_max","price_min"]}),
+         ("Location", {"fields": ["position", "province", "district"]})
     ]
+
+    def save_model(self, request, obj, form, change):
+        if "status" in form.changed_data:
+            if obj.status == PropertyStatus.APPROVED:
+                obj.active = True
+            elif obj.status != PropertyStatus.APPROVED:
+                obj.active = False
+            else:
+                obj.active = False
+        super().save_model(request, obj, form, change)
+    
+    class Media:
+        js = ("js/locations1.js",)
 
 
 class UtilitiesAdmin(ModelAdmin):

@@ -1,10 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Alert, Animated, Easing, View } from "react-native";
 import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axiosInstance, { authApis, endpoints } from "../config/Apis";
+import { UserContext } from "../config/context";
 import useStyle from "../styles/useStyle";
 
 const ProfileUser = ({ route }) => {
@@ -12,68 +13,12 @@ const ProfileUser = ({ route }) => {
     const style = useStyle();
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
+    const currentUser = useContext(UserContext);
     const navigation = useNavigation();
     const [isFollowing, setIsFollowing] = useState(false);
     const [followLoading, setFollowLoading] = useState(false);
     const spinAnim = useRef(new Animated.Value(0)).current;
 
-
-
-    // const checkFollowStatus = async () => {
-    //     const token = await AsyncStorage.getItem('token');
-    //     const currentUserId = await AsyncStorage.getItem('user_id'); 
-
-    //     try {
-    //         const res = await authApis(token).get(endpoints["is-follow"](user.id)); 
-    //         console.log(res.data);
-    //         if(res.data.is_following==true){
-    //             setIsFollowing(true);
-    //         }
-    //         console.log(isFollowing);
-
-
-    //     } catch (error) {
-    //         if (error.response?.status === 404) {
-    //             setIsFollowing(false);
-    //         } else {
-    //             console.error("Lỗi kiểm tra follow:", error);
-    //         }
-    //     }
-    // };
-
-	// const loadUser = async () => {
-	// 	const { userId } = route.params;
-	// 	try {
-	// 		setLoading(true);
-	// 		const response = await axiosInstance.get(endpoints.user(userId));
-	// 		console.log("Thông tin người dùng:", response.data);
-	// 		setUser(response.data);
-	// 	} catch (ex) {
-	// 		console.error("Lỗi khi lấy thông tin người dùng:", ex);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-	// const handleFollow = async () => {
-	// 	const token = await AsyncStorage.getItem("token");
-	// 	try {
-	// 		if (isFollowing != true) {
-	// 			const res = await authApis(token).post(endpoints.follow(user.id));
-	// 			alert("Đã theo dõi người dùng!");
-	// 		} else {
-	// 			alert("Đã theo dõi người dùng!");
-	// 		}
-	// 	} catch (err) {
-	// 		console.error("Lỗi khi theo dõi:", err);
-	// 		alert("Không thể theo dõi.");
-	// 	}
-	// };
-
-	// useEffect(() => {
-	// 	loadCurrentUser();
-	// 	loadUser();
-	// }, []);
 
     const loadUser = async () => {
         const { userId } = route.params;
@@ -144,7 +89,6 @@ const ProfileUser = ({ route }) => {
 
 
     useEffect(() => {
-        loadCurrentUser();
         loadUser();
     }, []);
 

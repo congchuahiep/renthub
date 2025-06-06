@@ -6,9 +6,9 @@ import PostAppbar from '../components/PostAppbar';
 import { UserContext } from '../config/context';
 import ChatListScreen from '../screens/Chats';
 import Login from '../screens/Login';
+import RoomSeekingForm from '../screens/MyPost';
 import Profile from '../screens/Profile';
 import PropertyList from '../screens/PropertyList';
-import Register from '../screens/RegisterTenant';
 import RentalList from '../screens/RentalList';
 import RoomSeekingList from '../screens/RoomSeekingList';
 import Users from '../screens/Users';
@@ -91,6 +91,15 @@ export default function TabNavigator() {
 							),
 						}}
 					/>
+					<Tab.Screen
+						name="Đăng bài"
+						component={RoomSeekingForm}
+						options={{
+							title: "Đăng bài",
+							tabBarIcon: ({ color }) => (
+								<MaterialDesignIcons name="post" color={color} size={26} />
+							),
+						}} />
 
 				</> : <>
 

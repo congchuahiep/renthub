@@ -15,6 +15,60 @@ from posts.serializers import (
 )
 from utils.choices import PostStatus
 
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from posts.models import Comment
+from posts.serializers import CommentSerializer
+
+
+
+
+class CommentActionMixin:
+
+    @action(detail=True, methods=["get", "post"], url_path="comments")
+    def comments(self, request, pk=None):
+        post = self.get_object()
+
+        if request.method == "GET":
+            comments = post.post.comments.select_related("user").filter(active=True, reply_to=None).order_by("-created_date")
+            paginator = paginators.CommentPaginator()
+            paginated_comments = paginator.paginate_queryset(comments, request)
+
+            serializer = CommentSerializer(paginated_comments, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+
+        elif request.method == "POST":
+            serializer = CommentSerializer(
+                data={
+                    "content": request.data.get("content"),
+                    "user": request.user.pk,
+                    "post": pk,
+                    "reply_to": request.data.get("reply_to"),  # 👈 Thêm dòng này!
+                }
+            )
+            serializer.is_valid(raise_exception=True)
+            comment = serializer.save()
+            return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+    @action(detail=True, methods=["get"], url_path="comments/(?P<comment_id>[^/.]+)/replies")
+    def comment_replies(self, request, pk=None, comment_id=None):
+        """
+        API: GET /rentals/<post_id>/comments/<comment_id>/replies/
+        Trả về danh sách các comment trả lời cho một comment
+        """
+        post = self.get_object()
+
+        try:
+            comment = post.post.comments.get(pk=comment_id, active=True)
+        except Comment.DoesNotExist:
+            return Response({"detail": "Comment not found."}, status=404)
+
+        replies = comment.replies.select_related("user").filter(active=True).order_by("created_date")
+        print(replies)
+        serializer = CommentSerializer(replies, many=True)
+        return Response(serializer.data)
 
 # Create your views here.
 class RentalPostViewSet(
@@ -24,6 +78,7 @@ class RentalPostViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
+    CommentActionMixin
 ):
     """
     ViewSet này cung cấp khả năng quản lý các Rental post
@@ -78,64 +133,11 @@ class RentalPostViewSet(
         serializer.context["detail"] = (
             f"Rental post '{instance.title}' has been created successfully."
         )
+        
+       
 
-    @action(detail=True, methods=["get", "post"], url_path="comments")
-    def comments(self, request, pk=None):
-        """
-        Quản lý comment của một bài viết:
-        - `GET /rentals/<id>/comments/`: Lấy danh sách comment của bài viết
-        - `POST /rentals/<id>/comments/`: Thêm comment vào bài viết
-        """
-        rental_post = self.get_object()
+    
 
-        if request.method == "GET":
-            comments = rental_post.post.comments.select_related("user").filter(
-                active=True
-            )
-            paginator = paginators.CommentPaginator()
-
-            # Danh sách bình luận đã được phân trang
-            paginated_comments = paginator.paginate_queryset(comments, self.request)
-
-            if paginated_comments is not None:
-                serializer = CommentSerializer(paginated_comments, many=True)
-                return paginator.get_paginated_response(serializer.data)
-            else:
-                serializer = CommentSerializer(comments, many=True)
-                return Response(serializer.data)
-
-        elif request.method == "POST":
-            serializer = CommentSerializer(
-                data={
-                    "content": request.data.get("content"),
-                    "user": request.user.pk,
-                    "post": pk,
-                }
-            )
-            serializer.is_valid(raise_exception=True)
-            comment = serializer.save()
-            return Response(
-                CommentSerializer(comment).data, status=status.HTTP_201_CREATED
-            )
-
-
-class CommentViewSet(
-    viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
-):
-    """
-    ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
-    xoá và chỉnh sửa comment
-
-    Endpoints
-    ---------
-    - `DELETE /comments/<id>` : Xoá một Comment
-    - `PUT /comments/<id>` : Sửa toàn bộ một Comment
-    - `PATCH /comments/<id>` : Sửa một phần Comment
-    """
-
-    queryset = Comment.objects.filter(active=True)
-    serializer_class = CommentSerializer
-    permission_classes = [IsCommentOwner]
 
 
 class RoomSeekingPostViewSet(
@@ -145,8 +147,9 @@ class RoomSeekingPostViewSet(
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
+    CommentActionMixin
 ):
-    queryset = RoomSeekingPost.objects.filter(active=True)
+    queryset = RoomSeekingPost.objects.filter(active=True).order_by("-created_date")
     serializer_class = RoomSeekingPostSerializer
     pagination_class = PostPaginator
     page_size = 10
@@ -157,6 +160,8 @@ class RoomSeekingPostViewSet(
             return [IsTenant()]
         elif self.action in ["destroy", "update", "partial_update"]:
             return [IsPostOwner()]
+        elif self.action == "comments" and self.request.method == "POST":
+            return [IsAuthenticated()]
         # else phần comments thằng Hiệp làm thằng Tín đéo biết
         # Hiệp: chấm hỏi =)))?
         return [AllowAny()]
@@ -164,41 +169,4 @@ class RoomSeekingPostViewSet(
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    @action(detail=True, methods=["get", "post"], url_path="comments")
-    def comments(self, request, pk=None):
-        """
-        Quản lý comment của một bài viết:
-        - `GET /rentals/<id>/comments/`: Lấy danh sách comment của bài viết
-        - `POST /rentals/<id>/comments/`: Thêm comment vào bài viết
-        """
-        rental_post = self.get_object()
-
-        if request.method == "GET":
-            comments = rental_post.post.comments.select_related("user").filter(
-                active=True
-            )
-            paginator = paginators.CommentPaginator()
-
-            # Danh sách bình luận đã được phân trang
-            paginated_comments = paginator.paginate_queryset(comments, self.request)
-
-            if paginated_comments is not None:
-                serializer = CommentSerializer(paginated_comments, many=True)
-                return paginator.get_paginated_response(serializer.data)
-            else:
-                serializer = CommentSerializer(comments, many=True)
-                return Response(serializer.data)
-
-        elif request.method == "POST":
-            serializer = CommentSerializer(
-                data={
-                    "content": request.data.get("content"),
-                    "user": request.user.pk,
-                    "post": pk,
-                }
-            )
-            serializer.is_valid(raise_exception=True)
-            comment = serializer.save()
-            return Response(
-                CommentSerializer(comment).data, status=status.HTTP_201_CREATED
-            )
+   

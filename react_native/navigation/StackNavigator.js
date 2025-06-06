@@ -1,18 +1,19 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useContext } from "react";
 import { useTheme } from "react-native-paper";
 import AppbarDefault from "../components/Appbar";
 import PostAppbar from "../components/PostAppbar";
+import { ThemeSettingContext } from "../config/context";
 import FollowerList from "../screens/FollowList";
 import ProfileUser from "../screens/ProfileUser";
+import Register from "../screens/Register";
+import RegisterLandlord from "../screens/RegisterLandlord";
+import RegisterTenant from "../screens/RegisterTenant";
 import RentalDetail from "../screens/RentalDetail";
+import RoomSeekingDetail from "../screens/RoomSeekingDetail";
 import Setting from "../screens/Setting";
 import UserInfo from "../screens/UserInfo";
 import TabNavigator from "./TabNavigator";
-import RegisterTenant from "../screens/RegisterTenant";
-import { useContext } from "react";
-import { ThemeSettingContext } from "../config/context";
-import RegisterLandlord from "../screens/RegisterLandlord";
-import Register from "../screens/Register";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,16 @@ export default function StackNavigator() {
 					header: (props) => <PostAppbar {...props} />,
 				})}
 			/>
+			<Stack.Screen
+				name="RoomSeekingDetail"
+				component={RoomSeekingDetail} options={({ route }) => ({
+					title: route.params.title
+						? route.params.title
+						: "Bài đăng tìm trọ",
+					headerShown: true,
+					header: (props) => <PostAppbar {...props} />,
+				})} />
+
 			<Stack.Screen
 				name="UserInfo"
 				component={UserInfo}

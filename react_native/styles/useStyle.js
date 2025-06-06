@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { StyleSheet, useColorScheme } from "react-native";
+import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 import { ThemeSettingContext } from "../config/context";
 
