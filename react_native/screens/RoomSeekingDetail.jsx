@@ -92,7 +92,7 @@ const RoomSeekingDetail = ({ route }) => {
     const loadRoomSeekingPost = async () => {
         try {
             setLoading(true);
-            const res = await axiosInstance.get(endpoints["roomseekings-details"](postIntanceId));
+            const res = await axiosInstance.get(endpoints.roomseekingsDetails(postIntanceId));
             console.log(res.data);
             setRoomSeeking(res.data);
             console.log(roomSeeking);

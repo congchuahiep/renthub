@@ -18,15 +18,11 @@ const useStyle = () => {
 		},
 		appBar: {
 			backgroundColor:
-				themeMode === "dark"
-					? theme.colors.onPrimary
-					: theme.colors.onPrimary,
+				themeMode === "dark" ? theme.colors.onPrimary : theme.colors.onPrimary,
 		},
 		bottomBar: {
 			backgroundColor:
-				themeMode === "dark"
-					? theme.colors.onPrimary
-					: theme.colors.onPrimary,
+				themeMode === "dark" ? theme.colors.onPrimary : theme.colors.onPrimary,
 			height: 90,
 		},
 		card: {
@@ -54,6 +50,15 @@ const useStyle = () => {
 			fontWeight: 900,
 			marginTop: 8,
 			color: theme.colors.onPrimaryContainer,
+		},
+		text_primary: {
+			color: theme.colors.primary,
+		},
+		text_primary_dark: {
+			color: theme.colors.onPrimaryContainer,
+		},
+		text_secondary: {
+			color: theme.colors.secondary,
 		},
 		input: {
 			backgroundColor: theme.colors.background,

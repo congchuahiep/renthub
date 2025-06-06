@@ -1,14 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, useNavigation } from "@react-navigation/native";
-import qs from "qs"; // Thêm thư viện qs để chuyển đổi dữ liệu
-import { useContext, useState } from "react";
+import { Link, useNavigation, useRoute } from "@react-navigation/native";
+import { useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
-import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
+import { Button, HelperText, Modal, Portal, TextInput, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Apis, { authApis, endpoints } from "../config/Apis";
-import { MyDispatchContext } from "../config/context";
+import { useAuth } from "../config/auth";
 import useStyle from "../styles/useStyle";
-import { Image } from "react-native";
 
 const info = [
 	{
@@ -26,18 +22,22 @@ const info = [
 ];
 
 const Login = () => {
+	const route = useRoute();
+	const navigation = useNavigation();
+
+	const { login } = useAuth();
+
 	const style = useStyle();
 	const theme = useTheme();
 
-	const [user, setUser] = useState({});
+	const [userLoginData, setUserLoginData] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [errors, setErrors] = useState({});
-	const navigation = useNavigation();
 
-	const userDispatch = useContext(MyDispatchContext);
+  const [openModel, setOpenModel] = useState(false);
 
-	const setState = (value, field) => {
-		setUser({ ...user, [field]: value });
+	const updateUserLoginData = (value, field) => {
+		setUserLoginData({ ...userLoginData, [field]: value });
 	};
 
 	const validate = () => {
@@ -45,7 +45,7 @@ const Login = () => {
 		let valid = true;
 
 		for (let i of info) {
-			if (!user[i.field] || user[i.field].trim() === "") {
+			if (!userLoginData[i.field] || userLoginData[i.field].trim() === "") {
 				newErrors[i.field] = `Vui lòng nhập ${i.label.toLowerCase()}!`;
 				valid = false;
 			}
@@ -59,31 +59,13 @@ const Login = () => {
 			try {
 				setLoading(true);
 
-				const requestData = qs.stringify({
-					...user,
-					client_id: process.env.EXPO_PUBLIC_AUTH_CLIENT_ID,
-					client_secret: process.env.EXPO_PUBLIC_AUTH_CLIENT_SECRET,
-					grant_type: "password",
-				});
-
-				let res = await Apis.post(endpoints["login"], requestData, {
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded",
-					},
-				});
-
-				await AsyncStorage.setItem("token", res.data.access_token);
-
-				let u = await authApis(res.data.access_token).get(
-					endpoints["current-user"]
-				);
-
-				userDispatch({
-					type: "login",
-					payload: u.data,
-				});
+				console.log(userLoginData);
+				await login(userLoginData.username, userLoginData.password);
+				// Đăng nhập thành công sẽ tự động navigate qua màn hình chính
 			} catch (ex) {
+				console.log(ex);
 				let newErrors = {};
+
 				if (ex.response?.data?.error === "invalid_grant") {
 					newErrors.general = "Tài khoản hoặc mật khẩu không đúng!";
 				} else {
@@ -103,7 +85,7 @@ const Login = () => {
 			<KeyboardAvoidingView
 				behavior="padding"
 				keyboardVerticalOffset={0}
-				style={{ flex: 1, justifyContent: "center" }}
+				style={{ flex: 1, justifyContent: "center", gap: 2 }}
 			>
 				<Text
 					style={{
@@ -116,6 +98,28 @@ const Login = () => {
 				>
 					Đăng nhập
 				</Text>
+				{route?.params?.message && (
+					<View
+						style={{
+							backgroundColor: theme.colors.elevation.level3,
+							padding: 16,
+							borderRadius: 8,
+							marginBottom: 16,
+							borderLeftWidth: 4,
+							borderLeftColor: theme.colors.primary,
+						}}
+					>
+						<Text
+							style={{
+								color: theme.colors.onSurfaceVariant,
+								lineHeight: 20,
+							}}
+							numberOfLines={4}
+						>
+							{route?.params?.message}
+						</Text>
+					</View>
+				)}
 				{info.map((i) => (
 					<View key={i.field} style={{}}>
 						<TextInput
@@ -125,8 +129,8 @@ const Login = () => {
 							label={i.label}
 							secureTextEntry={i.secureTextEntry}
 							right={<TextInput.Icon icon={i.icon} />}
-							value={user[i.field]}
-							onChangeText={(t) => setState(t, i.field)}
+							value={userLoginData[i.field]}
+							onChangeText={(t) => updateUserLoginData(t, i.field)}
 						/>
 						{errors[i.field] && (
 							<HelperText type="error">{errors[i.field]}</HelperText>
@@ -148,7 +152,7 @@ const Login = () => {
 				>
 					Đăng nhập
 				</Button>
-				<Text style={{ marginTop: 4, textAlign: "center" }}>
+				<Text style={{ marginTop: 12, textAlign: "center" }}>
 					Chưa có tài khoản?{" "}
 					<Link
 						screen="Register"
@@ -161,6 +165,25 @@ const Login = () => {
 						Đăng ký ngay
 					</Link>
 				</Text>
+				<Button onPress={() => navigation.navigate("RentalMapping")}>
+					TESTMAP
+				</Button>
+				<Button onPress={() => setOpenModel(true)}>
+					TESTMODEL
+				</Button>
+
+				<Portal>
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={openModel}
+						onDismiss={() => setOpenModel(false)}
+					>
+						<View>
+							<Text>HI</Text>
+						</View>
+					</Modal>
+				</Portal>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);

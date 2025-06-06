@@ -1,19 +1,22 @@
 from rest_framework import mixins, parsers, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from accounts.perms import IsLandlord, IsTenant
 from posts import paginators
-from posts.models import Comment, RentalPost, RoomSeekingPost
+from posts.models import Comment, RentalPost, RoomSeekingPost, Utilities
 from posts.paginators import PostPaginator
 from posts.perms import IsCommentOwner, IsPostOwner
 from posts.serializers import (
     CommentSerializer,
     RentalPostSerializer,
     RoomSeekingPostSerializer,
+    UtilitiesSerializer,
 )
 from utils.choices import PostStatus
+from utils.geocoding import get_bounding_box, haversine
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -109,7 +112,7 @@ class RentalPostViewSet(
     def get_permissions(self):
         """
         Cấu hình các permission của view action:
-        - `IsLandlord`: create, POST comments
+        - `IsLandlord`, `IsPropertyOwner`: create, POST comments
         - `IsRentalPostOwner`: destroy, update, partial_update
         - Không có permission: list, retrieve, GET /comments/
         """
@@ -120,6 +123,115 @@ class RentalPostViewSet(
         elif self.action == "comments" and self.request.method == "POST":
             return [IsAuthenticated()]
         return [AllowAny()]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Lọc theo tỉnh/huyện/xã
+        # NOTE: Lọc địa điểm này chưa có rằng buộc giữa tỉnh, quận, huyện
+        province_id = self.request.query_params.get("province_id")
+        district_id = self.request.query_params.get("district_id")
+        ward_id = self.request.query_params.get("ward_id")
+        if province_id:
+            queryset = queryset.filter(property__province__code=province_id)
+        if district_id:
+            queryset = queryset.filter(property__district__code=district_id)
+        if ward_id:
+            queryset = queryset.filter(property__ward__code=ward_id)
+
+        # Lọc theo giá
+        min_price = self.request.query_params.get("min_price")
+        max_price = self.request.query_params.get("max_price")
+        try:
+            if min_price:
+                min_price = float(min_price)
+            if max_price:
+                max_price = float(max_price)
+
+            # Kiểm tra logic
+            if (
+                min_price is not None
+                and max_price is not None
+                and min_price > max_price
+            ):
+                raise ValueError("Giá thấp nhất không được lớn hơn giá cao nhất.")
+
+            if min_price is not None:
+                queryset = queryset.filter(price__gte=min_price)
+            if max_price is not None:
+                queryset = queryset.filter(price__lte=max_price)
+
+        except ValueError as e:
+            raise ValidationError({"price": str(e)})
+
+        # Lọc theo số người ở
+        min_person = self.request.query_params.get("min_limit_person")
+        max_person = self.request.query_params.get("max_limit_person")
+        if min_person:
+            queryset = queryset.filter(limit_person__gte=int(min_person))
+        if max_person:
+            queryset = queryset.filter(limit_person__lte=int(max_person))
+
+        # Lọc theo xung quanh vị trí chỉ định
+        lat = float(self.request.query_params.get("latitude", 0))
+        lon = float(self.request.query_params.get("longitude", 0))
+        radius = float(self.request.query_params.get("radius", 5))  # km
+        if lat and lon:
+            lat = float(lat)
+            lon = float(lon)
+
+            bounds = get_bounding_box(lat, lon, radius)
+
+            queryset = queryset.filter(
+                property__latitude__gte=bounds["min_lat"],
+                property__latitude__lte=bounds["max_lat"],
+                property__longitude__gte=bounds["min_lon"],
+                property__longitude__lte=bounds["max_lon"],
+            )
+
+            # Sau khi lọc bằng bounding box (hình chữ nhận)
+            # cần lọc thêm bằng haversine (bằng bán kính tròn)
+            queryset = [
+                p
+                for p in queryset
+                if haversine(lat, lon, p.property.latitude, p.property.longitude)
+                <= radius
+            ]
+
+            # Thêm thuộc tính distance
+            for p in queryset:
+                p.distance = haversine(
+                    lat, lon, p.property.latitude, p.property.longitude
+                )
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        """
+        Ghi đè lại để lấy thêm thông tin distance (khi lọc bằng một vị trí cụ thể)
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            data = serializer.data
+
+            # Thêm thông tin distance thủ công nếu cần
+            for i, item in enumerate(data):
+                if hasattr(page[i], "distance"):
+                    item["distance"] = round(page[i].distance, 2)
+
+            return self.get_paginated_response(data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        data = serializer.data
+
+        for i, item in enumerate(data):
+            if hasattr(queryset[i], "distance"):
+                item["distance"] = round(queryset[i].distance, 2)
+
+        return Response(data)
 
     def perform_create(self, serializer):
         """
@@ -133,11 +245,30 @@ class RentalPostViewSet(
         serializer.context["detail"] = (
             f"Rental post '{instance.title}' has been created successfully."
         )
-        
-       
 
-    
 
+
+
+
+
+
+class CommentViewSet(
+    viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
+):
+    """
+    ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
+    xoá và chỉnh sửa comment
+
+    Endpoints
+    ---------
+    - `DELETE /comments/<id>` : Xoá một Comment
+    - `PUT /comments/<id>` : Sửa toàn bộ một Comment
+    - `PATCH /comments/<id>` : Sửa một phần Comment
+    """
+
+    queryset = Comment.objects.filter(active=True)
+    serializer_class = CommentSerializer
+    permission_classes = [IsCommentOwner]
 
 
 class RoomSeekingPostViewSet(
@@ -169,4 +300,3 @@ class RoomSeekingPostViewSet(
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-   

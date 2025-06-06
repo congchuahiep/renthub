@@ -35,68 +35,78 @@ class Property(BaseModel):
     - `address`: Địa chỉ của dãy trọ
     """
 
-    status = models.CharField(max_length=10, choices=PropertyStatus.choices, default=PropertyStatus.PENDING)
+    status = models.CharField(
+        max_length=10, choices=PropertyStatus.choices, default=PropertyStatus.PENDING
+    )
 
     owner = models.ForeignKey(
         "accounts.User",
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": UserType.LANDLORD},
         related_name="properties",
-        null=True
+        null=True,
     )
 
     name = models.CharField(max_length=256)
 
-    
     province = models.ForeignKey(
-        "locations.Province", on_delete=models.SET_NULL, null=True, blank=False, related_name="properties"
+        "locations.Province",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+        related_name="properties",
     )
     district = models.ForeignKey(
-        "locations.District", on_delete=models.SET_NULL, null=True, blank=False, related_name="properties"
+        "locations.District",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+        related_name="properties",
     )
     ward = models.ForeignKey(
-        "locations.Ward", on_delete=models.SET_NULL, null=True, blank=False, related_name="properties"
+        "locations.Ward",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+        related_name="properties",
     )
     address = models.CharField(max_length=256, null=False, blank=False)
-    
+
     def __str__(self):
         return f"{self.name}"
-    
+
     # Toạ độ thực tế (kinh độ và vĩ độ) của dãy trọ
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    
+
     def save(self, *args, **kwargs):
         """
         Lưu toạ độ của dãy trọ dựa trên địa chỉ của nó.
         """
-        
+
         # Nếu chưa có toạ độ, lấy toạ độ từ địa chỉ
         if not self.latitude or not self.longitude:
             address = f"{self.address}, {self.ward}, {self.district}, {self.province}, Việt Nam"
             self.latitude, self.longitude = get_coordinates(address)
-        
+
         # Cập nhật toạ độ khi địa chỉ thay đổi
         if self.pk:
             old_property = Property.objects.get(pk=self.pk)
             if (
-                self.address != old_property.address or
-                self.province != old_property.province or
-                self.district != old_property.district or
-                self.ward != old_property.ward
+                self.address != old_property.address
+                or self.province != old_property.province
+                or self.district != old_property.district
+                or self.ward != old_property.ward
             ):
                 address = f"{self.address}, {self.ward}, {self.district}, {self.province}, Việt Nam"
                 self.latitude, self.longitude = get_coordinates(address)
-        
+
         super().save(*args, **kwargs)
 
 
 class PropertyImage(Image):
     property = models.ForeignKey(
-        "Property",
-        on_delete=models.CASCADE,
-        related_name="images",
-        null=True
+        "Property", on_delete=models.CASCADE, related_name="images", null=True
     )
 
     class Meta:

@@ -2,7 +2,7 @@ module.exports = {
 	expo: {
 		name: "RentHub",
 		slug: "react_native",
-		version: "0.0.1",
+		version: "0.0.2",
 		orientation: "portrait",
 		icon: "./assets/icon.png",
 		userInterfaceStyle: "light",
@@ -19,7 +19,7 @@ module.exports = {
 			package: "com.hieptin.renthub",
 			versionCode: 1,
 			adaptiveIcon: {
-				foregroundImage: "./assets/adaptive-icon.png",
+				foregroundImage: "./assets/icon.png",
 				backgroundColor: "#ffffff",
 			},
 			edgeToEdgeEnabled: true,
@@ -45,6 +45,13 @@ module.exports = {
 				{
 					photosPermission:
 						"The app accesses your photos to let you share them with your friends.",
+				},
+			],
+			[
+				"expo-location",
+				{
+					locationAlwaysAndWhenInUsePermission:
+						"Allow $(PRODUCT_NAME) to use your location.",
 				},
 			],
 		],

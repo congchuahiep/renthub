@@ -1,227 +1,270 @@
-import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
-import { Image, View, ScrollView } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Dimensions } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-	Button,
-	HelperText,
-	Text,
-	TextInput,
-	useTheme,
-} from "react-native-paper";
+import { Button, Card, Text } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
+
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
+import StepBottomBar from "../components/StepBottomBar";
+import { stepFields, stepsInfo } from "../form_data/registerLandlordDataForm";
+import { renderFormField } from "../utils/form";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
-import { tenantInfo } from "./RegisterTenant";
-import AvatarPicker from "../components/form/AvatarPicker";
-import InputField from "../components/form/InputField";
-import ImagesPicker from "../components/form/ImagesPicker";
-import DatePicker from "../components/form/DatePicker";
 
-// CÁC TRƯỜNG ĐĂNG KÝ TÀI KHOẢN CHỦ TRỌ ĐƯỢC CHIA LÀM 3 BƯỚC
-
-// STEP 1: Thông tin căn bản (giống thông tin đăng ký người dùng tìm trọ)
-const step1 = tenantInfo;
-// STEP 2: Thông tin cá nhân
-const step2 = [
-	{
-		label: "Số điện thoại",
-		field: "phone_number",
-		secureTextEntry: false,
-		icon: "phone",
-	},
-	{
-		label: "Ngày sinh",
-		field: "dob",
-		type: "date",
-		icon: "cake-variant",
-	},
-	{
-		label: "Số căn cước công dân",
-		field: "cccd",
-		secureTextEntry: false,
-		icon: "card-account-details",
-	},
-	{
-		label: "Đường",
-		field: "address",
-		secureTextEntry: false,
-		icon: "road-variant",
-	},
-	{
-		label: "Quận/huyện",
-		field: "district",
-		secureTextEntry: false,
-		icon: "home-city",
-	},
-	{
-		label: "Tỉnh thành",
-		field: "province",
-		secureTextEntry: false,
-		icon: "city",
-	},
-];
-// STEP 3: Thông tin dãy trọ đầu tiên
-const step3 = [
-	{
-		label: "Tên tài sản",
-		field: "property_name",
-	},
-	{
-		label: "Địa chỉ tài sản",
-		field: "property_address",
-	},
-	{
-		label: "Địa chỉ phường tài sản",
-		field: "property_ward",
-	},
-	{
-		label: "Địa chỉ quận tài sản",
-		field: "property_district",
-	},
-	{
-		label: "Địa chỉ tỉnh tài sản",
-		field: "property_province",
-	},
-	{
-		label: "Ảnh dãy trọ",
-		field: "property_upload_images",
-		type: "images",
-	},
-];
-
-const RegisterLandlord = () => {
+const RegisterLandlord = ({ navigation, route }) => {
+	// Refs cho animation
+	const flatListRef = useRef(null);
+	const scrollX = useRef(new Animated.Value(0)).current;
+	const { width } = Dimensions.get("window");
 	const style = useStyle();
-	const theme = useTheme();
-	const [step, setStep] = useState(1); // State dùng cho
-	const [user, setUser] = useState({});
+
+	// States
+	const [currentStep, setCurrentStep] = useState(0);
+	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [propertyImages, setPropertyImages] = useState([]);
 
-	/**
-	 * Lấy các trường thông tin tại step hiện tại
-	 */
-	const getFields = () => {
-		if (step === 1) return step1;
-		if (step === 2) return step2;
-		if (step === 3) return step3;
-		return [];
-	};
+	// Nhận params từ màn hình chọn địa chỉ
+	useEffect(() => {
+		if (route?.params) {
+			const {
+				ward,
+				district,
+				province,
+				region_address,
+				street_address,
+				latitude,
+				longitude,
+			} = route.params;
 
-	const updateUserField = (value, field) => {
-		setUser({ ...user, [field]: value });
-		setErrors({ ...errors, [field]: undefined });
-	};
+			if (ward && district && province && region_address) {
+				setFormData((prev) => ({
+					...prev,
+					property_ward: ward,
+					property_district: district,
+					property_province: province,
+					property_region_address: region_address,
+				}));
+			}
 
-	// Chọn avatar
-	const pickAvatar = async () => {
-		let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status !== "granted") {
-			alert("Bạn cần cấp quyền truy cập ảnh!");
-			return;
-		}
-		const result = await ImagePicker.launchImageLibraryAsync();
-		if (!result.canceled) {
-			updateUserField(result.assets[0], "avatar");
-		}
-	};
-
-	// Xoá ảnh avatar hiện tại
-	const onRemoveAvatar = () => setUser({ ...user, avatar: undefined });
-
-	// Chọn ảnh dãy trọ
-	const pickPropertyImages = async () => {
-		let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status !== "granted") {
-			alert("Bạn cần cấp quyền truy cập ảnh!");
-			return;
-		}
-		const result = await ImagePicker.launchImageLibraryAsync({
-			allowsMultipleSelection: true,
-			quality: 0.7,
-		});
-		if (!result.canceled) {
-			setPropertyImages(result.assets);
-			setUser({ ...user, property_upload_images: result.assets });
-		}
-	};
-
-	const validate = () => {
-		let newErrors = {};
-		let valid = true;
-
-		for (let i of getFields()) {
-			if (i.type === "images") {
-				if (i.required !== false && !propertyImages.length) {
-					newErrors[i.field] = "Vui lòng chọn ít nhất 1 ảnh!";
-					valid = false;
-				}
-			} else if (
-				i.required !== false &&
-				(!user[i.field] || user[i.field].toString().trim() === "")
-			) {
-				newErrors[i.field] = `Vui lòng nhập ${i.label.toLowerCase()}!`;
-				valid = false;
+			if (street_address && latitude && longitude) {
+				setFormData((prev) => ({
+					...prev,
+					property_address: street_address,
+					property_latitude: latitude,
+					property_longitude: longitude,
+				}));
 			}
 		}
+	}, [route?.params]);
 
-		if (step === 1 && user.password !== user.confirm) {
-			newErrors.confirm = "Mật khẩu xác nhận không khớp!";
-			valid = false;
-		}
-		setErrors(newErrors);
-		return valid;
+	// Các hàm xử lý
+	const goToStep = (stepIndex) => {
+		if (stepIndex < 0 || stepIndex >= stepsInfo?.length) return;
+
+		flatListRef.current?.scrollToIndex({
+			index: stepIndex,
+			animated: true,
+		});
+		setCurrentStep(stepIndex);
 	};
 
-	const register = async () => {
-		if (!validate()) return;
+	const updateField = (field, value) => {
+		setFormData((prev) => ({ ...prev, [field]: value }));
+		setErrors((prev) => ({ ...prev, [field]: undefined }));
+	};
+
+	// Render form field
+	const renderStep = ({ item, index }) => {
+		const fields = stepFields[index];
+
+		return (
+			<KeyboardAwareScrollView
+				style={{ width }}
+				keyboardShouldPersistTaps="handled"
+				contentContainerStyle={{ padding: 16 }}
+				enableOnAndroid
+			>
+				<Card style={style.card}>
+					<Card.Content>
+						<Text variant="titleMedium" style={style.text_secondary}>
+							{item.title}
+						</Text>
+						{item.description && (
+							<Text style={{ marginVertical: 8 }}>{item.description}</Text>
+						)}
+
+						{fields.map((field) =>
+							renderFormField({
+								field,
+								value: formData[field.field],
+								error: errors[field.field],
+								onChange: (value) => updateField(field.field, value),
+								onImagePick: handlePickImage,
+								propertyImages,
+								navigation,
+								formData,
+                returnScreen: "RegisterLandlord",
+								style,
+							})
+						)}
+					</Card.Content>
+				</Card>
+			</KeyboardAwareScrollView>
+		);
+	};
+
+	const handlePickImage = async (multiple = false) => {
+		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		if (status !== "granted") {
+			alert("Bạn cần cấp quyền truy cập ảnh!");
+			return;
+		}
+
+		const result = await ImagePicker.launchImageLibraryAsync({
+			allowsMultipleSelection: multiple,
+			quality: 0.7,
+		});
+
+		if (!result.canceled) {
+			if (multiple) {
+				setPropertyImages(result.assets);
+				updateField("property_upload_images", result.assets);
+			} else {
+				updateField("avatar", result.assets[0]);
+			}
+		}
+	};
+
+	const handleValidateStep = () => {
+		const fields = stepFields[currentStep];
+		const newErrors = {};
+		let isValid = true;
+
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const phoneRegex = /^(0|84|\+84)([0-9]{9}|[0-9]{10})$/;
+
+		fields.forEach((field) => {
+			const value = formData[field.field];
+
+			if (
+				field.required !== false &&
+				(!value || value.toString().trim() === "")
+			) {
+				newErrors[field.field] = `Vui lòng nhập ${field.label.toLowerCase()}`;
+				isValid = false;
+				return;
+			}
+
+			// Validate đặc biệt theo loại field
+			switch (field.field) {
+				case "email":
+					if (!emailRegex.test(value)) {
+						newErrors.email = "Email không hợp lệ";
+						isValid = false;
+					}
+					break;
+				case "phone_number":
+					if (!phoneRegex.test(value)) {
+						newErrors.phone_number = "Số điện thoại không hợp lệ";
+						isValid = false;
+					}
+					break;
+				case "property_upload_images":
+					if (propertyImages.length < 3 ) {
+						newErrors[field.field] = "Vui lòng chọn ít nhất 3 ảnh về dãy trọ";
+						isValid = false;
+					}
+					break;
+				case "region_address":
+					if (
+						!formData.property_ward ||
+						!formData.property_district ||
+						!formData.property_province
+					) {
+						newErrors[field.field] = "Vui lòng chọn tỉnh/huyện/xã";
+						isValid = false;
+					}
+					break;
+			}
+
+			// Validate mật khẩu xác nhận
+			if (
+				currentStep === 1 &&
+				field.field === "confirm" &&
+				formData.password !== value
+			) {
+				newErrors.confirm = "Mật khẩu xác nhận không khớp";
+				isValid = false;
+			}
+		});
+
+		setErrors(newErrors);
+		return isValid;
+	};
+
+	/**
+	 * Xử lý hoàn tất đăng ký
+	 */
+	const handleSubmit = async () => {
+		if (!handleValidateStep()) return;
+
 		try {
 			setLoading(true);
+			const formDataToSend = new FormData();
 
-			let form = new FormData(); // Tạo dữ liệu form data
+			// Append form data
+			Object.entries(formData).forEach(([key, value]) => {
+				if (value === undefined || value === null || key === "confirm") return;
 
-			for (const key in user) {
-				// Các trường vớ vẩn không có trong thông tin đăng ký bỏ qua
-				if (key === "confirm" || user[key] === undefined || user[key] === null)
-					continue;
-
-				// Xử lý trường avatar
-				if (key === "avatar") {
-					if (user.avatar && user.avatar.uri) {
-						form.append("avatar", {
-							uri: user.avatar.uri,
-							name: user.avatar.fileName || "avatar.jpg",
-							type: "image/jpeg",
-						});
-					}
-					continue;
-				}
-
-				// Xử lý trường các hình ảnh dãy trọ
-				if (key === "property_upload_images" && Array.isArray(user[key])) {
-					user[key].forEach((img, idx) => {
-						form.append("property_upload_images", {
+				if (key === "avatar" && value?.uri) {
+					formDataToSend.append("avatar", {
+						uri: value.uri,
+						name: value.fileName || "avatar.jpg",
+						type: "image/jpeg",
+					});
+				} else if (key === "property_upload_images" && Array.isArray(value)) {
+					value.forEach((img, idx) => {
+						formDataToSend.append("property_upload_images", {
 							uri: img.uri,
 							name: img.fileName || `property_${idx}.jpg`,
 							type: "image/jpeg",
 						});
 					});
-					continue;
+				} else {
+					formDataToSend.append(key, value);
 				}
+			});
 
-				// Các trường khác nhập vào luôn
-				form.append(key, user[key]);
-			}
-
-			await Apis.post(endpoints["landlord-register"], form, {
+			await Apis.post(endpoints.landlordRegister, formDataToSend, {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 
-			alert("Đăng ký thành công!");
-		} catch (ex) {
-			console.log(ex.response?.data || ex.toJSON?.() || ex);
-			alert("Đăng ký thất bại. Vui lòng thử lại!");
+      // TODO: GỬI MAIL
+
+			navigation.navigate("Home", {
+				screen: "Login",
+				params: {
+					message:
+						"Tài khoản của bạn đã được đăng ký thành công! Tuy nhiên chung tôi cần vài ngày để xử lý xét duyệt tài khoản của bạn, một khi hoàn tất chúng tôi sẽ thông báo cho bạn qua email.",
+				},
+			});
+		} catch (error) {
+			if (error.response?.data) {
+				const apiErrors = {};
+				if (error.response.data.email) {
+					apiErrors.email = "Email đã được sử dụng";
+					goToStep(1);
+				}
+				if (error.response.data.username) {
+					apiErrors.username = "Tên đăng nhập đã tồn tại";
+					goToStep(1);
+				}
+				setErrors(apiErrors);
+			} else {
+				alert("Có lỗi xảy ra, vui lòng thử lại!");
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -229,92 +272,37 @@ const RegisterLandlord = () => {
 
 	return (
 		<BottomSafeAreaView>
-			<KeyboardAwareScrollView
-				keyboardShouldPersistTaps="handled"
-				contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 4 }}
-				enableOnAndroid={true}
-				extraScrollHeight={240}
-			>
-				<Text
-					style={[style.title_big, { textAlign: "center", marginBottom: 12 }]}
-				>
-					{step == 1 && "Thông tin căn bản"}
-					{step == 2 && "Thông tin cá nhân"}
-					{step == 3 && "Dãy trọ đầu tiên"}
-				</Text>
-				{getFields().map((info) =>
-					info.type === "images" ? (
-						// Trường chọn ảnh dãy trọ
-						<ImagesPicker
-							key={info.field}
-							images={propertyImages}
-							onPick={pickPropertyImages}
-							error={errors[info.field]}
-							label="Thêm ảnh dãy trọ"
-						/>
-					) : info.type === "avatar" ? (
-						// Trường avatar
-						<AvatarPicker
-							key={info.field}
-							avatar={user.avatar}
-							onPick={pickAvatar}
-							onRemove={onRemoveAvatar}
-						/>
-					) : info.type === "date" ? (
-						// Trường ngày tháng
-						<DatePicker
-							key={info.field}
-							label={info.label}
-							value={user[info.field]}
-							onChange={(date) => updateUserField(date, info.field)}
-							error={errors.dob}
-						/>
-					) : (
-						// Các trường khác
-						<InputField
-							key={info.field}
-							label={info.label}
-							value={user[info.field]}
-							onChangeText={(value) => updateUserField(value, info.field)}
-							secureTextEntry={info.secureTextEntry}
-							icon={info.icon}
-							error={errors[info.field]}
-						/>
-					)
+			<Animated.FlatList
+				ref={flatListRef}
+				data={stepsInfo}
+				renderItem={renderStep}
+				horizontal
+				pagingEnabled
+				showsHorizontalScrollIndicator={false}
+				scrollEventThrottle={16}
+				onScroll={Animated.event(
+					[{ nativeEvent: { contentOffset: { x: scrollX } } }],
+					{ useNativeDriver: true }
 				)}
+				scrollEnabled={false}
+			/>
 
-				{/* Các nút điều hướng */}
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "space-between",
-						marginTop: 16,
-					}}
-				>
-					{step > 1 && (
-						<Button mode="outlined" onPress={() => setStep(step - 1)}>
-							Quay lại
-						</Button>
-					)}
-					{step < 3 ? (
-						<Button
-							mode="contained"
-							onPress={() => validate() && setStep(step + 1)}
-						>
-							Tiếp tục
-						</Button>
-					) : (
-						<Button
-							mode="contained"
-							onPress={register}
-							loading={loading}
-							disabled={loading}
-						>
-							Đăng ký
-						</Button>
-					)}
-				</View>
-			</KeyboardAwareScrollView>
+			<StepBottomBar
+				step={currentStep + 1} // Vì currentStep bắt đầu từ 0, cần +1 để khớp với step từ 1
+				steps={stepsInfo} // Truyền mảng steps trực tiếp
+				onBack={() => goToStep(currentStep - 1)}
+				onNext={() => {
+					if (handleValidateStep()) {
+						if (currentStep === stepsInfo.length - 1) {
+							handleSubmit();
+						} else {
+							goToStep(currentStep + 1);
+						}
+					}
+				}}
+				onFinish={handleSubmit}
+				loading={loading}
+			/>
 		</BottomSafeAreaView>
 	);
 };

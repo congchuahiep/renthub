@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useContext } from "react";
 import { useTheme } from "react-native-paper";
 import AppbarDefault from "../components/Appbar";
+import RentalAppbar from "../components/RentalAppbar";
 import PostAppbar from "../components/PostAppbar";
 import { ThemeSettingContext } from "../config/context";
 import FollowerList from "../screens/FollowList";
@@ -12,8 +13,14 @@ import RegisterTenant from "../screens/RegisterTenant";
 import RentalDetail from "../screens/RentalDetail";
 import RoomSeekingDetail from "../screens/RoomSeekingDetail";
 import Setting from "../screens/Setting";
-import UserInfo from "../screens/UserInfo";
+import ProfileDetail from "../screens/ProfileDetail";
+import RegionAddressSelect from "../screens/address/RegionAddressSelect";
 import TabNavigator from "./TabNavigator";
+import StreetAddressSelect from "../screens/address/StreetAddressSelect";
+import RentalCreate from "../screens/RentalCreate";
+import PropertySellect from "../screens/property/PropertySelect";
+import RentalMapping from "../screens/RentalMapping";
+import RentalMapAppbar from "../components/RentalMapAppbar";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,7 +49,7 @@ export default function StackNavigator() {
 						? route.params.title
 						: "Bài đăng cho thuê trọ",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					header: (props) => <RentalAppbar {...props} />,
 				})}
 			/>
 			<Stack.Screen
@@ -56,8 +63,8 @@ export default function StackNavigator() {
 				})} />
 
 			<Stack.Screen
-				name="UserInfo"
-				component={UserInfo}
+				name="ProfileDetail"
+				component={ProfileDetail}
 				options={({ route }) => ({
 					headerShown: true,
 					title: route.params.title ? route.params.title : "Thông tin cá nhân",
@@ -70,7 +77,7 @@ export default function StackNavigator() {
 				options={{
 					title: "Danh sách người theo dõi",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					header: (props) => <RentalAppbar {...props} />,
 				}}
 			/>
 			<Stack.Screen
@@ -111,6 +118,56 @@ export default function StackNavigator() {
 					headerShown: true,
 					headerTransparent: false,
 					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="RegionAddressSelect"
+				component={RegionAddressSelect}
+				options={({ route }) => ({
+					title: "Chọn tỉnh/huyện/xã",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="StreetAddressSelect"
+				component={StreetAddressSelect}
+				options={({ route }) => ({
+					title: "Chọn số nhà, vị trí cụ thể",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="RentalCreate"
+				component={RentalCreate}
+				options={({ route }) => ({
+					title: "Đăng bài cho thuê",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="PropertySelect"
+				component={PropertySellect}
+				options={({ route }) => ({
+					title: "Chọn dãy trọ",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="RentalMapping"
+				component={RentalMapping}
+				options={({ route }) => ({
+					title: "Tìm kiếm dãy trọ",
+					headerShown: true,
+					headerTransparent: true,
+					header: (props) => <RentalMapAppbar {...props} />,
 				})}
 			/>
 		</Stack.Navigator>

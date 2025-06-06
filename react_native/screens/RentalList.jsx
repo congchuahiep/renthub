@@ -1,24 +1,58 @@
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View } from "react-native";
-import { ActivityIndicator, Text, useTheme } from "react-native-paper";
+import {
+	ActivityIndicator,
+	AnimatedFAB,
+	Text,
+	useTheme,
+} from "react-native-paper";
+import RentalAppbar from "../components/RentalAppbar";
 import RentalPostCard from "../components/RentalPostCard";
 import Apis, { endpoints } from "../config/Apis";
+import { useAuth } from "../config/auth";
 import useStyle from "../styles/useStyle";
+import RentalFilterModal from "../components/RentalFilterModal";
 
 const RentalList = () => {
+	const navigation = useNavigation();
+
+	const { user } = useAuth();
+
 	// Style
 	const theme = useTheme();
 	const style = useStyle();
+	const headerHeight = useHeaderHeight();
+
 	// Các state hiệu ứng
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
+	const [isPhoneButtonExtended, setIsPhoneButtonExtended] = useState(true);
+
+	const [showFilterModal, setShowFilterModal] = useState(false);
+	const [isFiltered, setIsFiltered] = useState(false);
+
 	// State lưu dữ liệu
 	const [rentalPosts, setRentalPosts] = useState([]);
 
-	const loadRentalPosts = async () => {
+	const loadRentalPosts = async (limitPerson, priceRange) => {
 		setLoading(true);
 
-		await Apis.get(endpoints["rentals"])
+		const params = {};
+
+		if (limitPerson && limitPerson != 0) params.min_limit_person = limitPerson;
+		else params.min_limit_person = null;
+
+		if (priceRange && priceRange[0] != 0)
+			params.min_price = priceRange[0] * 1000000;
+		else params.min_price = null;
+
+		if (priceRange && priceRange[1] != 31)
+			params.max_price = priceRange[1] * 1000000;
+		else params.max_price = null;
+
+		await Apis.get(endpoints.rentals, { params })
 			.then((res) => {
 				setRentalPosts(res.data.results);
 			})
@@ -35,20 +69,41 @@ const RentalList = () => {
 		loadRentalPosts();
 	}, []);
 
-	const onRefresh = () => {
+	useEffect(() => {
+		navigation.setOptions({
+			header: (props) => (
+				<RentalAppbar
+					isFiltered={isFiltered}
+					setShowFilterModal={() => setShowFilterModal(true)}
+					{...props}
+				/>
+			),
+		});
+	}, [navigation, isFiltered]);
+
+	const handleOnRefresh = () => {
 		setRefreshing(true);
 		loadRentalPosts();
 	};
 
+	// Khi trượt nút thêm bài đăng sẽ thu nhỏ lại
+	const handleOnScroll = ({ nativeEvent }) => {
+		const currentScrollPosition =
+			Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
+
+		setIsPhoneButtonExtended(currentScrollPosition <= 0);
+	};
+
 	return (
-		<>
+		<View style={{ position: "relative", flex: 1 }}>
 			<FlatList
 				style={[style.container]}
 				data={rentalPosts}
 				refreshControl={
 					<RefreshControl
+						progressViewOffset={headerHeight}
 						refreshing={refreshing}
-						onRefresh={onRefresh}
+						onRefresh={handleOnRefresh}
 						colors={[theme.colors.primary]}
 						progressBackgroundColor={theme.colors.background}
 					/>
@@ -65,15 +120,54 @@ const RentalList = () => {
 						numberOfBathroom={item.number_of_bathrooms}
 					/>
 				)}
+				ListHeaderComponent={<View style={{ height: headerHeight }} />}
 				ListEmptyComponent={
 					!loading &&
-					rentalPosts && <Text>Hiện tại không có bài đăng nào cả 🥲</Text>
+					rentalPosts && (
+						<View
+							style={{
+								flex: 1,
+								alignItems: "center",
+								justifyContent: "center",
+								paddingVertical: 40,
+							}}
+						>
+							<Text
+								style={{
+									fontSize: 16,
+									textAlign: "center",
+									color: theme.colors.outline,
+								}}
+							>
+								Không có bài đăng nào cả 🥲
+							</Text>
+						</View>
+					)
 				}
 				ListFooterComponent={
 					loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />
 				}
+				onScroll={handleOnScroll}
 			/>
-		</>
+			{user?.user_type === "landlord" && (
+				<AnimatedFAB
+					label={"Thêm bài đăng"}
+					animateFrom={"right"}
+					extended={isPhoneButtonExtended}
+					style={{ position: "absolute", right: 24, bottom: 24 }}
+					icon="plus"
+					onPress={() => navigation.navigate("RentalCreate")}
+				/>
+			)}
+
+			<RentalFilterModal
+				isFiltered={isFiltered}
+				setIsFiltered={setIsFiltered}
+				showFilterModal={showFilterModal}
+				setShowFilterModal={setShowFilterModal}
+				loadRentalPosts={loadRentalPosts}
+			/>
+		</View>
 	);
 };
 

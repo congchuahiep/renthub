@@ -117,8 +117,8 @@ const RentalDetail = ({ route }) => {
 
 	const loadRentalPost = async () => {
 		setLoading(true);
-
-		await Apis.get(endpoints["rental-details"](id))
+    
+		await Apis.get(endpoints.rentalDetails(id))
 			.then((res) => {
 				console.log(res.data);
 				setRentalPost(res.data);
