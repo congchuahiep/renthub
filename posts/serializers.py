@@ -314,7 +314,7 @@ class CommentSerializer(serializers.ModelSerializer):
         data["user"] = {
             "id": instance.user.id,
             "name": f"{instance.user.first_name} {instance.user.last_name}",
-            "avatar": instance.user.avatar,
+            "avatar": instance.user.avatar.url if instance.user.avatar else None,
         }
         return data
 
