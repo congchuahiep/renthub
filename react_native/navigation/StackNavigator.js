@@ -3,7 +3,6 @@ import { useContext } from "react";
 import { useTheme } from "react-native-paper";
 import AppbarDefault from "../components/Appbar";
 import RentalAppbar from "../components/RentalAppbar";
-import PostAppbar from "../components/PostAppbar";
 import { ThemeSettingContext } from "../config/context";
 import FollowerList from "../screens/FollowList";
 import ProfileUser from "../screens/ProfileUser";

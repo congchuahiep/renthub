@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, Text } from "react-native";
 import { Button, Card, HelperText, Menu, TextInput, Title, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import axiosInstance, { authApis, endpoints } from "../config/Apis";
+import Apis, { authApis, endpoints } from "../config/Apis";
 
 const RoomSeekingForm = () => {
   const theme = useTheme();
@@ -34,7 +34,7 @@ const RoomSeekingForm = () => {
   const loadDistricts = async (provinceId) => {
     try {
       setLoadingDistrict(true);
-      const res = await axiosInstance.get(`${endpoints.districts}?province_id=${provinceId}`);
+      const res = await Apis.get(`${endpoints.districts}?province_id=${provinceId}`);
       const formatter = res.data.map(item => ({
         label: item.full_name || "Không có tên", // Sử dụng `full_name` như trong ảnh Postman
         value: item.code || "undefined",
@@ -52,7 +52,7 @@ const RoomSeekingForm = () => {
   const loadProvince = async () => {
     try {
       setLoadingProvince(true);
-      const res = await axiosInstance.get(endpoints.provinces);
+      const res = await Apis.get(endpoints.provinces);
 
       // Đảm bảo res.data là mảng và có dữ liệu
       const provincesData = Array.isArray(res?.data) ? res.data : [];
@@ -123,6 +123,8 @@ const RoomSeekingForm = () => {
       for (const key in post) {
         form.append(key, post[key]);
       }
+
+      console.log(form.data);
 
       const res = await authApis(token).post(endpoints.roomseekings, form, {
         headers: {

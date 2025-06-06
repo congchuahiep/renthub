@@ -18,15 +18,6 @@ from posts.serializers import (
 from utils.choices import PostStatus
 from utils.geocoding import get_bounding_box, haversine
 
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-from posts.models import Comment
-from posts.serializers import CommentSerializer
-
-
-
 
 class CommentActionMixin:
 
@@ -247,11 +238,6 @@ class RentalPostViewSet(
         )
 
 
-
-
-
-
-
 class CommentViewSet(
     viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
 ):
@@ -300,3 +286,15 @@ class RoomSeekingPostViewSet(
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
+class UtilitiesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """
+    ViewSet này dùng để xem các danh sách các Utilities có sẵn
+
+    Endpoints
+    ---------
+    - `GET /utilities/` : Lấy danh sách các utility
+    """
+
+    queryset = Utilities.objects.filter(active=True)
+    serializer_class = UtilitiesSerializer

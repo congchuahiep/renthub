@@ -200,7 +200,7 @@ const ProfileUser = ({route}) => {
           <List.Item
             title="Thông tin cá nhân"
             left={props => <List.Icon {...props} icon="account"/>}
-            onPress={() => navigation.navigate("UserInfo", {user})}
+            onPress={() => navigation.navigate("ProfileDetail", {userData: user})}
           />
           <List.Item
             title="Bài đăng"
