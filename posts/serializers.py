@@ -244,8 +244,6 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
             "avatar": instance.owner.avatar.url if instance.owner.avatar else None,
         }
 
-        data["post"] = instance.post.id
-
         if instance.province:
             data["province"] = instance.province.full_name
         if instance.district:
