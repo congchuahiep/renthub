@@ -58,7 +58,7 @@ export default function StackNavigator() {
 						? route.params.title
 						: "Bài đăng tìm trọ",
 					headerShown: true,
-					header: (props) => <PostAppbar {...props} />,
+					header: (props) => <AppbarDefault {...props} />,
 				})} />
 
 			<Stack.Screen

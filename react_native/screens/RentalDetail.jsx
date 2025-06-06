@@ -1,12 +1,19 @@
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+	FlatList,
+	KeyboardAvoidingView,
+	ScrollView,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import {
 	ActivityIndicator,
 	AnimatedFAB,
 	Avatar,
 	Button,
 	Card,
+	Divider,
 	Icon,
 	Text,
 	TextInput,
@@ -19,6 +26,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { formatDate, getRelativeTime } from "../utils/datetime";
+import Comment from "../components/Comment";
+import CommentsList from "../components/CommentList";
 
 const RentalDetail = ({ route }) => {
 	const theme = useTheme();
@@ -29,12 +38,6 @@ const RentalDetail = ({ route }) => {
 
 	const [rentalPost, setRentalPost] = useState();
 	const [comments, setComments] = useState();
-	const [repliesComment, setRepliesComment] = useState({});
-	const [openReplies, setOpenReplies] = useState({});
-	const [newComment, setNewComment] = useState("");
-	const [newReplyComment, setNewReplyComment] = useState({});
-
-
 
 	const { id } = route.params;
 
@@ -43,7 +46,6 @@ const RentalDetail = ({ route }) => {
 			const res = await Apis.get(endpoints["rental-comments"](id));
 			console.log(res.data);
 			setComments(res.data.results);
-
 		} catch (ex) {
 			console.log(ex);
 		}
@@ -51,73 +53,19 @@ const RentalDetail = ({ route }) => {
 
 	const loadRepliesComment = async (commentId) => {
 		try {
-			const res = await Apis.get(endpoints["rental-comments-replies"](id, commentId));
-			console.log("Replies for comment:", commentId, res.data);
-			if (Array.isArray(res.data) && res.data.length > 0) {
-				setRepliesComment(prev => ({
-					...prev,
-					[commentId]: res.data,
-				}));
-			} else {
-				setRepliesComment(prev => ({
-					...prev,
-					[commentId]: [], // vẫn set mảng rỗng để tránh lỗi undefined
-				}));
-			}
+			const res = await Apis.get(
+				endpoints["rental-comments-replies"](id, commentId)
+			);
+			return res.data;
 		} catch (ex) {
 			console.log(ex);
+			return null;
 		}
-	};
-
-	const CommentPost = async () => {
-		if (!newComment.trim()) return; // không gửi bình luận rỗng
-
-		const token = await AsyncStorage.getItem("token");
-		try {
-			const res = await authApis(token).post(endpoints["rental-comments"](id), {
-				content: newComment.trim(),
-			});
-			console.log("Đã gửi bình luận:", res.data);
-			setNewComment("");
-		} catch (ex) {
-			console.log("Lỗi gửi bình luận:", ex);
-		} finally {
-			loadComment();
-		}
-	};
-
-	const CommentReply = async (commentId, replyContent) => {
-		const token = await AsyncStorage.getItem("token");
-		console.log('commentId:', commentId);
-
-		try {
-			const res = await authApis(token).post(endpoints["rental-comments"](id), {
-				content: replyContent.trim(),
-				reply_to: commentId,
-			});
-			console.log(res.data);
-		} catch (ex) {
-			console.log(ex);
-		} finally {
-			loadRepliesComment(commentId);
-		}
-	};
-
-
-
-
-
-	// Khi trượt nút liên hệ sẽ thu nhỏ lại
-	const onScroll = ({ nativeEvent }) => {
-		const currentScrollPosition =
-			Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
-
-		setIsPhoneButtonExtended(currentScrollPosition <= 0);
 	};
 
 	const loadRentalPost = async () => {
 		setLoading(true);
-    
+
 		await Apis.get(endpoints.rentalDetails(id))
 			.then((res) => {
 				console.log(res.data);
@@ -130,13 +78,51 @@ const RentalDetail = ({ route }) => {
 				setLoading(false);
 			});
 		loadComment();
-
 	};
 
 	useEffect(() => {
 		loadRentalPost();
-
 	}, []);
+
+	// Khi trượt nút liên hệ sẽ thu nhỏ lại
+	const handleOnScroll = ({ nativeEvent }) => {
+		const currentScrollPosition =
+			Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
+
+		setIsPhoneButtonExtended(currentScrollPosition <= 0);
+	};
+
+	const handleCommentPost = async (content) => {
+		const token = await AsyncStorage.getItem("token");
+		try {
+			await authApis(token).post(endpoints["rental-comments"](id), {
+				content,
+			});
+			loadComment(); // Refresh comments list
+		} catch (ex) {
+			console.log("Lỗi gửi bình luận:", ex);
+		}
+	};
+
+	const handleCommentReply = async (commentId, content) => {
+		const token = await AsyncStorage.getItem("token");
+
+		console.log("ID: ", commentId, " - NỘI DUNG:", content);
+
+		try {
+			const res = await authApis(token).post(
+				endpoints["rental-comments"](id),
+				{
+					content,
+					reply_to: commentId,
+				}
+			);
+			console.log(res.data);
+		} catch (ex) {
+			console.log(ex);
+			return false;
+		}
+	};
 
 	return (
 		<>
@@ -146,8 +132,8 @@ const RentalDetail = ({ route }) => {
 				style={{ flex: 1, position: "relative" }}
 			>
 				{rentalPost ? (
-					<>
-						<ScrollView style={[style.container]} onScroll={onScroll}>
+					<View style={{ flex: 1 }}>
+						<ScrollView style={[style.container]} onScroll={handleOnScroll}>
 							{/* KHUNG XEM ẢNH */}
 							<View
 								style={[
@@ -398,153 +384,15 @@ const RentalDetail = ({ route }) => {
 
 							{/* KHUNG BÌNH LUẬN */}
 							{/* TODO: Triển khai bình luận bài đăng */}
-							<Card style={style.card}>
-								<Card.Content>
-									<Text
-										style={[
-											style.title_small,
-											{ color: theme.colors.primary, marginBottom: 5 },
-										]}
-									>
-										Bình luận
-									</Text>
-
-									<View
-										style={{
-											flex: 1,
-											flexDirection: "row",
-											alignItems: "center",
-											gap: 12,
-											marginBottom: 16,
-										}}
-									>
-										<Avatar.Text label="?" size={36} />
-										<TextInput
-											label={"Bình luận của bạn..."}
-											value={newComment}
-											onChangeText={setNewComment}
-											style={{ flexGrow: 1 }}
-											mode="outlined"
-										/>
-										<Button onPress={CommentPost}>Gửi</Button>
-									</View>
-
-									{Array.isArray(comments) && comments.length > 0 ? (
-										comments.map((cmt) => (
-											<View
-												key={cmt.id}
-												style={{
-													marginBottom: 12,
-													backgroundColor: theme.colors.surface, // nền theo theme
-													padding: 12,
-													borderRadius: 8,
-													shadowColor: theme.dark ? "#000" : "#ccc",
-													shadowOffset: { width: 0, height: 1 },
-													shadowOpacity: 0.3,
-													shadowRadius: 2,
-													elevation: 2,
-												}}
-											>
-												<View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}>
-													<Avatar.Image size={36} source={cmt.user?.avatar ? { uri: cmt.user.avatar } : null} />
-													<Text style={{ fontWeight: "bold", color: theme.colors.onSurface, fontSize: 16 }}>
-														{cmt.user?.name}
-													</Text>
-												</View>
-												<Text style={{ marginLeft: 44, color: theme.colors.onSurface, fontSize: 14, marginBottom: 6 }}>
-													{cmt.content}
-												</Text>
-												<View style={{ flexDirection: "row" }}>
-													<TouchableOpacity
-														onPress={() => {
-															if (openReplies[cmt.id]) {
-																setOpenReplies(prev => ({ ...prev, [cmt.id]: false }));
-															} else {
-																if (!repliesComment[cmt.id]) {
-																	loadRepliesComment(cmt.id);
-																}
-																setOpenReplies(prev => ({ ...prev, [cmt.id]: true }));
-															}
-														}}
-													>
-														<Text style={{ color: theme.colors.primary, fontWeight: "600", padding: 10 }}>
-															{openReplies[cmt.id] ? 'Ẩn phản hồi' : 'Xem phản hồi'}
-														</Text>
-													</TouchableOpacity>
-
-													<TouchableOpacity
-														onPress={() => {
-															setNewReplyComment(prev => {
-																const isOpen = prev[cmt.id] !== undefined;
-																if (isOpen) {
-																	const updated = { ...prev };
-																	delete updated[cmt.id]; // Ẩn ô phản hồi
-																	return updated;
-																} else {
-																	return { ...prev, [cmt.id]: "" }; // Mở ô phản hồi trống
-																}
-															});
-														}}
-													>
-														<Text style={{ color: theme.colors.primary, fontWeight: "600", padding: 10 }}>
-															{newReplyComment[cmt.id] !== undefined ? "Hủy" : "Trả lời"}
-														</Text>
-													</TouchableOpacity>
-												</View>
-
-												{openReplies[cmt.id] && (
-													<View style={{ marginLeft: 20, marginTop: 8 }}>
-														{repliesComment[cmt.id] && repliesComment[cmt.id].length > 0 ? (
-															repliesComment[cmt.id].map((reply) => (
-																<View key={reply.id} style={{ marginBottom: 8 }}>
-																	<View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-																		<Avatar.Image
-																			size={36}
-																			source={reply.user?.avatar ? { uri: reply.user.avatar } : null}
-																		/>
-																		<Text style={{ fontWeight: "bold", color: theme.colors.onSurface }}>
-																			{reply.user.name}
-																		</Text>
-																	</View>
-																	<Text style={{ marginLeft: 44, color: theme.colors.onSurface }}>
-																		{reply.content}
-																	</Text>
-																</View>
-															))
-														) : (
-															<Text style={{ marginLeft: 4, fontStyle: "italic", color: theme.colors.onSurface }}>
-																Không có phản hồi
-															</Text>
-														)}
-														{newReplyComment[cmt.id] !== undefined && (
-															<View style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}>
-																<TextInput
-																	mode="outlined"
-																	placeholder="Nhập phản hồi..."
-																	style={{ flex: 1 }}
-																	value={newReplyComment[cmt.id]}
-																	onChangeText={(text) =>
-																		setNewReplyComment((prev) => ({ ...prev, [cmt.id]: text }))
-																	}
-																/>
-																<Button onPress={ () => {
-																	CommentReply(cmt.id, newReplyComment[cmt.id]);
-																	setNewReplyComment(prev => ({ ...prev, [cmt.id]: "" }));
-																}}>
-																	Gửi
-																</Button>
-															</View>
-														)}
-													</View>
-												)}
-
-											</View>
-										))
-									) : (
-										<Text>Không có bình luận nào</Text>
-									)}
-
-								</Card.Content>
+							<Card style={[style.card, { flex: 1 }]}>
+								<CommentsList
+									comments={comments}
+									loading={loading}
+									onCommentPost={handleCommentPost}
+									onCommentReply={handleCommentReply}
+									loadRepliesComment={loadRepliesComment}
+									loadComments={loadComment}
+								/>
 							</Card>
 
 							<View style={{ height: 120 }} />
@@ -560,7 +408,7 @@ const RentalDetail = ({ route }) => {
 							animateFrom={"right"}
 							style={{ position: "absolute", bottom: 42, right: 24 }}
 						/>
-					</>
+					</View>
 				) : (
 					<ActivityIndicator
 						size={48}

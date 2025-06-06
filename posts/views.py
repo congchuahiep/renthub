@@ -20,19 +20,21 @@ from utils.geocoding import get_bounding_box, haversine
 
 
 class CommentActionMixin:
-
     @action(detail=True, methods=["get", "post"], url_path="comments")
     def comments(self, request, pk=None):
         post = self.get_object()
 
         if request.method == "GET":
-            comments = post.post.comments.select_related("user").filter(active=True, reply_to=None).order_by("-created_date")
+            comments = (
+                post.post.comments.select_related("user")
+                .filter(active=True, reply_to=None)
+                .order_by("-created_date")
+            )
             paginator = paginators.CommentPaginator()
             paginated_comments = paginator.paginate_queryset(comments, request)
 
             serializer = CommentSerializer(paginated_comments, many=True)
             return paginator.get_paginated_response(serializer.data)
-
 
         elif request.method == "POST":
             serializer = CommentSerializer(
@@ -40,13 +42,18 @@ class CommentActionMixin:
                     "content": request.data.get("content"),
                     "user": request.user.pk,
                     "post": pk,
-                    "reply_to": request.data.get("reply_to"),  # 👈 Thêm dòng này!
+                    "reply_to": request.data.get("reply_to"),
                 }
             )
             serializer.is_valid(raise_exception=True)
             comment = serializer.save()
-            return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
-    @action(detail=True, methods=["get"], url_path="comments/(?P<comment_id>[^/.]+)/replies")
+            return Response(
+                CommentSerializer(comment).data, status=status.HTTP_201_CREATED
+            )
+
+    @action(
+        detail=True, methods=["get"], url_path="comments/(?P<comment_id>[^/.]+)/replies"
+    )
     def comment_replies(self, request, pk=None, comment_id=None):
         """
         API: GET /rentals/<post_id>/comments/<comment_id>/replies/
@@ -59,10 +66,34 @@ class CommentActionMixin:
         except Comment.DoesNotExist:
             return Response({"detail": "Comment not found."}, status=404)
 
-        replies = comment.replies.select_related("user").filter(active=True).order_by("created_date")
+        replies = (
+            comment.replies.select_related("user")
+            .filter(active=True)
+            .order_by("created_date")
+        )
         print(replies)
         serializer = CommentSerializer(replies, many=True)
         return Response(serializer.data)
+
+
+class CommentViewSet(
+    viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
+):
+    """
+    ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
+    xoá và chỉnh sửa comment
+
+    Endpoints
+    ---------
+    - `DELETE /comments/<id>` : Xoá một Comment
+    - `PUT /comments/<id>` : Sửa toàn bộ một Comment
+    - `PATCH /comments/<id>` : Sửa một phần Comment
+    """
+
+    queryset = Comment.objects.filter(active=True)
+    serializer_class = CommentSerializer
+    permission_classes = [IsCommentOwner]
+
 
 # Create your views here.
 class RentalPostViewSet(
@@ -72,7 +103,7 @@ class RentalPostViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
-    CommentActionMixin
+    CommentActionMixin,
 ):
     """
     ViewSet này cung cấp khả năng quản lý các Rental post
@@ -238,25 +269,6 @@ class RentalPostViewSet(
         )
 
 
-class CommentViewSet(
-    viewsets.GenericViewSet, mixins.DestroyModelMixin, mixins.UpdateModelMixin
-):
-    """
-    ViewSet này cung cấp khả năng cho phép chủ sở hữu comment được
-    xoá và chỉnh sửa comment
-
-    Endpoints
-    ---------
-    - `DELETE /comments/<id>` : Xoá một Comment
-    - `PUT /comments/<id>` : Sửa toàn bộ một Comment
-    - `PATCH /comments/<id>` : Sửa một phần Comment
-    """
-
-    queryset = Comment.objects.filter(active=True)
-    serializer_class = CommentSerializer
-    permission_classes = [IsCommentOwner]
-
-
 class RoomSeekingPostViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
@@ -264,7 +276,7 @@ class RoomSeekingPostViewSet(
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
-    CommentActionMixin
+    CommentActionMixin,
 ):
     queryset = RoomSeekingPost.objects.filter(active=True).order_by("-created_date")
     serializer_class = RoomSeekingPostSerializer
