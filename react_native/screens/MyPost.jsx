@@ -134,7 +134,7 @@ const RoomSeekingForm = () => {
 
       console.log("✅ Post created:", res.data);
     } catch (ex) {
-      console.log("❌ Error:", ex.response?.data || ex.message);
+      // NOTE TẠm thời đóng console.log("❌ Error:", ex.response?.data || ex.message); 
     } finally {
       setLoading(false);
     }

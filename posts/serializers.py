@@ -227,23 +227,24 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     post = PostReferenceSerializer(read_only=True)
 
-
     class Meta:
         model = RoomSeekingPost
-        fields = '__all__'
-        extra_kwargs={
-            'owner':{
-                'read_only':True,
+        fields = "__all__"
+        extra_kwargs = {
+            "owner": {
+                "read_only": True,
             },
         }
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['owner']={
-            'id':instance.owner.id,
-            'name':f"{instance.owner.first_name} {instance.owner.last_name}",
-            'avatar':instance.owner.avatar,
+        data["owner"] = {
+            "id": instance.owner.id,
+            "name": f"{instance.owner.first_name} {instance.owner.last_name}",
+            "avatar": instance.owner.avatar.url if instance.owner.avatar else None,
         }
+
+        data["post"] = instance.post.id
 
         if instance.province:
             data["province"] = instance.province.full_name
@@ -252,7 +253,7 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
         return data
 
     def validate(self, attrs):
-        request = self.context['request']
+        request = self.context["request"]
         instance = self.instance
 
         if instance and instance.owner != request.user:
@@ -261,7 +262,9 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
             )
         if instance:
             if instance.owner != request.user:
-                raise serializers.ValidationError("You do not have permission to edit this post.")
+                raise serializers.ValidationError(
+                    "You do not have permission to edit this post."
+                )
 
         price_min = attrs.get("price_min", 0)
         price_max = attrs.get("price_max", 0)
@@ -270,10 +273,8 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
 
         return attrs
 
-
-
     def create(self, validated_data):
-        validated_data['status'] = 'pending'
+        validated_data["status"] = "pending"
         post = PostReference.objects.create()
         roomSeeking_post = RoomSeekingPost.objects.create(post=post, **validated_data)
 
@@ -296,10 +297,9 @@ class CommentSerializer(serializers.ModelSerializer):
     - `user`: Id của người dùng gửi comment
     - `post`: Id của bài đăng
     """
+
     reply_to = serializers.PrimaryKeyRelatedField(
-        queryset=Comment.objects.all(),
-        allow_null=True,
-        required=False
+        queryset=Comment.objects.all(), allow_null=True, required=False
     )
 
     class Meta:
@@ -313,16 +313,12 @@ class CommentSerializer(serializers.ModelSerializer):
         """
         data = super().to_representation(instance)
         # data["user"] = UserSerializer(instance.user).data
-        data['user']={
-            'id':instance.user.id,
-            'name':f"{instance.user.first_name} {instance.user.last_name}",
-            'avatar':instance.user.avatar,
+        data["user"] = {
+            "id": instance.user.id,
+            "name": f"{instance.user.first_name} {instance.user.last_name}",
+            "avatar": instance.user.avatar,
         }
         return data
 
-
-
     def create(self, validated_data):
         return super().create(validated_data)
-
-

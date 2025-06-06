@@ -279,8 +279,6 @@ class RoomSeekingPostViewSet(
             return [IsPostOwner()]
         elif self.action == "comments" and self.request.method == "POST":
             return [IsAuthenticated()]
-        # else phần comments thằng Hiệp làm thằng Tín đéo biết
-        # Hiệp: chấm hỏi =)))?
         return [AllowAny()]
 
     def perform_create(self, serializer):

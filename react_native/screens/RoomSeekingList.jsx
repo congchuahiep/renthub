@@ -37,7 +37,8 @@ const RoomSeekingList = () => {
 
     const loadRoomSeekingPosts = async (pageToLoad = 1, refreshing = false) => {
         try {
-            const res = await Apis.get(`${endpoints.roomseekings}?page=${pageToLoad}&page_size=${pageSize}`);
+            // const res = await Apis.get(`${endpoints.roomseekings}?page=${pageToLoad}&page_size=${pageSize}`);
+            const res = await Apis.get(endpoints.roomseekings);
             if (refreshing) {
                 setRoomSeekings(res.data.results);
             } else {
