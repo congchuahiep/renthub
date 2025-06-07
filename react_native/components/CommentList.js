@@ -1,20 +1,22 @@
 import { useState } from "react";
-import { FlatList, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import {
+	ActivityIndicator,
 	Avatar,
+	Button,
+	IconButton,
 	Text,
 	TextInput,
-	Button,
 	useTheme,
-	Icon,
-	IconButton,
 } from "react-native-paper";
-import Comment from "./Comment";
-import useStyle from "../styles/useStyle";
 import { useAuth } from "../config/auth";
+import useStyle from "../styles/useStyle";
+import Comment from "./Comment";
+import Apis from "../config/Apis";
 
 const CommentsList = ({
-	comments,
+	commentData,
+	setCommentData,
 	onCommentPost,
 	onCommentReply,
 	loadRepliesComment,
@@ -22,9 +24,29 @@ const CommentsList = ({
 	const theme = useTheme();
 	const style = useStyle();
 
+	const { results: comments, next } = commentData;
+
 	const { user } = useAuth();
 
 	const [newComment, setNewComment] = useState("");
+	const [loadingMoreComments, setLoadingMoreComment] = useState(false);
+
+	const loadMoreComments = async () => {
+		if (!commentData.next) return;
+
+		try {
+			setLoadingMoreComment(true);
+			const res = await Apis.get(commentData.next);
+			setCommentData((prevData) => ({
+				results: [...(prevData.results || []), ...res.data.results],
+				next: res.data.next,
+			}));
+		} catch (ex) {
+			console.error("Lỗi khi tải thêm bình luận:", ex);
+		} finally {
+			setLoadingMoreComment(false);
+		}
+	};
 
 	const handleCommentPost = async () => {
 		if (!newComment.trim()) return;
@@ -80,17 +102,23 @@ const CommentsList = ({
 				/>
 			</View>
 
-			{comments && Array.isArray(comments) && comments.length > 0 ? (
-				comments.map((cmt) => (
-					<Comment
-						key={cmt.id}
-						comment={cmt}
-						onReplySubmit={handleReplySubmit}
-						loadRepliesComment={loadRepliesComment}
-					/>
-				))
-			) : (
-				<Text>Không có bình luận nào</Text>
+				{comments && Array.isArray(comments) && comments.length > 0 ? (
+					comments.map((cmt) => (
+						<Comment
+							key={cmt.id}
+							comment={cmt}
+							onReplySubmit={handleReplySubmit}
+							loadRepliesComment={loadRepliesComment}
+						/>
+					))
+				) : (
+					<Text>Không có bình luận nào</Text>
+				)}
+
+			{next && (
+				<Button mode="contained-tonal" onPress={loadMoreComments} loading={loadingMoreComments}>
+					Tải thêm bình luận
+				</Button>
 			)}
 		</View>
 	);

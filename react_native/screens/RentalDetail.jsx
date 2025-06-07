@@ -1,33 +1,23 @@
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import {
-	FlatList,
-	KeyboardAvoidingView,
-	ScrollView,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 import {
 	ActivityIndicator,
 	AnimatedFAB,
 	Avatar,
-	Button,
 	Card,
-	Divider,
 	Icon,
 	Text,
-	TextInput,
 	useTheme,
 } from "react-native-paper";
 import Carousel from "../components/Carousel";
 import Apis, { authApis, endpoints } from "../config/Apis";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CommentsList from "../components/CommentList";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { formatDate, getRelativeTime } from "../utils/datetime";
-import Comment from "../components/Comment";
-import CommentsList from "../components/CommentList";
 
 const RentalDetail = ({ route }) => {
 	const theme = useTheme();
@@ -37,7 +27,10 @@ const RentalDetail = ({ route }) => {
 	const [loading, setLoading] = useState(false);
 
 	const [rentalPost, setRentalPost] = useState();
-	const [comments, setComments] = useState();
+	const [commentData, setCommentData] = useState({
+		results: null,
+		next: null,
+	});
 
 	const { id } = route.params;
 
@@ -45,7 +38,7 @@ const RentalDetail = ({ route }) => {
 		try {
 			const res = await Apis.get(endpoints["rental-comments"](id));
 			console.log(res.data);
-			setComments(res.data.results);
+			setCommentData(res.data);
 		} catch (ex) {
 			console.log(ex);
 		}
@@ -77,12 +70,15 @@ const RentalDetail = ({ route }) => {
 			.finally(() => {
 				setLoading(false);
 			});
-		loadComment();
 	};
 
 	useEffect(() => {
 		loadRentalPost();
 	}, []);
+
+	useEffect(() => {
+		loadComment();
+	}, [rentalPost]);
 
 	// Khi trượt nút liên hệ sẽ thu nhỏ lại
 	const handleOnScroll = ({ nativeEvent }) => {
@@ -110,13 +106,10 @@ const RentalDetail = ({ route }) => {
 		console.log("ID: ", commentId, " - NỘI DUNG:", content);
 
 		try {
-			const res = await authApis(token).post(
-				endpoints["rental-comments"](id),
-				{
-					content,
-					reply_to: commentId,
-				}
-			);
+			const res = await authApis(token).post(endpoints["rental-comments"](id), {
+				content,
+				reply_to: commentId,
+			});
 			console.log(res.data);
 		} catch (ex) {
 			console.log(ex);
@@ -383,11 +376,10 @@ const RentalDetail = ({ route }) => {
 							</Card>
 
 							{/* KHUNG BÌNH LUẬN */}
-							{/* TODO: Triển khai bình luận bài đăng */}
 							<Card style={[style.card, { flex: 1 }]}>
 								<CommentsList
-									comments={comments}
-									loading={loading}
+									commentData={commentData}
+									setCommentData={setCommentData}
 									onCommentPost={handleCommentPost}
 									onCommentReply={handleCommentReply}
 									loadRepliesComment={loadRepliesComment}

@@ -32,7 +32,10 @@ const RoomSeekingDetail = ({ route }) => {
 
 	const [roomSeeking, setRoomSeeking] = useState(null);
 	const [loading, setLoading] = useState(false);
-	const [comments, setComments] = useState();
+	const [commentData, setCommentData] = useState({
+		results: null,
+		next: null,
+	});
 
 	const { postIntanceId } = route?.params;
 
@@ -42,7 +45,7 @@ const RoomSeekingDetail = ({ route }) => {
 				endpoints["roomseeking-comments"](postIntanceId)
 			);
 			console.log(res.data);
-			setComments(res.data.results);
+			setCommentData(res.data);
 		} catch (ex) {
 			console.log(ex);
 		}
@@ -107,7 +110,6 @@ const RoomSeekingDetail = ({ route }) => {
 			);
 			console.log(res.data);
 			setRoomSeeking(res.data);
-			console.log(roomSeeking);
 		} catch (ex) {
 			console.log(ex);
 		} finally {
@@ -116,7 +118,6 @@ const RoomSeekingDetail = ({ route }) => {
 	};
 
 	useEffect(() => {
-		console.log(postIntanceId);
 		loadRoomSeekingPost();
 	}, []);
 
@@ -256,14 +257,16 @@ const RoomSeekingDetail = ({ route }) => {
 
 			<Card style={[style.card, { flex: 1 }]}>
 				<CommentsList
-					comments={comments}
-					loading={loading}
+					commentData={commentData}
+          setCommentData={setCommentData}
 					onCommentPost={handleCommentPost}
 					onCommentReply={handleCommentReply}
 					loadRepliesComment={loadRepliesComment}
 					loadComments={loadComment}
 				/>
 			</Card>
+
+			<View style={{ height: 54 }} />
 		</ScrollView>
 	);
 };
