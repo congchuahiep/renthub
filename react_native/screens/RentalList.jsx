@@ -28,7 +28,7 @@ const RentalList = () => {
 	// Các state hiệu ứng
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
-	const [isPhoneButtonExtended, setIsPhoneButtonExtended] = useState(true);
+	const [isCreateButtonExtended, setIsCreateButtonExtended] = useState(true);
 
 	const [showFilterModal, setShowFilterModal] = useState(false);
 	const [isFiltered, setIsFiltered] = useState(false);
@@ -91,7 +91,7 @@ const RentalList = () => {
 		const currentScrollPosition =
 			Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
 
-		setIsPhoneButtonExtended(currentScrollPosition <= 0);
+		setIsCreateButtonExtended(currentScrollPosition <= 0);
 	};
 
 	return (
@@ -153,7 +153,7 @@ const RentalList = () => {
 				<AnimatedFAB
 					label={"Thêm bài đăng"}
 					animateFrom={"right"}
-					extended={isPhoneButtonExtended}
+					extended={isCreateButtonExtended}
 					style={{ position: "absolute", right: 24, bottom: 24 }}
 					icon="plus"
 					onPress={() => navigation.navigate("RentalCreate")}

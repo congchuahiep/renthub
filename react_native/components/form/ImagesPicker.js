@@ -1,4 +1,4 @@
-import { View, Image } from "react-native";
+import { Image, View } from "react-native";
 import { Button, HelperText, useTheme } from "react-native-paper";
 
 const ImagesPicker = ({ images, onPick, error, label }) => {
@@ -25,7 +25,7 @@ const ImagesPicker = ({ images, onPick, error, label }) => {
 					marginTop: 8,
 				}}
 			>
-				{images.map((img, idx) => (
+				{images && images.map((img, idx) => (
 					<Image
 						key={idx}
 						source={{ uri: img.uri }}
