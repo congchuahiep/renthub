@@ -16,11 +16,12 @@ const PropertyList = () => {
 		try {
 			setLoading(true); // Bắt đầu tải dữ liệu
 			let response = await Apis.get(endpoints.properties);
-			setProperties(response.data); // Lưu dữ liệu vào state
+			console.log(response.data);
+			setProperties(response.data); 
 		} catch (ex) {
 			console.error(ex);
 		} finally {
-			setLoading(false); // Kết thúc tải dữ liệu
+			setLoading(false); 
 			setRefreshing(false);
 		}
 	};

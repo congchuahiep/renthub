@@ -259,7 +259,11 @@ class RentalPostViewSet(
         """
         Khi thức hiện phương thức `create()`, gắn landlord đang gọi API
         để trở thành chủ sở hữu của bài đăng này
-        """
+        # """
+        # if serializer.is_valid():
+        #     instance = serializer.save(owner=self.request.user)
+        # else:
+        #     print(serializer.errors)  # In lỗi ra console để xem cụ thể
         instance = serializer.save(
             owner=self.request.user
         )  # Gán landlord là user hiện tại
