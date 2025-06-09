@@ -1,67 +1,186 @@
+import { get, onChildAdded, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { Button, FlatList, Text, TextInput, View } from "react-native";
+import { Button, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { Avatar } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { sendMessage } from "../components/sendMess";
+import { database } from "../config/config";
 
-const ChatScreen = ({ chatId, userId }) => {
-	const [messages, setMessages] = useState([]);
-	const [newMessage, setNewMessage] = useState("");
+const ChatScreen = ({ route }) => {
+  const { chatId, userId } = route.params;
 
-	// Hàm gọi API để lấy tin nhắn mới
-	const fetchMessages = async () => {
-		try {
-			const response = await fetch(
-				`http://your-django-api-url/chat/${chatId}/messages/`
-			);
-			const data = await response.json();
-			setMessages(data.messages);
-		} catch (error) {
-			console.error("Error fetching messages:", error);
-		}
-	};
+  const [messages, setMessages] = useState([]);
+  const [participants, setParticipants] = useState([]);
+  const [newMessage, setNewMessage] = useState([]);
 
-	// Gửi tin nhắn
-	const sendMessage = async () => {
-		if (newMessage) {
-			try {
-				await fetch("http://your-django-api-url/chat/send/", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ chatId, message: newMessage, userId }),
-				});
-				setNewMessage("");
-				fetchMessages(); // Gọi lại API để cập nhật tin nhắn sau khi gửi
-			} catch (error) {
-				console.error("Error sending message:", error);
-			}
-		}
-	};
+  useEffect(() => {
+    if (!chatId) return;
+    setNewMessage("");
+    const messagesRef = ref(database, `chats/${chatId}/messages`);
 
-	useEffect(() => {
-		// Lấy tin nhắn ngay khi vào màn hình
-		fetchMessages();
+    const unsubscribe = onChildAdded(messagesRef, (snapshot) => {
+      const newMsg = { id: snapshot.key, ...snapshot.val() };
+      setMessages((prev) => {
+        const exists = prev.find((msg) => msg.id === newMsg.id);
+        return exists ? prev : [...prev, newMsg].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      });
+    });
 
-		// Cập nhật tin nhắn mỗi 3 giây
-		const intervalId = setInterval(fetchMessages, 3000);
+    get(ref(database, `chats/${chatId}/participants`)).then((snapshot) => {
+      if (snapshot.exists()) {
+        setParticipants(snapshot.val());
+      }
+    });
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
 
-		return () => clearInterval(intervalId); // Dọn dẹp khi màn hình bị rời đi
-	}, [chatId]);
+    
+  }, [chatId]);
 
-	return (
-		<View>
-			<FlatList
-				data={messages}
-				keyExtractor={(item) => item.id.toString()}
-				renderItem={({ item }) => <Text>{item.content}</Text>}
-			/>
-			<TextInput
-				placeholder="Type a message"
-				value={newMessage}
-				onChangeText={setNewMessage}
-			/>
-			<Button title="Send" onPress={sendMessage} />
-		</View>
-	);
+  const getAvatarByUserId = (userId) => {
+    const participant = participants.find((p) => p.id === userId);
+    return participant?.avatar || null;
+  };
+
+  const renderMessageItem = ({ item }) => {
+    const isCurrentUser = item.userId === userId;
+    const avatar = getAvatarByUserId(item.userId);
+
+    return (
+      <View style={[styles.messageWrapper, isCurrentUser ? styles.alignRight : styles.alignLeft]}>
+        {!isCurrentUser && (
+          avatar ? (
+            <Avatar.Image size={36} source={{ uri: avatar }} style={styles.avatar} />
+          ) : (
+            <Avatar.Text
+              size={36}
+              label=""
+              style={[styles.avatar, { backgroundColor: "#ccc" }]}
+            />
+          )
+        )}
+
+        <View style={[styles.messageBubble, isCurrentUser ? styles.currentUser : styles.otherUser]}>
+          <Text style={styles.messageText}>{item.content}</Text>
+          <Text style={styles.messageTime}>
+            {new Date(item.createdAt).toLocaleTimeString()}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+    >
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1 }}>
+          <FlatList
+            data={messages}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderMessageItem}
+            contentContainerStyle={{ paddingBottom: 10 }}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type a message"
+            value={newMessage}
+            onChangeText={setNewMessage}
+          />
+          <Button
+            title="Send"
+            onPress={() => {
+              sendMessage(chatId, userId, newMessage);
+              setNewMessage("");
+            }}
+          />
+        </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
+
+
+  );
 };
+
+const styles = StyleSheet.create({
+  messageWrapper: {
+    flexDirection: "row",
+    marginVertical: 5,
+    alignItems: "flex-end",
+  },
+
+  alignLeft: {
+    justifyContent: "flex-start",
+    alignSelf: "flex-start",
+  },
+
+  alignRight: {
+    justifyContent: "flex-end",
+    alignSelf: "flex-end",
+    flexDirection: "row-reverse", // avatar nằm bên phải nếu có
+  },
+
+  avatar: {
+    marginHorizontal: 6,
+  },
+
+  messageBubble: {
+    borderRadius: 10,
+    padding: 10,
+    maxWidth: "75%",
+  },
+
+  currentUser: {
+    backgroundColor: "#DCF8C6",
+  },
+
+  otherUser: {
+    backgroundColor: "#FFF",
+  },
+
+  messageText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+
+  messageTime: {
+    fontSize: 12,
+    color: "#888",
+    textAlign: "right",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderTopWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#f9f9f9',
+  },
+
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 6,
+    marginRight: 8,
+    backgroundColor: '#fff',
+  },
+});
 
 export default ChatScreen;

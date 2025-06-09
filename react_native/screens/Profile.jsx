@@ -1,10 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { Avatar, Button, List, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useStyle from "../styles/useStyle";
 import { useAuth } from "../config/auth";
+import useStyle from "../styles/useStyle";
 
 const Profile = () => {
 	const theme = useTheme();
@@ -16,6 +16,8 @@ const Profile = () => {
 	const navigation = useNavigation();
 
 	const handleLogout = async () => {
+
+		console.log(user);
 		logout();
 	};
 

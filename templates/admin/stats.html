@@ -1,0 +1,107 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Thống kê người dùng</h2>
+
+<label>Chọn loại thống kê thời gian:</label>
+<select id="typeSelect">
+    <option value="month">Theo tháng</option>
+    <option value="quarter">Theo quý</option>
+    <option value="year">Theo năm</option>
+</select>
+
+<canvas id="userStatsChart" width="800" height="400"></canvas>
+
+<canvas id="userTypeChart" width="800" height="400"></canvas>
+<!-- const monthlyStats = JSON.parse('{{ monthly_stats|safe|escapejs }}');
+    const quarterlyStats = JSON.parse('{{ quarterly_stats|safe|escapejs }}');
+    const yearlyStats = JSON.parse('{{ yearly_stats|safe|escapejs }}');
+    const userTypeStats = JSON.parse('{{ user_type_stats|safe|escapejs }}'); -->
+
+<script>
+    const monthlyStats = JSON.parse('{{ monthly_stats|safe|escapejs }}');
+    const quarterlyStats = JSON.parse('{{ quarterly_stats|safe|escapejs }}');
+    const yearlyStats = JSON.parse('{{ yearly_stats|safe|escapejs }}');
+
+    const userTypes = ['landlord', 'tenant'];
+    const userTypeLabels = {
+        'landlord': 'Chủ nhà',
+        'tenant': 'Người thuê'
+    };
+
+    let chartInstance;
+
+    function renderChart(type) {
+        let rawData;
+        if (type === 'month') rawData = monthlyStats;
+        else if (type === 'quarter') rawData = quarterlyStats;
+        else rawData = yearlyStats;
+
+        const labels = rawData.map(item => {
+            const date = new Date(item[type]);
+            if (type === 'month') return `${date.getMonth() + 1}/${date.getFullYear()}`;
+            if (type === 'quarter') return `Q${Math.floor(date.getMonth() / 3) + 1}/${date.getFullYear()}`;
+            if (type === 'year') return `${date.getFullYear()}`;
+        });
+
+        const datasets = userTypes.map(ut => ({
+            label: userTypeLabels[ut],
+            data: rawData.map(item => item[ut] || 0),
+            backgroundColor: ut === 'landlord' ? 'rgba(255, 159, 64, 0.6)' : 'rgba(54, 162, 235, 0.6)',
+            borderColor: ut === 'landlord' ? 'rgba(255, 159, 64, 1)' : 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }));
+
+        if (chartInstance) chartInstance.destroy();
+
+        const ctx = document.getElementById('userStatsChart').getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { stacked: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // Default chart
+    renderChart('month');
+    document.getElementById('typeSelect').addEventListener('change', function () {
+        renderChart(this.value);
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<style>
+    #typeSelect {
+    appearance: none;           
+    -webkit-appearance: none;  
+    -moz-appearance: none;     
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20,50 70,100 120,50' stroke='black' stroke-width='15' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    padding-right: 30px; 
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+    label {
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>
+
+{% endblock %}

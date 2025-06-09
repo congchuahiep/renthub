@@ -1,7 +1,9 @@
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomBar from "../components/BottomBar";
-import ChatListScreen from "../screens/Chats";
+import RentalAppbar from "../components/RentalAppbar";
+import { useAuth } from "../config/auth";
+import ChatsList from "../screens/Chats";
 import Login from "../screens/Login";
 import RoomSeekingForm from "../screens/MyPost";
 import Profile from "../screens/Profile";
@@ -9,9 +11,6 @@ import PropertyList from "../screens/PropertyList";
 import RentalList from "../screens/RentalList";
 import RoomSeekingList from "../screens/RoomSeekingList";
 import Users from "../screens/Users";
-import { useAuth } from "../config/auth";
-import RentalAppbar from "../components/RentalAppbar";
-import Register from "../screens/RegisterTenant";
 
 const Tab = createBottomTabNavigator();
 
@@ -77,15 +76,15 @@ export default function TabNavigator() {
 						}}
 					/>
 
-					{/* <Tab.Screen
-            name="chats"
-            component={ChatListScreen}
-            options={{
-              title: "Tin nhắn",
-              tabBarIcon: ({color}) => (
-                <MaterialDesignIcons name="chat" color={color} size={26}/>
-              ),
-						}} /> */}
+					<Tab.Screen
+						name="Chats"
+						component={ChatsList}
+						options={{
+							title: "Tin nhắn",
+							tabBarIcon: ({ color }) => (
+								<MaterialDesignIcons name="chat" color={color} size={26} />
+							),
+						}} />
 					<Tab.Screen
 						name="profile"
 						component={Profile}
