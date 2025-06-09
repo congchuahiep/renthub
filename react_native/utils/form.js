@@ -49,7 +49,7 @@ export const renderFormField = ({
 			return (
 				<AvatarPicker
 					key={key}
-					avatar={label}
+					avatar={value}
 					onPick={() => handlePickImage(false)}
 					onRemove={() => updateField(undefined)}
 					error={error}

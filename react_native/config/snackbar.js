@@ -22,7 +22,7 @@ export function SnackbarProvider({ children }) {
 					onDismiss={() => setVisible(false)}
 					duration={duration}
 					onIconPress={() => setVisible(false)}
-					style={{ marginBottom: 32 }}
+					style={{ marginBottom: 90 }}
 				>
 					{message}
 				</Snackbar>

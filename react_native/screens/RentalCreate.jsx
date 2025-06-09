@@ -1,4 +1,3 @@
-import * as ImagePicker from "expo-image-picker";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -9,7 +8,7 @@ import BottomSafeAreaView from "../components/BottomSafeAreaView";
 import StepBottomBar from "../components/StepBottomBar";
 import UtilitySelector from "../components/form/UtilitySelector";
 import Apis, { authApis, endpoints } from "../config/Apis";
-import { stepFields, stepsInfo } from "../form_data/createRentalDataForm";
+import { stepFields, stepsInfo } from "../form_data/rentalDataForm";
 import useStyle from "../styles/useStyle";
 import { renderFormField } from "../utils/form";
 import { useSnackbar } from "../config/snackbar";
@@ -100,7 +99,7 @@ const RentalCreate = ({ navigation, route }) => {
 					if (!value || value < 1) {
 						newErrors[
 							field.field
-						] = `Số lượng ${field.label.toLowerCase()} phải lớn hơn 0`;
+						] = `${field.label} phải lớn hơn 0`;
 						isValid = false;
 					}
 					return;
@@ -245,8 +244,6 @@ const RentalCreate = ({ navigation, route }) => {
 				)}
 				scrollEnabled={false}
 			/>
-
-      <Button />
 
 			<StepBottomBar
 				step={currentStep + 1}

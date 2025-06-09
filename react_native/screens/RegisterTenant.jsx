@@ -1,122 +1,76 @@
-import * as ImagePicker from "expo-image-picker";
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-	Button,
-	useTheme
-} from "react-native-paper";
+import { Button, Card, useTheme } from "react-native-paper";
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
-import AvatarPicker from "../components/form/AvatarPicker";
-import InputField from "../components/form/InputField";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
+import { registerTenantDataForm } from "../form_data/registerTenantDataForm";
+import { renderFormField } from "../utils/form";
+import { useSnackbar } from "../config/snackbar";
 
-// CÁC TRƯỜNG THÔNG TIN ĐĂNG KÝ TÀI KHOẢN TÌM TRỌ
-export const tenantInfo = [
-	{
-		label: "Ảnh đại diện",
-		field: "avatar",
-		secureTextEntry: true,
-		required: false,
-		icon: "eye",
-		type: "avatar",
-	},
-	{
-		label: "Tên",
-		field: "first_name",
-		secureTextEntry: false,
-	},
-	{
-		label: "Họ và tên lót",
-		field: "last_name",
-		secureTextEntry: false,
-	},
-	{
-		label: "Tên đăng nhập",
-		field: "username",
-		secureTextEntry: false,
-		icon: "account-circle",
-	},
-	{
-		label: "Email",
-		field: "email",
-		secureTextEntry: false,
-		icon: "email",
-		keyboardType: "email-address",
-	},
-	{
-		label: "Mật khẩu",
-		field: "password",
-		secureTextEntry: true,
-		icon: "eye",
-	},
-	{
-		label: "Xác nhận mật khẩu",
-		field: "confirm",
-		secureTextEntry: true,
-		icon: "eye",
-	},
-];
-
-const RegisterTenant = () => {
+const RegisterTenant = ({ navigation }) => {
+	const snackbar = useSnackbar();
 	const style = useStyle();
-	const theme = useTheme();
-	const [user, setUser] = useState({});
+
+	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
 
 	// Phương thức thiết lập giá trị cho các thông tin đăng ký người dùng
-	const updateUserField = (value, field) => {
-		setUser({ ...user, [field]: value });
+	const updateDataForm = (field, value) => {
+		setFormData({ ...formData, [field]: value });
 		setErrors({ ...errors, [field]: undefined });
 	};
 
-	// Chọn ảnh avatar
-	const pickAvatar = async () => {
-		let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status !== "granted") {
-			alert("Bạn cần cấp quyền truy cập ảnh!");
-			return;
-		}
-		const result = await ImagePicker.launchImageLibraryAsync();
-		if (!result.canceled) {
-			updateUserField(result.assets[0], "avatar");
-		}
-		for (let i of tenantInfo) {
-			if (!user[i.field] || user[i.field].toString().trim() === "") {
-				newErrors[i.field] = `Vui lòng nhập ${i.label.toLowerCase()}!`;
-				valid = false;
-			}
-		}
-	};
+	const handleValidate = () => {
+		const fields = registerTenantDataForm;
+		const newErrors = {};
+		let isValid = true;
 
-	// Xoá ảnh avatar hiện tại
-	const onRemoveAvatar = () => setUser({ ...user, avatar: undefined });
+		fields.forEach((field) => {
+			const value = formData[field.field];
 
-	const validate = () => {
-		let newErrors = {};
-		let valid = true;
-		for (let i of tenantInfo) {
-			if (!user[i.field] || user[i.field].toString().trim() === "") {
-				newErrors[i.field] = `Vui lòng nhập ${i.label.toLowerCase()}!`;
-				valid = false;
+			switch (field.field) {
+				case "number_of_bathrooms":
+				case "number_of_bedrooms":
+				case "limit_person":
+					if (!value || value < 1) {
+						newErrors[field.field] = `${field.label} phải lớn hơn 0`;
+						isValid = false;
+					}
+					return;
+
+				case "confirm_password":
+					if (!value || formData.password !== value) {
+						newErrors[field.field] = "Mật khẩu xác nhận không khớp!";
+						isValid = false;
+					}
+					return;
+
+				default:
+					if (
+						field.required !== false &&
+						(!value || value.toString().trim() === "")
+					) {
+						newErrors[
+							field.field
+						] = `Vui lòng nhập ${field.label.toLowerCase()}`;
+						isValid = false;
+					}
 			}
-		}
-		if (user.password !== user.confirm) {
-			newErrors.confirm = "Mật khẩu xác nhận không khớp!";
-			valid = false;
-		}
+		});
+
 		setErrors(newErrors);
-		return valid;
+		return isValid;
 	};
 
 	/**
 	 * Xử lý đăng ký người dùng
 	 */
 	const registerHandle = async () => {
-		console.log("User data:", user);
-		console.log("Validation passed:", validate());
-		if (!validate()) return; // Validate dữ liệu đăng ký
+		console.log("User data:", formData);
+		if (!handleValidate()) return; // Validate dữ liệu đăng ký
 
 		try {
 			setLoading(true);
@@ -124,20 +78,24 @@ const RegisterTenant = () => {
 			// Tạo form
 			let form = new FormData();
 
-			for (const key in user) {
-				if (key === "confirm" || user[key] === undefined || user[key] === null)
+			for (const key in formData) {
+				if (
+					key === "confirm" ||
+					formData[key] === undefined ||
+					formData[key] === null
+				)
 					continue;
 				if (key === "avatar") {
-					if (user.avatar && user.avatar.uri) {
+					if (formData.avatar && formData.avatar.uri) {
 						form.append("avatar", {
-							uri: user.avatar.uri,
-							name: user.avatar.fileName || "avatar.jpg",
+							uri: formData.avatar.uri,
+							name: formData.avatar.fileName || "avatar.jpg",
 							type: "image/jpeg",
 						});
 					}
 					continue;
 				}
-				form.append(key, user[key]);
+				form.append(key, formData[key]);
 			}
 			console.log(form.data);
 
@@ -146,10 +104,11 @@ const RegisterTenant = () => {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 
-			alert("Đăng ký thành công!");
+			snackbar("Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
+			navigation.popToTop();
 		} catch (ex) {
 			console.log(ex.response?.data || ex.toJSON?.() || ex);
-			alert("Đăng ký thất bại. Vui lòng thử lại!");
+			snackbar("Đăng ký thất bại. Vui lòng thử lại!");
 		} finally {
 			setLoading(false);
 		}
@@ -159,34 +118,27 @@ const RegisterTenant = () => {
 		<BottomSafeAreaView>
 			<KeyboardAwareScrollView
 				keyboardShouldPersistTaps="handled"
-				contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 4 }}
+				contentContainerStyle={{
+					paddingHorizontal: 16,
+					paddingBottom: 32,
+					gap: 4,
+				}}
 				enableOnAndroid={true}
 				extraScrollHeight={160}
 			>
-				{/* Map từng trường thông tin một */}
-				{tenantInfo.map((info) =>
-					info.type === "avatar" ? (
-						// Nếu là trường avatar
-						<AvatarPicker
-							key={info.field}
-							avatar={user.avatar}
-							onPick={pickAvatar}
-							onRemove={onRemoveAvatar}
-						/>
-					) : (
-						// Các trường khác
-						<InputField
-							key={info.field}
-							label={info.label}
-							value={user[info.field]}
-							onChangeText={(value) => updateUserField(value, info.field)}
-							secureTextEntry={info.secureTextEntry}
-							icon={info.icon}
-							error={errors[info.field]}
-							keyboardType={info.keyboardType}
-						/>
-					)
-				)}
+				<Card style={style.card}>
+					<Card.Content>
+						{registerTenantDataForm.map((field) =>
+							renderFormField({
+								field,
+								formData,
+								error: errors[field.field],
+								updateField: (value) => updateDataForm(field.field, value),
+								navigation,
+							})
+						)}
+					</Card.Content>
+				</Card>
 
 				<Button
 					onPress={registerHandle}
