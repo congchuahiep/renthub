@@ -9,7 +9,7 @@ import BottomSafeAreaView from "../components/BottomSafeAreaView";
 import StepBottomBar from "../components/StepBottomBar";
 import UtilitySelector from "../components/form/UtilitySelector";
 import Apis, { authApis, endpoints } from "../config/Apis";
-import { stepFields, stepsInfo } from "../form_data/rentalDataForm";
+import { stepFields, stepsInfo } from "../form_data/createRentalDataForm";
 import useStyle from "../styles/useStyle";
 import { renderFormField } from "../utils/form";
 import { useSnackbar } from "../config/snackbar";
