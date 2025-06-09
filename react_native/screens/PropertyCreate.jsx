@@ -8,8 +8,11 @@ import useStyle from "../styles/useStyle";
 import { renderFormField } from "../utils/form";
 import { authApis, endpoints } from "../config/Apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSnackbar } from "../config/snackbar";
 
 const PropertyCreate = ({ navigation, route }) => {
+	const snackbar = useSnackbar();
+
 	const theme = useTheme();
 	const style = useStyle();
 	const { width } = Dimensions.get("window");
@@ -133,11 +136,14 @@ const PropertyCreate = ({ navigation, route }) => {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 
+			snackbar(
+				"Đăng ký dãy trọ thành công! chúng tôi sẽ tiến hành xác minh thông tin trong vài ngày. Kết quả xác minh sẽ được thông báo đến bạn qua email",
+				10000
+			);
 			navigation.popToTop();
-			alert("Đăng ký dãy trọ thành công!");
 		} catch (error) {
 			console.error(error);
-			alert("Có lỗi xảy ra khi đăng ký dãy trọ!");
+			snackbar("Có lỗi xảy ra khi đăng ký dãy trọ!");
 		} finally {
 			setSubmitLoading(false);
 		}
