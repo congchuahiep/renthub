@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Button, Card, Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomSafeAreaView from "../components/BottomSafeAreaView";
 import StepBottomBar from "../components/StepBottomBar";
 import UtilitySelector from "../components/form/UtilitySelector";
 import Apis, { authApis, endpoints } from "../config/Apis";
+import { useSnackbar } from "../config/snackbar";
 import { stepFields, stepsInfo } from "../form_data/rentalDataForm";
 import useStyle from "../styles/useStyle";
 import { renderFormField } from "../utils/form";
-import { useSnackbar } from "../config/snackbar";
 
 const RentalCreate = ({ navigation, route }) => {
 	const snackbar = useSnackbar();

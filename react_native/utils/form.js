@@ -1,6 +1,6 @@
 import {
-  launchImageLibraryAsync,
-  requestMediaLibraryPermissionsAsync,
+	launchImageLibraryAsync,
+	requestMediaLibraryPermissionsAsync,
 } from "expo-image-picker";
 import AvatarPicker from "../components/form/AvatarPicker";
 import DatePicker from "../components/form/DatePicker";
@@ -20,8 +20,10 @@ export const renderFormField = ({
 
 	const key = field.field;
 	const label = field.label;
-  const value = formData[key];
+	const value = formData[key];
 	const returnScreen = field.returnScreen;
+
+	const dependentValue = field.dependsOn ? formData?.[field.dependsOn] : null;
 
 	const handlePickImage = async (multiple = false) => {
 		const { status } = await requestMediaLibraryPermissionsAsync();
@@ -56,17 +58,17 @@ export const renderFormField = ({
 				/>
 			);
 
-    case "counter":
-      return (
-        <Counter
-          key={key}
-          label={label}
-          value={value}
-          error={error}
-          onChange={updateField}
-          {...field}
-        />
-      )
+		case "counter":
+			return (
+				<Counter
+					key={key}
+					label={label}
+					value={value}
+					error={error}
+					onChange={updateField}
+					{...field}
+				/>
+			);
 
 		case "date":
 			return (
@@ -92,6 +94,9 @@ export const renderFormField = ({
 
 		case "region":
 		case "street":
+			const navigationParams = field.dependsOn
+				? { region_address: dependentValue }
+				: {};
 		case "property": {
 			const navigationMap = {
 				region: "RegionAddressSelect",
@@ -101,16 +106,10 @@ export const renderFormField = ({
 
 			const navigateTo = navigationMap[field.type];
 
-			const dependentValue = field.dependsOn
-				? formData?.[field.dependsOn]
-				: null;
+			console.log(dependentValue);
 
 			const disabled = field.dependsOn && !dependentValue;
 			const disabledText = disabled ? "Chọn tỉnh/huyện/xã trước" : undefined;
-
-			const navigationParams = field.dependsOn
-				? { [field.dependsOn]: dependentValue }
-				: {};
 
 			return (
 				<ScreenPickerButton

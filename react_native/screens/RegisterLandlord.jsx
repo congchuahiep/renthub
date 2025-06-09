@@ -10,6 +10,7 @@ import { stepFields, stepsInfo } from "../form_data/registerLandlordDataForm";
 import { renderFormField } from "../utils/form";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
+import { useSnackbar } from "../config/snackbar";
 
 const RegisterLandlord = ({ navigation, route }) => {
 	// Refs cho animation
@@ -18,12 +19,13 @@ const RegisterLandlord = ({ navigation, route }) => {
 	const { width } = Dimensions.get("window");
 	const style = useStyle();
 
+	const snackbar = useSnackbar();
+
 	// States
 	const [currentStep, setCurrentStep] = useState(0);
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
-	const [propertyImages, setPropertyImages] = useState([]);
 
 	// Nhận params từ màn hình chọn địa chỉ
 	useEffect(() => {
@@ -75,68 +77,6 @@ const RegisterLandlord = ({ navigation, route }) => {
 		setErrors((prev) => ({ ...prev, [field]: undefined }));
 	};
 
-	// Render form field
-	const renderStep = ({ item, index }) => {
-		const fields = stepFields[index];
-
-		return (
-			<KeyboardAwareScrollView
-				style={{ width }}
-				keyboardShouldPersistTaps="handled"
-				contentContainerStyle={{ padding: 16 }}
-				enableOnAndroid
-			>
-				<Card style={style.card}>
-					<Card.Content>
-						<Text variant="titleMedium" style={style.text_secondary}>
-							{item.title}
-						</Text>
-						{item.description && (
-							<Text style={{ marginVertical: 8 }}>{item.description}</Text>
-						)}
-
-						{fields.map((field) =>
-							renderFormField({
-								field,
-								value: formData[field.field],
-								error: errors[field.field],
-								onChange: (value) => updateField(field.field, value),
-								onImagePick: handlePickImage,
-								propertyImages,
-								navigation,
-								formData,
-								returnScreen: "RegisterLandlord",
-								style,
-							})
-						)}
-					</Card.Content>
-				</Card>
-			</KeyboardAwareScrollView>
-		);
-	};
-
-	const handlePickImage = async (multiple = false) => {
-		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status !== "granted") {
-			alert("Bạn cần cấp quyền truy cập ảnh!");
-			return;
-		}
-
-		const result = await ImagePicker.launchImageLibraryAsync({
-			allowsMultipleSelection: multiple,
-			quality: 0.7,
-		});
-
-		if (!result.canceled) {
-			if (multiple) {
-				setPropertyImages(result.assets);
-				updateField("property_upload_images", result.assets);
-			} else {
-				updateField("avatar", result.assets[0]);
-			}
-		}
-	};
-
 	const handleValidateStep = () => {
 		const fields = stepFields[currentStep];
 		const newErrors = {};
@@ -148,36 +88,38 @@ const RegisterLandlord = ({ navigation, route }) => {
 		fields.forEach((field) => {
 			const value = formData[field.field];
 
-			if (
-				field.required !== false &&
-				(!value || value.toString().trim() === "")
-			) {
-				newErrors[field.field] = `Vui lòng nhập ${field.label.toLowerCase()}`;
-				isValid = false;
-				return;
-			}
+			console.log(field);
 
-			// Validate đặc biệt theo loại field
 			switch (field.field) {
+				case "confirm_password":
+					if (!value || formData.password !== value) {
+						newErrors[field.field] = "Mật khẩu xác nhận không khớp!";
+						isValid = false;
+					}
+					break;
+
 				case "email":
 					if (!emailRegex.test(value)) {
 						newErrors.email = "Email không hợp lệ";
 						isValid = false;
 					}
 					break;
+
 				case "phone_number":
 					if (!phoneRegex.test(value)) {
 						newErrors.phone_number = "Số điện thoại không hợp lệ";
 						isValid = false;
 					}
 					break;
+
 				case "property_upload_images":
-					if (propertyImages.length < 3) {
-						newErrors[field.field] = "Vui lòng chọn ít nhất 3 ảnh về dãy trọ";
+					if (!value || value?.length < 3) {
+						newErrors[field.field] = "Vui lòng chọn ít nhất 3 ảnh về dãy trọ!";
 						isValid = false;
 					}
 					break;
-				case "region_address":
+
+				case "property_region_address":
 					if (
 						!formData.property_ward ||
 						!formData.property_district ||
@@ -187,16 +129,17 @@ const RegisterLandlord = ({ navigation, route }) => {
 						isValid = false;
 					}
 					break;
-			}
 
-			// Validate mật khẩu xác nhận
-			if (
-				currentStep === 1 &&
-				field.field === "confirm" &&
-				formData.password !== value
-			) {
-				newErrors.confirm = "Mật khẩu xác nhận không khớp";
-				isValid = false;
+				default:
+					if (
+						field.required !== false &&
+						(!value || value.toString().trim() === "")
+					) {
+						newErrors[
+							field.field
+						] = `Vui lòng nhập ${field.label.toLowerCase()}`;
+						isValid = false;
+					}
 			}
 		});
 
@@ -208,7 +151,14 @@ const RegisterLandlord = ({ navigation, route }) => {
 	 * Xử lý hoàn tất đăng ký
 	 */
 	const handleSubmit = async () => {
-		if (!handleValidateStep()) return;
+		console.log("HẢ");
+
+		if (!handleValidateStep()) {
+			console.log("Validate thất bại");
+			return;
+		}
+
+    console.log("HẢ @@");
 
 		try {
 			setLoading(true);
@@ -261,11 +211,46 @@ const RegisterLandlord = ({ navigation, route }) => {
 				}
 				setErrors(apiErrors);
 			} else {
-				alert("Có lỗi xảy ra, vui lòng thử lại!");
+				snackbar("Có lỗi xảy ra, vui lòng thử lại!");
 			}
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	// Render form field
+	const renderStep = ({ item, index }) => {
+		const fields = stepFields[index];
+
+		return (
+			<KeyboardAwareScrollView
+				style={{ width }}
+				keyboardShouldPersistTaps="handled"
+				contentContainerStyle={{ padding: 16 }}
+				enableOnAndroid
+			>
+				<Card style={style.card}>
+					<Card.Content>
+						<Text variant="titleMedium" style={style.text_secondary}>
+							{item.title}
+						</Text>
+						{item.description && (
+							<Text style={{ marginVertical: 8 }}>{item.description}</Text>
+						)}
+
+						{fields.map((field) =>
+							renderFormField({
+								field,
+								formData,
+								error: errors[field.field],
+								updateField: (value) => updateField(field.field, value),
+								navigation,
+							})
+						)}
+					</Card.Content>
+				</Card>
+			</KeyboardAwareScrollView>
+		);
 	};
 
 	return (
@@ -284,6 +269,9 @@ const RegisterLandlord = ({ navigation, route }) => {
 				)}
 				scrollEnabled={false}
 			/>
+
+			<Button onPress={() => console.log(formData)}>DATA</Button>
+			<Button onPress={() => console.log(errors)}>ERROR</Button>
 
 			<StepBottomBar
 				step={currentStep + 1} // Vì currentStep bắt đầu từ 0, cần +1 để khớp với step từ 1

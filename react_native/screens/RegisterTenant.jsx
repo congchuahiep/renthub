@@ -39,14 +39,14 @@ const RegisterTenant = ({ navigation }) => {
 						newErrors[field.field] = `${field.label} phải lớn hơn 0`;
 						isValid = false;
 					}
-					return;
+					break;
 
 				case "confirm_password":
 					if (!value || formData.password !== value) {
 						newErrors[field.field] = "Mật khẩu xác nhận không khớp!";
 						isValid = false;
 					}
-					return;
+					break;
 
 				default:
 					if (
