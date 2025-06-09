@@ -7,6 +7,7 @@ import DatePicker from "../components/form/DatePicker";
 import ImagesPicker from "../components/form/ImagesPicker";
 import InputField from "../components/form/InputField";
 import ScreenPickerButton from "../components/form/ScreenPickerButton";
+import Counter from "../components/form/Counter";
 
 export const renderFormField = ({
 	field,
@@ -54,6 +55,18 @@ export const renderFormField = ({
 					error={error}
 				/>
 			);
+
+    case "counter":
+      return (
+        <Counter
+          key={key}
+          label={label}
+          value={value}
+          error={error}
+          onChange={updateField}
+          {...field}
+        />
+      )
 
 		case "date":
 			return (

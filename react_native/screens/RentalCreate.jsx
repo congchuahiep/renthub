@@ -9,11 +9,14 @@ import BottomSafeAreaView from "../components/BottomSafeAreaView";
 import StepBottomBar from "../components/StepBottomBar";
 import UtilitySelector from "../components/form/UtilitySelector";
 import Apis, { authApis, endpoints } from "../config/Apis";
-import { stepFields, stepsInfo } from "../form_data/createRentalDataForm";
+import { stepFields, stepsInfo } from "../form_data/rentalDataForm";
 import useStyle from "../styles/useStyle";
 import { renderFormField } from "../utils/form";
+import { useSnackbar } from "../config/snackbar";
 
 const RentalCreate = ({ navigation, route }) => {
+	const snackbar = useSnackbar();
+
 	const style = useStyle();
 	const flatListRef = useRef(null);
 	const scrollX = useRef(new Animated.Value(0)).current;
@@ -25,7 +28,6 @@ const RentalCreate = ({ navigation, route }) => {
 	const [errors, setErrors] = useState({});
 	const [submitLoading, setSubmitLoading] = useState(false);
 
-	const [rentalImages, setRentalImages] = useState([]);
 	const [utilities, setUtilities] = useState([]);
 	const [selectedUtilities, setSelectedUtilities] = useState([]);
 
@@ -62,24 +64,6 @@ const RentalCreate = ({ navigation, route }) => {
 		}
 	}, [route?.params]);
 
-	const handlePickImage = async () => {
-		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status !== "granted") {
-			alert("Bạn cần cấp quyền truy cập ảnh!");
-			return;
-		}
-
-		const result = await ImagePicker.launchImageLibraryAsync({
-			allowsMultipleSelection: true,
-			quality: 0.7,
-		});
-
-		if (!result.canceled) {
-			setRentalImages(result.assets);
-			updateDataForm("upload_images", result.assets);
-		}
-	};
-
 	const handleGoToStep = (stepIndex) => {
 		if (stepIndex < 0 || stepIndex >= stepsInfo?.length) return;
 
@@ -109,19 +93,79 @@ const RentalCreate = ({ navigation, route }) => {
 		fields.forEach((field) => {
 			const value = formData[field.field];
 
-      // TODO: HẠN CHẾ SỐ LƯỢNG NHÀ TẮM, NHÀ VỆ SINH CÁC THỨ
-
-			if (
-				field.required !== false &&
-				(!value || value.toString().trim() === "")
-			) {
-				newErrors[field.field] = `Vui lòng nhập ${field.label.toLowerCase()}`;
-				isValid = false;
+			switch (field.field) {
+        case "number_of_bathrooms":
+        case "number_of_bedrooms":
+				case "limit_person":
+					if (!value || value < 1) {
+						newErrors[
+							field.field
+						] = `Số lượng ${field.label.toLowerCase()} phải lớn hơn 0`;
+						isValid = false;
+					}
+					return;
+				default:
+					if (
+						field.required !== false &&
+						(!value || value.toString().trim() === "")
+					) {
+						newErrors[
+							field.field
+						] = `Vui lòng nhập ${field.label.toLowerCase()}`;
+						isValid = false;
+					}
 			}
 		});
 
 		setErrors(newErrors);
 		return isValid;
+	};
+
+	const handleSubmit = async () => {
+		if (!formData.property_id) {
+			alert("Không tìm thấy thông tin dãy trọ!");
+			return;
+		}
+
+		try {
+			setSubmitLoading(true);
+			const formDataToSend = new FormData();
+
+			Object.entries(formData).forEach(([key, value]) => {
+				if (value === undefined || value === null) return;
+
+				if (key === "upload_images" && Array.isArray(value)) {
+					value.forEach((img, idx) => {
+						formDataToSend.append("upload_images", {
+							uri: img.uri,
+							name: img.fileName || `rental_${idx}.jpg`,
+							type: "image/jpeg",
+						});
+					});
+				} else {
+					formDataToSend.append(key, value);
+				}
+			});
+
+			selectedUtilities.forEach((id) => {
+				formDataToSend.append("utilities_ids", id);
+			});
+
+			console.log(formDataToSend);
+
+			const token = await AsyncStorage.getItem("token");
+			await authApis(token).post(endpoints.rentals, formDataToSend, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+
+			snackbar("Tạo bài đăng thành công!");
+			navigation.popToTop();
+		} catch (error) {
+			console.error(error);
+			snackbar("Có lỗi xảy ra khi tạo bài đăng!");
+		} finally {
+			setSubmitLoading(false);
+		}
 	};
 
 	/**
@@ -173,66 +217,16 @@ const RentalCreate = ({ navigation, route }) => {
 						{stepFields[index].map((field) =>
 							renderFormField({
 								field,
-								value: formData[field.field],
+								formData,
 								error: errors[field.field],
-								onChange: (value) => updateDataForm(field.field, value),
-								onImagePick: handlePickImage,
-								propertyImages: rentalImages,
-								navigation: navigation,
-								returnScreen: "RentalCreate",
-								style,
+								updateField: (value) => updateDataForm(field.field, value),
+								navigation,
 							})
 						)}
 					</Card.Content>
 				</Card>
 			</KeyboardAwareScrollView>
 		);
-	};
-
-	const handleSubmit = async () => {
-		if (!formData.property_id) {
-			alert("Không tìm thấy thông tin dãy trọ!");
-			return;
-		}
-
-		try {
-			setSubmitLoading(true);
-			const formDataToSend = new FormData();
-
-			Object.entries(formData).forEach(([key, value]) => {
-				if (value === undefined || value === null) return;
-
-				if (key === "upload_images" && Array.isArray(value)) {
-					value.forEach((img, idx) => {
-						formDataToSend.append("upload_images", {
-							uri: img.uri,
-							name: img.fileName || `rental_${idx}.jpg`,
-							type: "image/jpeg",
-						});
-					});
-				} else {
-					formDataToSend.append(key, value);
-				}
-			});
-
-			selectedUtilities.forEach((id) => {
-				formDataToSend.append("utilities_ids", id);
-			});
-
-			console.log(formDataToSend);
-
-			const token = await AsyncStorage.getItem("token");
-			await authApis(token).post(endpoints.rentals, formDataToSend, {
-				headers: { "Content-Type": "multipart/form-data" },
-			});
-
-			navigation.popToTop();
-		} catch (error) {
-			console.error(error);
-			alert("Có lỗi xảy ra khi tạo bài đăng!");
-		} finally {
-			setSubmitLoading(false);
-		}
 	};
 
 	return (
@@ -251,6 +245,8 @@ const RentalCreate = ({ navigation, route }) => {
 				)}
 				scrollEnabled={false}
 			/>
+
+      <Button />
 
 			<StepBottomBar
 				step={currentStep + 1}

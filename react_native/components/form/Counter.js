@@ -1,8 +1,16 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { IconButton, Text, useTheme } from "react-native-paper";
+import { HelperText, IconButton, Text, useTheme } from "react-native-paper";
 
-const Counter = ({ label, icon, value, onChange, min = 0, max = Infinity }) => {
+const Counter = ({
+	label,
+	icon,
+	value = 0,
+	onChange,
+	error,
+	min = 0,
+	max = Infinity,
+}) => {
 	const theme = useTheme();
 
 	const increase = () => {
@@ -17,64 +25,52 @@ const Counter = ({ label, icon, value, onChange, min = 0, max = Infinity }) => {
 		}
 	};
 
-	return (
-		<View
-			style={{
-				alignItems: "center",
-				paddingVertical: 8,
-				flexDirection: "row",
-				justifyContent: "space-between",
-			}}
-		>
-			<View
-				style={{ flexDirection: "row", alignItems: "center", marginBottom: 0 }}
-			>
-				<IconButton icon={icon} size={20} />
-				<Text>{label}</Text>
-			</View>
+	const color = error ? theme.colors.error : theme.colors.onSurface;
 
-			<View style={{ flexDirection: "row", alignItems: "center" }}>
-				<IconButton
-					size={16}
-					icon="minus"
-					onPress={decrease}
-					disabled={value <= min}
-					mode="contained"
-				/>
-				<Text style={{ fontSize: 20, marginHorizontal: 8 }}>{value}</Text>
-				<IconButton
-					size={16}
-					icon="plus"
-					onPress={increase}
-					disabled={value >= max}
-					mode="contained"
-				/>
+	return (
+		<View style={{ paddingVertical: 8 }}>
+			<View
+				style={{
+					alignItems: "center",
+					flexDirection: "row",
+					justifyContent: "space-between",
+				}}
+			>
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						marginBottom: 0,
+					}}
+				>
+					<IconButton icon={icon} size={20} />
+					<Text style={{ color: color}}>{label}</Text>
+				</View>
+				<View style={{ flexDirection: "row", alignItems: "center" }}>
+					<IconButton
+						size={16}
+						icon="minus"
+						onPress={decrease}
+						disabled={value <= min}
+						mode="contained"
+					/>
+					<Text style={{ fontSize: 20, marginHorizontal: 8 }}>{value}</Text>
+					<IconButton
+						size={16}
+						icon="plus"
+						onPress={increase}
+						disabled={value >= max}
+						mode="contained"
+					/>
+				</View>
 			</View>
+			{error && (
+				<HelperText type="error" visible={!!error}>
+					{error}
+				</HelperText>
+			)}
 		</View>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		alignItems: "center",
-		paddingVertical: 8,
-	},
-	labelContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 4,
-	},
-	label: {
-		fontSize: 16,
-	},
-	counterRow: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	value: {
-		fontSize: 20,
-		marginHorizontal: 16,
-	},
-});
 
 export default Counter;
