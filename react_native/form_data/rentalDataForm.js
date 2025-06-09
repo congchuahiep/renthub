@@ -1,3 +1,5 @@
+const screen = "RentalCreate";
+
 export const stepsInfo = [
 	{ title: "Thông tin cơ bản", description: "Thông tin chính của bài đăng" },
 	{ title: "Thông tin chi tiết", description: "Các thông số về nơi cho thuê" },
@@ -9,6 +11,7 @@ export const step1 = [
 		label: "Bài đăng cho:",
 		field: "property_name",
 		type: "property",
+		returnScreen: screen,
 	},
 	{
 		label: "Tiêu đề",
@@ -42,24 +45,30 @@ export const step2 = [
 		required: true,
 	},
 	{
+		type: "counter",
 		label: "Số người tối đa",
 		field: "limit_person",
 		icon: "account-group",
-		keyboardType: "numeric",
+		min: 0,
+		max: 10,
 		required: true,
 	},
 	{
+		type: "counter",
 		label: "Số phòng ngủ",
 		field: "number_of_bedrooms",
 		icon: "bed",
-		keyboardType: "numeric",
+    min: 0,
+    max: 10,
 		required: true,
 	},
 	{
+		type: "counter",
 		label: "Số phòng tắm",
 		field: "number_of_bathrooms",
 		icon: "shower",
-		keyboardType: "numeric",
+		min: 0,
+		max: 10,
 		required: true,
 	},
 	{
