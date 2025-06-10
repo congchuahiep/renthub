@@ -17,10 +17,10 @@ import Apis, { authApis, endpoints } from "../config/Apis";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CommentsList from "../components/CommentList";
+import PropertyCard from "../components/PropertyCard";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { formatDate, getRelativeTime } from "../utils/datetime";
-import PropertyCard from "../components/PropertyCard";
 
 const RentalDetail = ({ navigation, route }) => {
 	const theme = useTheme();
@@ -435,8 +435,7 @@ const RentalDetail = ({ navigation, route }) => {
 										/>
 										<View>
 											<Text style={[style.title_small]}>
-												{rentalPost.owner.last_name}{" "}
-												{rentalPost.owner.first_name}
+												{rentalPost.owner.name}
 											</Text>
 											<Text>{rentalPost.owner.email}</Text>
 											<Text>{rentalPost.owner.phone_number}</Text>
@@ -474,7 +473,6 @@ const RentalDetail = ({ navigation, route }) => {
 							</Card>
 
 							<View style={{ height: 120 }} />
-
 						</ScrollView>
 
 						{!keyboardVisible && (

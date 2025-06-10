@@ -3,26 +3,28 @@ import { useContext } from "react";
 import { useTheme } from "react-native-paper";
 import AppbarDefault from "../components/Appbar";
 import RentalAppbar from "../components/RentalAppbar";
+import RentalMapAppbar from "../components/RentalMapAppbar";
 import { ThemeSettingContext } from "../config/context";
+import RegionAddressSelect from "../screens/address/RegionAddressSelect";
+import StreetAddressSelect from "../screens/address/StreetAddressSelect";
+import ChatScreen from "../screens/Chat";
 import FollowerList from "../screens/FollowList";
+import MyPost from "../screens/MyPost";
+import ProfileDetail from "../screens/ProfileDetail";
 import ProfileUser from "../screens/ProfileUser";
+import PropertySellect from "../screens/property/PropertySelect";
+import PropertyCreate from "../screens/PropertyCreate";
+import PropertyDetail from "../screens/PropertyDetail";
 import Register from "../screens/Register";
 import RegisterLandlord from "../screens/RegisterLandlord";
 import RegisterTenant from "../screens/RegisterTenant";
+import RentalCreate from "../screens/RentalCreate";
 import RentalDetail from "../screens/RentalDetail";
+import RentalMapping from "../screens/RentalMapping";
+import RoomSeekingCreate from "../screens/RoomSeekingCreate";
 import RoomSeekingDetail from "../screens/RoomSeekingDetail";
 import Setting from "../screens/Setting";
-import ProfileDetail from "../screens/ProfileDetail";
-import RegionAddressSelect from "../screens/address/RegionAddressSelect";
 import TabNavigator from "./TabNavigator";
-import StreetAddressSelect from "../screens/address/StreetAddressSelect";
-import RentalCreate from "../screens/RentalCreate";
-import PropertySellect from "../screens/property/PropertySelect";
-import RentalMapping from "../screens/RentalMapping";
-import RentalMapAppbar from "../components/RentalMapAppbar";
-import PropertyCreate from "../screens/PropertyCreate";
-import RoomSeekingCreate from "../screens/RoomSeekingCreate";
-import PropertyDetail from "../screens/PropertyDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -90,6 +92,10 @@ export default function StackNavigator() {
 					headerShown: true,
 					header: (props) => <AppbarDefault {...props} />,
 				}}
+			/>
+			<Stack.Screen
+				name="ChatScreen"
+				component={ChatScreen}
 			/>
 			{/* <Stack.Screen/> */}
 			<Stack.Screen
@@ -201,6 +207,16 @@ export default function StackNavigator() {
 					headerTransparent: false,
 					header: (props) => <AppbarDefault {...props} />,
 				}}
+			/>
+			<Stack.Screen
+				name="MyPost"
+				component={MyPost}
+				// options={({ route }) => ({
+				// 	title: "Chi tiết dãy trọ",
+				// 	headerShown: true,
+				// 	headerTransparent: false,
+				// 	header: (props) => <AppbarDefault {...props} />,
+				// })}
 			/>
 		</Stack.Navigator>
 	);

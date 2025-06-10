@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomBar from "../components/BottomBar";
 import RentalAppbar from "../components/RentalAppbar";
 import { useAuth } from "../config/auth";
+import ChatsList from "../screens/Chats";
 import Login from "../screens/Login";
 import Profile from "../screens/Profile";
 import PropertyList from "../screens/PropertyList";
@@ -14,6 +15,7 @@ const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
 	const { user } = useAuth();
+	console.log("Current user:", user);
 
 	return (
 		<Tab.Navigator
@@ -74,15 +76,15 @@ export default function TabNavigator() {
 						}}
 					/>
 
-					{/* <Tab.Screen
-            name="chats"
-            component={ChatListScreen}
-            options={{
-              title: "Tin nhắn",
-              tabBarIcon: ({color}) => (
-                <MaterialDesignIcons name="chat" color={color} size={26}/>
-              ),
-						}} /> */}
+					<Tab.Screen
+						name="Chats"
+						component={ChatsList}
+						options={{
+							title: "Tin nhắn",
+							tabBarIcon: ({ color }) => (
+								<MaterialDesignIcons name="chat" color={color} size={26} />
+							),
+						}} />
 					<Tab.Screen
 						name="profile"
 						component={Profile}

@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import {
-	ActivityIndicator,
 	Avatar,
 	Button,
 	IconButton,
 	Text,
 	TextInput,
-	useTheme,
+	useTheme
 } from "react-native-paper";
+import Apis from "../config/Apis";
 import { useAuth } from "../config/auth";
 import useStyle from "../styles/useStyle";
 import Comment from "./Comment";
-import Apis from "../config/Apis";
 
 const CommentsList = ({
 	commentData,
@@ -58,7 +57,6 @@ const CommentsList = ({
 		await onCommentReply(commentId, content);
 	};
 
-	// TODO: Tạo validate cho đăng comment
 
 	return (
 		<View style={{ padding: 16 }}>

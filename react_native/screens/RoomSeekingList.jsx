@@ -10,11 +10,10 @@ import {
 	View,
 } from "react-native";
 import { AnimatedFAB, Avatar, useTheme } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { endpoints } from "../config/Apis";
+import { useAuth } from "../config/auth";
 import useStyle from "../styles/useStyle";
 import { getRelativeTime } from "../utils/datetime";
-import { useAuth } from "../config/auth";
 
 const RoomSeekingList = () => {
 	const { user } = useAuth();
@@ -32,8 +31,7 @@ const RoomSeekingList = () => {
 	const [nextPage, setNextPage] = useState(null);
 
 	const statusTypeMapping = {
-		approved: "Đã kiểm duyệt",
-		pending: "Đang kiểm duyệt",
+		active: "Đã kiểm duyệt",
 		rejected: "Từ chối kiểm duyệt",
 		expired: "Hết hạn",
 		rented: "Đã thuê",
@@ -92,7 +90,6 @@ const RoomSeekingList = () => {
 		);
 	};
 
-	// Khi trượt nút thêm bài đăng sẽ thu nhỏ lại
 	const handleOnScroll = ({ nativeEvent }) => {
 		const currentScrollPosition =
 			Math.floor(nativeEvent?.contentOffset?.y) ?? 0;

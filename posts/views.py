@@ -121,6 +121,14 @@ class RentalPostViewSet(
     - `POST /rentals/<id>/comments/`: Thêm comment vào bài viết
     """
 
+    # def get_queryset(self):
+    #     queryset = RentalPost.objects.prefetch_related(
+    #         "post", "utilities", "owner", "post__images"
+    #     ).order_by("-created_date")
+
+    #     # Nếu không phải action "mypost", chỉ lấy bài viết đang active
+    #     if self.action != "mypost":
+    #         queryset = queryset.filter(status=PostStatus.ACTIVE)
     queryset = RentalPost.objects.prefetch_related(
         "post", "utilities", "owner", "post__images"
     ).filter(
@@ -148,6 +156,9 @@ class RentalPostViewSet(
 
     def get_queryset(self):
         queryset = super().get_queryset()
+
+        if(self.action=='retrieve'):
+            return RentalPost.objects.all()
 
         # Lọc theo tỉnh/huyện/xã
         # NOTE: Lọc địa điểm này chưa có rằng buộc giữa tỉnh, quận, huyện
@@ -260,10 +271,7 @@ class RentalPostViewSet(
         Khi thức hiện phương thức `create()`, gắn landlord đang gọi API
         để trở thành chủ sở hữu của bài đăng này
         # """
-        # if serializer.is_valid():
-        #     instance = serializer.save(owner=self.request.user)
-        # else:
-        #     print(serializer.errors)  # In lỗi ra console để xem cụ thể
+       
         instance = serializer.save(
             owner=self.request.user
         )  # Gán landlord là user hiện tại
@@ -271,6 +279,14 @@ class RentalPostViewSet(
         serializer.context["detail"] = (
             f"Rental post '{instance.title}' has been created successfully."
         )
+
+    @action(methods=["get"], detail=False,url_path="my-rental-posts")
+    def mypost(self,request):
+        owner =  request.user
+        print(owner)
+        my_rental_posts = RentalPost.objects.filter(owner=owner)
+        serializer=RentalPostSerializer(my_rental_posts,many=True,context={"request":request})
+        return Response(serializer.data)
 
 
 class RoomSeekingPostViewSet(
@@ -282,7 +298,9 @@ class RoomSeekingPostViewSet(
     mixins.UpdateModelMixin,
     CommentActionMixin,
 ):
-    queryset = RoomSeekingPost.objects.filter(active=True).order_by("-created_date")
+    queryset = RoomSeekingPost.objects.filter(
+        status=PostStatus.ACTIVE
+    ).order_by("-created_date") 
     serializer_class = RoomSeekingPostSerializer
     pagination_class = PostPaginator
     page_size = 10
@@ -297,8 +315,23 @@ class RoomSeekingPostViewSet(
             return [IsAuthenticated()]
         return [AllowAny()]
 
+    def get_queryset(self):
+        if(self.action=='retrieve'):
+            return RoomSeekingPost.objects.all()
+        return super().get_queryset()
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    
+
+    @action(methods=["get"], detail=False,url_path="my-roomseeking-posts")
+    def mypost(self,request):
+        owner =  request.user
+        print(owner)
+        my_roomseeking_post = RoomSeekingPost.objects.filter(owner=owner)
+        serializer=RoomSeekingPostSerializer(my_roomseeking_post,many=True,context={"request":request})
+        return Response(serializer.data)
+
 
 
 class UtilitiesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):

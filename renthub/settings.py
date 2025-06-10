@@ -80,7 +80,6 @@ INSTALLED_APPS = [
     "posts.apps.PostsConfig",
     "properties.apps.PropertiesConfig",
     "comments.apps.CommentsConfig",
-    "chats.apps.ChatsConfig",
     "locations.apps.LocationsConfig",
     # Test app
     "testing.apps.TestingConfig",
@@ -241,14 +240,15 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CLIENT_ID = os.getenv("OATUH2_CLIENT_ID")
 CLIENT_SECRET = os.getenv("OATUH2_CLIENT_SECRET")
 
+
 UNFOLD = {
     "SITE_TITLE": "Renthub Admin",
     "SITE_HEADER": "Renthub",
     "SITE_URL": "/",
-    "SITE_ICON": None,  # Đường dẫn đến icon của bạn nếu có
-    # Cấu hình thanh bên - sidebar
+    "SITE_ICON": None,  
     "SIDEBAR": {
         "navigation": [
+            
             {
                 "title": _("Home"),
                 "icon": "home",
@@ -310,6 +310,9 @@ UNFOLD = {
                     },
                 ],
             },
+        
+
+       
         ],
     },
     "STYLES": [

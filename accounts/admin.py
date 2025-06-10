@@ -1,6 +1,15 @@
 from django.forms.utils import mark_safe
 from django.utils.html import format_html
 from accounts.models import User, LandlordApproved
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+from django.contrib import admin
+from django.urls import path
+from django.shortcuts import render
+from django.contrib.auth import get_user_model
+from django.db.models.functions import TruncDate
+from django.db.models import Count
+from django.template.response import TemplateResponse
 
 from unfold.admin import ModelAdmin
 from admin_site.components import action_button, option_display
@@ -12,6 +21,7 @@ from django.urls import path
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 
+User_query = get_user_model()
 class UserAdmin(ModelAdmin):
     """
     Trang quản lý người dùng
@@ -203,6 +213,29 @@ class LandlordApprovedAdmin(UserAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+    
+
+
+    
+# class MyAdminSite(admin.AdminSite):
+#     site_header = 'RentHub Admin'
+
+#     def get_urls(self):
+#         urls = super().get_urls()
+#         custom_urls = [
+#             path('renthub-stats/', self.admin_view(self.renthub_stats), name='renthub_stats'),
+#         ]
+#         return custom_urls + urls
+
+#     def renthub_stats(self, request):
+#         # Thống kê người dùng
+#         stats = User.objects.values('user_type').annotate(count=Count('id'))
+
+#         return TemplateResponse(request, 'admin/stats.html', {
+#             'stats': stats,
+#         })
+    
+# renthub_admin_site = MyAdminSite(name='renthub_admin')
 
 
 renthub_admin_site.register(LandlordApproved, LandlordApprovedAdmin)
