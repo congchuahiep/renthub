@@ -5,7 +5,6 @@ export const sendMessage = async (chatId, userId, messageText) => {
   try {
     console.log(chatId, userId, messageText);
     if (!chatId || !userId || !messageText) {
-      console.error('Missing parameters for sendMessage.');
       return;
     }
 

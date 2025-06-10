@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
 import { Button, Card, HelperText, Menu, TextInput, Title, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { authApis, endpoints } from "../config/Apis";
@@ -59,14 +59,13 @@ const RoomSeekingForm = () => {
       const formatted = provincesData.map(item => ({
         label: item.name || "Không có tên",
         value: item.code || "",
-      })).filter(item => item.value !== "undefined"); // Lọc bỏ item không hợp lệ
+      })).filter(item => item.value !== "undefined"); 
 
       setProvinces(formatted || []);
-      // Luôn set là mảng (kể cả formatted undefined)
-      // console.log(provinces);
+      
     } catch (error) {
       console.error("Lỗi khi tải tỉnh/thành:", error);
-      setProvinces([]); // Luôn set là mảng rỗng nếu có lỗi
+      setProvinces([]); 
     } finally {
       setLoadingProvince(false);
     }
@@ -76,13 +75,11 @@ const RoomSeekingForm = () => {
 
   useEffect(() => {
     loadProvince();
-    console.log("✅ Cập nhật provinces:", provinces);
   }, []);
 
 
 
   const updateField = (value, field) => {
-    // Giới hạn số người ở tối thiểu là 1
     if (field === "limit_person") {
       if (parseInt(value) < 1 || isNaN(value)) value = "1";
     }
@@ -109,9 +106,7 @@ const RoomSeekingForm = () => {
       setLoading(true);
 
       const form = new FormData();
-      console.log("Dữ liệu trước khi gửi:", post); // Debug data
-
-      // Append từng field một cách rõ ràng
+      console.log("Dữ liệu trước khi gửi:", post); 
       form.append("title", post.title);
       form.append("content", post.content);
       form.append("area", post.area);
@@ -133,14 +128,49 @@ const RoomSeekingForm = () => {
       });
 
       console.log("✅ Post created:", res.data);
+
+      Alert.alert(
+        "Thành công",
+        "Bài đăng của bạn đã được tạo thành công!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              console.log("User acknowledged success alert");
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+
+      setPost({
+        title: "",
+        content: "",
+        area: "",
+        limit_person: "1",
+        district: "",
+        province: "",
+        position: "",
+        price_min: "",
+        price_max: "",
+      });
+  
+      // Reset các label hiển thị
+      setSelectedProvinceLabel("");
+      setSelectedDistrictLabel("");
     } catch (ex) {
-      // NOTE TẠm thời đóng console.log("❌ Error:", ex.response?.data || ex.message); 
+      console.log(ex);
     } finally {
       setLoading(false);
     }
   };
 
   return (
+    <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        >
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Title style={{ marginBottom: 20 }}>Đăng bài tìm phòng</Title>
@@ -288,6 +318,7 @@ const RoomSeekingForm = () => {
         </Card>
       </ScrollView>
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

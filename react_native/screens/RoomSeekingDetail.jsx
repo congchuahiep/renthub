@@ -1,20 +1,19 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { use, useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
 import {
 	ScrollView,
-	StyleSheet,
 	Text,
 	TouchableOpacity,
-	View,
+	View
 } from "react-native";
 import {
 	Avatar,
-	Button,
 	Card,
 	Icon,
-	TextInput,
-	useTheme,
+	useTheme
 } from "react-native-paper";
+import CommentsList from "../components/CommentList";
 import {
 	default as Apis,
 	authApis,
@@ -24,7 +23,6 @@ import {
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { formatDate, getRelativeTime } from "../utils/datetime";
-import CommentsList from "../components/CommentList";
 
 const RoomSeekingDetail = ({ route }) => {
 	const theme = useTheme();
@@ -33,6 +31,7 @@ const RoomSeekingDetail = ({ route }) => {
 	const [roomSeeking, setRoomSeeking] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [comments, setComments] = useState();
+	 const navigation = useNavigation();
 
 	const { postIntanceId } = route?.params;
 
@@ -241,12 +240,50 @@ const RoomSeekingDetail = ({ route }) => {
 									>
 										{roomSeeking.price_min && roomSeeking.price_max
 											? `Giá cả: ${toVietNamDong(
-													roomSeeking.price_min
-											  )} - ${toVietNamDong(roomSeeking.price_max)}`
+												roomSeeking.price_min
+											)} - ${toVietNamDong(roomSeeking.price_max)}`
 											: "Không yêu cầu "}
 									</Text>
 								</View>
 							</View>
+						</Card.Content>
+					</Card>
+					<Card style={style.card}>
+						<Card.Content>
+							<Text
+								style={[
+									style.title_small,
+									{ color: theme.colors.primary, marginBottom: 16 },
+								]}
+							>
+								Thông tin liên hệ
+							</Text>
+							<TouchableOpacity
+										onPress={() => navigation.navigate("ProfileUser", { userId: roomSeeking.owner.id })}
+									>
+							<View
+								style={{
+									flex: 1,
+									flexDirection: "row",
+									justifyContent: "center",
+									alignItems: "center",
+									gap: 24,
+									marginBottom: 16,
+								}}
+							>
+								<Avatar.Image
+									source={{ uri: roomSeeking.owner.avatar }}
+									size={96}
+								/>
+								<View>
+									<Text style={[style.title_small]}>
+										{roomSeeking.owner.name}{" "}
+									</Text>
+									<Text>{roomSeeking.owner.email}</Text>
+									<Text>{roomSeeking.owner.phone_number}</Text>
+								</View>
+							</View>
+							</TouchableOpacity>
 						</Card.Content>
 					</Card>
 				</>

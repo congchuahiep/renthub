@@ -1,7 +1,7 @@
 import { get, onChildAdded, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { Button, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
-import { Avatar } from "react-native-paper";
+import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { Avatar, IconButton } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { sendMessage } from "../components/sendMess";
 import { database } from "../config/config";
@@ -96,13 +96,16 @@ const ChatScreen = ({ route }) => {
             value={newMessage}
             onChangeText={setNewMessage}
           />
-          <Button
-            title="Send"
-            onPress={() => {
-              sendMessage(chatId, userId, newMessage);
-              setNewMessage("");
-            }}
-          />
+          <IconButton
+					mode="contained"
+					icon="send"
+					onPress={() => {
+            sendMessage(chatId, userId, newMessage);
+            setNewMessage("");
+          }}
+					style={{ margin: 0, borderRadius: 16 }}
+				/>
+         
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>

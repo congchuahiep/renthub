@@ -1,17 +1,15 @@
 import { useState } from "react";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import {
 	Avatar,
+	IconButton,
 	Text,
 	TextInput,
-	Button,
-	useTheme,
-	Icon,
-	IconButton,
+	useTheme
 } from "react-native-paper";
-import Comment from "./Comment";
-import useStyle from "../styles/useStyle";
 import { useAuth } from "../config/auth";
+import useStyle from "../styles/useStyle";
+import Comment from "./Comment";
 
 const CommentsList = ({
 	comments,

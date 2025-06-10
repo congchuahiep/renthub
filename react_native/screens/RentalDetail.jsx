@@ -1,33 +1,27 @@
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
 import {
-	FlatList,
 	KeyboardAvoidingView,
 	ScrollView,
-	TouchableOpacity,
-	View,
+	View
 } from "react-native";
 import {
 	ActivityIndicator,
 	AnimatedFAB,
 	Avatar,
-	Button,
 	Card,
-	Divider,
 	Icon,
 	Text,
-	TextInput,
-	useTheme,
+	useTheme
 } from "react-native-paper";
 import Carousel from "../components/Carousel";
 import Apis, { authApis, endpoints } from "../config/Apis";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CommentsList from "../components/CommentList";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { formatDate, getRelativeTime } from "../utils/datetime";
-import Comment from "../components/Comment";
-import CommentsList from "../components/CommentList";
 
 const RentalDetail = ({ route }) => {
 	const theme = useTheme();
@@ -372,8 +366,7 @@ const RentalDetail = ({ route }) => {
 										/>
 										<View>
 											<Text style={[style.title_small]}>
-												{rentalPost.owner.last_name}{" "}
-												{rentalPost.owner.first_name}
+												{rentalPost.owner.name}
 											</Text>
 											<Text>{rentalPost.owner.email}</Text>
 											<Text>{rentalPost.owner.phone_number}</Text>

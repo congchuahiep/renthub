@@ -8,12 +8,14 @@ from django.db.models.functions import TruncMonth, TruncQuarter, TruncYear
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from accounts.models import UserType
+from datetime import datetime
 
 class RentHubAdminSite(UnfoldAdminSite):
     site_header = "RentHub Admin"
     site_title = "RentHub Admin Portal"
     index_title = "Welcome to RentHub Admin Portal"
 
+    
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -23,11 +25,21 @@ class RentHubAdminSite(UnfoldAdminSite):
 
     def renthub_stats(self, request):
 
-    
-                
+        start_date_str = request.GET.get('start_date')
+        end_date_str = request.GET.get('end_date')
+
+        users = User.objects.all()
+
+        if start_date_str and end_date_str:
+            try:
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+                users = users.filter(date_joined__range=(start_date, end_date))
+            except ValueError:
+                pass  # Xử lý lỗi nếu ngày không hợp lệ
 
         def get_grouped_stats_by_user_type(trunc_func, field_name):
-            qs = User.objects.annotate(group=trunc_func('date_joined')) \
+            qs = users.annotate(group=trunc_func('date_joined')) \
                 .values('group', 'user_type') \
                 .annotate(count=Count('id')) \
                 .order_by('group', 'user_type')
@@ -53,13 +65,11 @@ class RentHubAdminSite(UnfoldAdminSite):
         quarterly_stats = get_grouped_stats_by_user_type(TruncQuarter, 'quarter')
         yearly_stats = get_grouped_stats_by_user_type(TruncYear, 'year')
 
-
-
         return TemplateResponse(request, 'admin/stats.html', {
             'monthly_stats': json.dumps(monthly_stats, cls=DjangoJSONEncoder),
             'quarterly_stats': json.dumps(quarterly_stats, cls=DjangoJSONEncoder),
             'yearly_stats': json.dumps(yearly_stats, cls=DjangoJSONEncoder),
-
+            'request': request  # Gửi xuống để template lấy lại giá trị GET
         })
 
 renthub_admin_site = RentHubAdminSite(name="renthub_admin")

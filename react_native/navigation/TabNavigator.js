@@ -16,6 +16,7 @@ const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
 	const { user } = useAuth();
+	console.log("Current user:", user);
 
 	return (
 		<Tab.Navigator
@@ -95,6 +96,8 @@ export default function TabNavigator() {
 							),
 						}}
 					/>
+					{user.user_type !== "landlord"? (
+						<>
 					<Tab.Screen
 						name="Đăng bài"
 						component={RoomSeekingForm}
@@ -105,6 +108,7 @@ export default function TabNavigator() {
 							),
 						}}
 					/>
+					</>):<></>}
 				</>
 			) : (
 				<>

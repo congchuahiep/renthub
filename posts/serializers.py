@@ -78,6 +78,15 @@ class RentalPostSerializer(serializers.ModelSerializer):
         Tuỳ chỉnh quá trình Serialize, Trả thêm thông tin `property`
         """
         data = super().to_representation(instance)
+
+        data["owner"] = {
+            "id": instance.owner.id,
+            "name": f"{instance.owner.first_name} {instance.owner.last_name}",
+            "avatar": instance.owner.avatar.url if instance.owner.avatar else None,
+            "email": instance.owner.email,
+            "phone_number":instance.owner.phone_number,
+        }
+
         data["property"] = PropertySerializer(instance.property).data
         return data
 
@@ -242,6 +251,8 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
             "id": instance.owner.id,
             "name": f"{instance.owner.first_name} {instance.owner.last_name}",
             "avatar": instance.owner.avatar.url if instance.owner.avatar else None,
+            "email": instance.owner.email,
+            "phone_number":instance.owner.phone_number,
         }
 
         if instance.province:
