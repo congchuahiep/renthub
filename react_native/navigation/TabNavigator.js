@@ -42,7 +42,7 @@ export default function TabNavigator() {
 					title: "Tìm trọ",
 					headerShown: true,
 					tabBarIcon: ({ color }) => (
-						<MaterialDesignIcons name="home-outline" color={color} size={26} />
+						<MaterialDesignIcons name="bullhorn" color={color} size={26} />
 					),
 				}}
 			/>

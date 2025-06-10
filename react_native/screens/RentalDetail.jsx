@@ -5,7 +5,9 @@ import {
 	ActivityIndicator,
 	AnimatedFAB,
 	Avatar,
+	Button,
 	Card,
+	Chip,
 	Icon,
 	Text,
 	useTheme,
@@ -18,8 +20,9 @@ import CommentsList from "../components/CommentList";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { formatDate, getRelativeTime } from "../utils/datetime";
+import PropertyCard from "../components/PropertyCard";
 
-const RentalDetail = ({ route }) => {
+const RentalDetail = ({ navigation, route }) => {
 	const theme = useTheme();
 	const style = useStyle();
 
@@ -284,34 +287,78 @@ const RentalDetail = ({ route }) => {
 									<Text style={{ color: theme.colors.secondary }}>
 										{rentalPost.content}
 									</Text>
+
+									<Text
+										style={[
+											style.title_small,
+											{ color: theme.colors.primary, marginBottom: 16 },
+										]}
+									>
+										Tiện ích
+									</Text>
+
+									<View
+										style={{
+											flexDirection: "row",
+											flexWrap: "wrap",
+											gap: 8,
+											// marginHorizontal: -4, // Để đảm bảo các chip được căn đều
+										}}
+									>
+										{rentalPost.utilities.map((utility) => (
+											<Chip
+												key={utility.id}
+												icon={utility.icon}
+												// mode="outlined"
+												compact
+												style={{
+													backgroundColor: theme.colors.surfaceVariant,
+													marginBottom: 4,
+												}}
+												textStyle={{
+													fontSize: 10,
+													color: theme.colors.onSurfaceVariant,
+												}}
+											>
+												{utility.name}
+											</Chip>
+										))}
+									</View>
 								</Card.Content>
 							</Card>
 
 							{/* THÔNG TIN DÃY TRỌ VÀ VỊ TRÍ DÃY TRỌ */}
-							<Card style={[style.card, { height: 468 }]}>
+							<Card style={[style.card, { height: 512 }]}>
 								<Card.Content>
-									<View style={{ height: 436 }}>
+									<View style={{ height: 478 }}>
 										<Text
 											style={[
 												style.title_small,
 												{ color: theme.colors.primary, marginBottom: 5 },
 											]}
 										>
-											Vị trí dãy trọ
+											Thông tin dãy trọ
 										</Text>
-										<Text
-											style={{
-												color: theme.colors.secondary,
-												flexShrink: 1,
-												marginBottom: 6,
-											}}
-										>
-											{rentalPost.property.address}, {rentalPost.property.ward},{" "}
-											{rentalPost.property.district},{" "}
-											{rentalPost.property.province}
-										</Text>
+
+										<PropertyCard
+											mode="small"
+											name={rentalPost.property.name}
+											images={rentalPost.property.images}
+											address={`${rentalPost.property.address}, ${rentalPost.property.ward}, ${rentalPost.property.district}, ${rentalPost.property.province}`}
+											onPress={() =>
+												navigation.navigate("PropertyDetail", {
+													id: rentalPost.property.id,
+												})
+											}
+										/>
+
 										<GoogleMaps.View
-											style={{ flex: 1, borderRadius: 6, flexShrink: 1 }}
+											style={{
+												flex: 1,
+												borderRadius: 6,
+												flexShrink: 1,
+												marginTop: 12,
+											}}
 											cameraPosition={{
 												coordinates: {
 													latitude: rentalPost.property.latitude,
@@ -371,6 +418,22 @@ const RentalDetail = ({ route }) => {
 											<Text>{rentalPost.owner.email}</Text>
 											<Text>{rentalPost.owner.phone_number}</Text>
 										</View>
+									</View>
+									<View style={{ flexDirection: "row", gap: 4 }}>
+										<Button style={{ flex: 1 }} mode="contained-tonal">
+											Theo dõi
+										</Button>
+										<Button
+											style={{ flex: 1 }}
+											mode="contained"
+											onPress={() =>
+												navigation.navigate("ProfileDetail", {
+													userData: { id: rentalPost.owner.id },
+												})
+											}
+										>
+											Trang cá nhân
+										</Button>
 									</View>
 								</Card.Content>
 							</Card>

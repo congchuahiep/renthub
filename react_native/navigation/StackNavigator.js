@@ -22,6 +22,7 @@ import RentalMapping from "../screens/RentalMapping";
 import RentalMapAppbar from "../components/RentalMapAppbar";
 import PropertyCreate from "../screens/PropertyCreate";
 import RoomSeekingCreate from "../screens/RoomSeekingCreate";
+import PropertyDetail from "../screens/PropertyDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -176,6 +177,16 @@ export default function StackNavigator() {
 				component={PropertyCreate}
 				options={({ route }) => ({
 					title: "Đăng ký dãy trọ mới",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="PropertyDetail"
+				component={PropertyDetail}
+				options={({ route }) => ({
+					title: "Chi tiết dãy trọ",
 					headerShown: true,
 					headerTransparent: false,
 					header: (props) => <AppbarDefault {...props} />,
