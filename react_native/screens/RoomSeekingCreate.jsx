@@ -5,7 +5,7 @@ import { Button, Card, HelperText, Menu, TextInput, Title, useTheme } from "reac
 import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { authApis, endpoints } from "../config/Apis";
 
-const RoomSeekingForm = () => {
+const RoomSeekingCreate = () => {
   const theme = useTheme();
   const [post, setPost] = useState({
     title: "",
@@ -291,4 +291,4 @@ const RoomSeekingForm = () => {
   );
 };
 
-export default RoomSeekingForm;
+export default RoomSeekingCreate;

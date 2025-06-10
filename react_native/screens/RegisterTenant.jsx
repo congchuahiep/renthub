@@ -105,10 +105,25 @@ const RegisterTenant = ({ navigation }) => {
 			});
 
 			snackbar("Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
-			navigation.popToTop();
-		} catch (ex) {
-			console.log(ex.response?.data || ex.toJSON?.() || ex);
-			snackbar("Đăng ký thất bại. Vui lòng thử lại!");
+			navigation.navigate("Home", {
+				screen: "Login",
+				params: {
+					message: "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.",
+				},
+			});
+		} catch (error) {
+			if (error.response?.data) {
+				const apiErrors = {};
+				if (error.response.data.email) {
+					apiErrors.email = "Email đã được sử dụng";
+				}
+				if (error.response.data.username) {
+					apiErrors.username = "Tên đăng nhập đã tồn tại";
+				}
+				setErrors(apiErrors);
+			} else {
+				snackbar("Có lỗi xảy ra, vui lòng thử lại!");
+			}
 		} finally {
 			setLoading(false);
 		}

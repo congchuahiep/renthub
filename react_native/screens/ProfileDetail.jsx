@@ -42,6 +42,8 @@ const ProfileDetail = ({ route }) => {
 	};
 
 	useEffect(() => {
+		if (userData.user_type !== "landlord") return;
+
 		loadProperty();
 	}, []);
 
@@ -101,11 +103,7 @@ const ProfileDetail = ({ route }) => {
 			{userData.user_type === "landlord" && (
 				<View style={{ marginTop: 16 }}>
 					<Text
-						style={[
-							style.title_small,
-							style.text_primary,
-							{ marginBottom: 4 },
-						]}
+						style={[style.title_small, style.text_primary, { marginBottom: 4 }]}
 					>
 						Danh sách dãy trọ
 					</Text>
