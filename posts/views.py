@@ -124,7 +124,7 @@ class RentalPostViewSet(
     queryset = RentalPost.objects.prefetch_related(
         "post", "utilities", "owner", "post__images"
     ).filter(
-        status=PostStatus.APPROVED
+        status=PostStatus.ACTIVE
     )  # Sử dụng prefetch_related để tối ưu hóa câu truy vấn
     serializer_class = RentalPostSerializer
     pagination_class = PostPaginator
@@ -271,6 +271,10 @@ class RentalPostViewSet(
         serializer.context["detail"] = (
             f"Rental post '{instance.title}' has been created successfully."
         )
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+
 
 
 class RoomSeekingPostViewSet(

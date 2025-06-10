@@ -1,10 +1,19 @@
 import { Link, useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
-import { Button, HelperText, Modal, Portal, TextInput, useTheme } from "react-native-paper";
+import {
+	Button,
+	HelperText,
+	Modal,
+	Portal,
+	Snackbar,
+	TextInput,
+	useTheme,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../config/auth";
 import useStyle from "../styles/useStyle";
+import { useSnackbar } from "../config/snackbar";
 
 const info = [
 	{
@@ -24,6 +33,7 @@ const info = [
 const Login = () => {
 	const route = useRoute();
 	const navigation = useNavigation();
+	const snackbar = useSnackbar();
 
 	const { login } = useAuth();
 
@@ -34,7 +44,7 @@ const Login = () => {
 	const [loading, setLoading] = useState(false);
 	const [errors, setErrors] = useState({});
 
-  const [openModel, setOpenModel] = useState(false);
+	const [openSnackBar, setOpenSnackBar] = useState(false);
 
 	const updateUserLoginData = (value, field) => {
 		setUserLoginData({ ...userLoginData, [field]: value });
@@ -168,22 +178,7 @@ const Login = () => {
 				<Button onPress={() => navigation.navigate("RentalMapping")}>
 					TESTMAP
 				</Button>
-				<Button onPress={() => setOpenModel(true)}>
-					TESTMODEL
-				</Button>
-
-				<Portal>
-					<Modal
-						animationType="slide"
-						transparent={true}
-						visible={openModel}
-						onDismiss={() => setOpenModel(false)}
-					>
-						<View>
-							<Text>HI</Text>
-						</View>
-					</Modal>
-				</Portal>
+				<Button onPress={() => snackbar("XIN CHÀO!")}>TESTSNACKBAR</Button>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);

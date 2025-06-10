@@ -7,7 +7,7 @@ from utils.serializers import ImageSerializer
 class PropertySerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
     upload_images = serializers.ListField(
-        child=serializers.ImageField(), write_only=True, required=False
+        child=serializers.ImageField(), write_only=True, required=True
     )
 
     class Meta:
@@ -24,7 +24,7 @@ class PropertySerializer(serializers.ModelSerializer):
             "upload_images",
             "images",
             "latitude",
-            "longitude"
+            "longitude",
         ]
         extra_kwargs = {
             "status": {
@@ -65,8 +65,10 @@ class PropertySerializer(serializers.ModelSerializer):
     def validate_upload_images(self, value):
         if not value:
             return value
+        if len(value) < 3:
+            raise serializers.ValidationError("Cần tối thiểu 3 bức ảnh về dãy trọ!")
         if len(value) > 10:
-            raise serializers.ValidationError("Vượt quá số lượng upload")
+            raise serializers.ValidationError("Vượt quá số lượng ảnh! (Tối đa là 10)")
         max_size = 10 * 1024 * 1024
         allowed_types = ["image/jpeg", "image/png", "image/jpg"]
         for image in value:

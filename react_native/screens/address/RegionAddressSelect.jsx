@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { View, TouchableOpacity, FlatList } from "react-native";
-import { Button, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Button, Text, useTheme } from "react-native-paper";
 import Apis, { endpoints } from "../../config/Apis";
 import BottomSafeAreaView from "../../components/BottomSafeAreaView";
 
 const RegionAddressSelect = ({ navigation, route }) => {
 	const theme = useTheme();
+
+	const [loading, setLoading] = useState(false);
 
 	const [provinces, setProvinces] = useState([]);
 	const [districts, setDistricts] = useState([]);
@@ -18,7 +20,17 @@ const RegionAddressSelect = ({ navigation, route }) => {
 	const [step, setStep] = useState("province"); // "province" | "district" | "ward"
 
 	useEffect(() => {
-		Apis.get(endpoints.provinces).then((res) => setProvinces(res.data));
+		setLoading(true);
+		Apis.get(endpoints.provinces)
+			.then((res) => {
+				setProvinces(res.data);
+			})
+			.catch((ex) => {
+				console.log(ex);
+			})
+			.finally(() => {
+				setLoading(false);
+			});
 	}, []);
 
 	useEffect(() => {
@@ -26,9 +38,18 @@ const RegionAddressSelect = ({ navigation, route }) => {
 			setDistrict(null);
 			setWard(null);
 			setWards([]);
-			Apis.get(endpoints.districts, { params: { province_id: province } }).then(
-				(res) => setDistricts(res.data)
-			);
+
+			setLoading(true);
+			Apis.get(endpoints.districts, { params: { province_id: province } })
+				.then((res) => {
+					setDistricts(res.data);
+				})
+				.catch((ex) => {
+					console.log(ex);
+				})
+				.finally(() => {
+					setLoading(false);
+				});
 		} else {
 			setDistricts([]);
 			setWards([]);
@@ -38,9 +59,18 @@ const RegionAddressSelect = ({ navigation, route }) => {
 	useEffect(() => {
 		if (district) {
 			setWard(null);
-			Apis.get(endpoints.wards, { params: { district_id: district } }).then(
-				(res) => setWards(res.data)
-			);
+
+			setLoading(true);
+			Apis.get(endpoints.wards, { params: { district_id: district } })
+				.then((res) => {
+					setWards(res.data);
+				})
+				.catch((ex) => {
+					console.log(ex);
+				})
+				.finally(() => {
+					setLoading(false);
+				});
 		} else {
 			setWards([]);
 		}
@@ -171,9 +201,15 @@ const RegionAddressSelect = ({ navigation, route }) => {
 						</TouchableOpacity>
 					)}
 					ListEmptyComponent={
-						<Text style={{ textAlign: "center", marginTop: 24, color: "#888" }}>
-							Không có dữ liệu
-						</Text>
+						loading ? (
+							<ActivityIndicator />
+						) : (
+							<Text
+								style={{ textAlign: "center", marginTop: 24, color: "#888" }}
+							>
+								Không có dữ liệu12
+							</Text>
+						)
 					}
 					style={{ flex: 1, marginBottom: 16 }}
 				/>

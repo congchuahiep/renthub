@@ -58,6 +58,8 @@ const CommentsList = ({
 		await onCommentReply(commentId, content);
 	};
 
+	// TODO: Tạo validate cho đăng comment
+
 	return (
 		<View style={{ padding: 16 }}>
 			<Text
@@ -102,21 +104,25 @@ const CommentsList = ({
 				/>
 			</View>
 
-				{comments && Array.isArray(comments) && comments.length > 0 ? (
-					comments.map((cmt) => (
-						<Comment
-							key={cmt.id}
-							comment={cmt}
-							onReplySubmit={handleReplySubmit}
-							loadRepliesComment={loadRepliesComment}
-						/>
-					))
-				) : (
-					<Text>Không có bình luận nào</Text>
-				)}
+			{comments && Array.isArray(comments) && comments.length > 0 ? (
+				comments.map((cmt) => (
+					<Comment
+						key={cmt.id}
+						comment={cmt}
+						onReplySubmit={handleReplySubmit}
+						loadRepliesComment={loadRepliesComment}
+					/>
+				))
+			) : (
+				<Text>Không có bình luận nào</Text>
+			)}
 
 			{next && (
-				<Button mode="contained-tonal" onPress={loadMoreComments} loading={loadingMoreComments}>
+				<Button
+					mode="contained-tonal"
+					onPress={loadMoreComments}
+					loading={loadingMoreComments}
+				>
 					Tải thêm bình luận
 				</Button>
 			)}

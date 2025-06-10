@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Avatar, Card, Text, useTheme } from "react-native-paper";
+import { Avatar, Card, Icon, Text, useTheme } from "react-native-paper";
 import useStyle from "../styles/useStyle";
 import Carousel from "./Carousel";
 import { Image, TouchableOpacity, View } from "react-native";
@@ -17,10 +17,6 @@ const PropertyCard = ({
 
 	const style = useStyle();
 	const theme = useTheme();
-
-	const toPropertyDetail = () => {
-		navigation.navigate("propertyDetail", { id: id, name: name });
-	};
 
 	if (mode === "small") {
 		return (
@@ -68,7 +64,27 @@ const PropertyCard = ({
 
 	return (
 		<Card style={style.card}>
-			<Card.Content>{images && <Carousel images={images} />}</Card.Content>
+			<Card.Content>
+				{images && <Carousel images={images} />}
+
+				<TouchableOpacity
+					onPress={() => navigation.navigate("PropertyDetail", { id })}
+					style={{ marginHorizontal: 8, marginTop: 5 }}
+				>
+					<Text style={[style.title_small, { marginBottom: 5 }]}>{name}</Text>
+					<Text
+						variant="bodyMedium"
+						style={{ color: theme.colors.secondary, marginBottom: 5 }}
+					>
+						<Icon
+							source={"map-marker-outline"}
+							size={16}
+							color={theme.colors.secondary}
+						/>
+						{address}
+					</Text>
+				</TouchableOpacity>
+			</Card.Content>
 		</Card>
 	);
 };

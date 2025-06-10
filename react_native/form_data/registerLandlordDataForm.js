@@ -1,8 +1,9 @@
+const screen = "RegisterLandlord";
+
 export const step1 = [
 	{
 		label: "Ảnh đại diện",
 		field: "avatar",
-		required: false,
 		type: "avatar",
 	},
 	{
@@ -35,7 +36,7 @@ export const step2 = [
 	},
 	{
 		label: "Xác nhận mật khẩu",
-		field: "confirm",
+		field: "confirm_password",
 		secureTextEntry: true,
 		icon: "eye",
 	},
@@ -58,7 +59,7 @@ export const step3 = [
 		label: "Số căn cước công dân",
 		field: "cccd",
 		icon: "card-account-details",
-        keyboardType: "number-pad",
+		keyboardType: "number-pad",
 	},
 	{
 		label: "Đường",
@@ -82,30 +83,33 @@ export const step4 = [
 		label: "Tên dãy trọ",
 		field: "property_name",
 	},
+	// {
+	// 	label: "Địa chỉ phường tài sản",
+	// 	field: "property_ward",
+	// 	hidden: true,
+	// },
+	// {
+	// 	label: "Địa chỉ quận tài sản",
+	// 	field: "property_district",
+	// 	hidden: true,
+	// },
+	// {
+	// 	label: "Địa chỉ tỉnh tài sản",
+	// 	field: "property_province",
+	// 	hidden: true,
+	// },
 	{
-		label: "Địa chỉ phường tài sản",
-		field: "property_ward",
-		hidden: true,
-	},
-	{
-		label: "Địa chỉ quận tài sản",
-		field: "property_district",
-		hidden: true,
-	},
-	{
-		label: "Địa chỉ tỉnh tài sản",
-		field: "property_province",
-		hidden: true,
-	},
-	{
+		type: "region",
 		label: "Chọn tỉnh/huyện/xã",
 		field: "property_region_address",
-		type: "region",
+    returnScreen: screen,
 	},
 	{
+		type: "street",
 		label: "Địa chỉ dãy trọ",
 		field: "property_address",
-		type: "street",
+    returnScreen: screen,
+    dependsOn: "property_region_address",
 	},
 	{
 		label: "Ảnh dãy trọ",

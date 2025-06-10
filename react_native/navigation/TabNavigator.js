@@ -1,17 +1,14 @@
 import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import BottomBar from "../components/BottomBar";
-import ChatListScreen from "../screens/Chats";
+import RentalAppbar from "../components/RentalAppbar";
+import { useAuth } from "../config/auth";
 import Login from "../screens/Login";
-import RoomSeekingForm from "../screens/MyPost";
 import Profile from "../screens/Profile";
 import PropertyList from "../screens/PropertyList";
 import RentalList from "../screens/RentalList";
 import RoomSeekingList from "../screens/RoomSeekingList";
 import Users from "../screens/Users";
-import { useAuth } from "../config/auth";
-import RentalAppbar from "../components/RentalAppbar";
-import Register from "../screens/RegisterTenant";
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +42,7 @@ export default function TabNavigator() {
 					title: "Tìm trọ",
 					headerShown: true,
 					tabBarIcon: ({ color }) => (
-						<MaterialDesignIcons name="home-outline" color={color} size={26} />
+						<MaterialDesignIcons name="bullhorn" color={color} size={26} />
 					),
 				}}
 			/>
@@ -93,16 +90,6 @@ export default function TabNavigator() {
 							title: "Người dùng",
 							tabBarIcon: ({ color }) => (
 								<MaterialDesignIcons name="account" color={color} size={26} />
-							),
-						}}
-					/>
-					<Tab.Screen
-						name="Đăng bài"
-						component={RoomSeekingForm}
-						options={{
-							title: "Đăng bài",
-							tabBarIcon: ({ color }) => (
-								<MaterialDesignIcons name="post" color={color} size={26} />
 							),
 						}}
 					/>

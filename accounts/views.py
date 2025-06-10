@@ -52,8 +52,6 @@ class UserViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # TODO: Hoàn thiện chức năng đăng ký người dùng thuê nhà
-    # [] Tạo Serializer
     @action(methods=["post"], detail=False, url_path="tenant-register")
     def tenant_register(self, request):
         serializer = self.get_serializer(data=request.data)

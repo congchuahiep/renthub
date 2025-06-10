@@ -1,3 +1,4 @@
+import { duration } from "moment";
 import { createContext } from "react";
 
 export const AuthContext = createContext({
@@ -12,4 +13,9 @@ export const ThemeSettingContext = createContext({
 	materialYou: true,
 	setThemeMode: () => {},
 	setMaterialYou: () => {},
+});
+
+export const SnackbarContext = createContext({
+	msg: "",
+	duration: 5000,
 });
