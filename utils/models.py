@@ -1,5 +1,3 @@
-from logging import Logger
-
 import cloudinary
 from cloudinary import uploader
 from cloudinary.models import CloudinaryField

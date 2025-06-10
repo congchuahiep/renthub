@@ -13,10 +13,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { authApis, endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
+import { useNavigation } from "@react-navigation/native";
+import { useSnackbar } from "../config/snackbar";
 
 const RoomSeekingCreate = () => {
+  const navigation = useNavigation();
+  const snackbar = useSnackbar();
+
 	const theme = useTheme();
-  const style = useStyle();
+	const style = useStyle();
 
 	const [post, setPost] = useState({
 		title: "",
@@ -133,15 +138,17 @@ const RoomSeekingCreate = () => {
 
 			console.log(form.data);
 
-			const res = await authApis(token).post(endpoints.roomseekings, form, {
+			await authApis(token).post(endpoints.roomseekings, form, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
 			});
 
-			console.log("✅ Post created:", res.data);
+			snackbar("Tạo bài đăng thành công!");
+			navigation.popToTop();
 		} catch (ex) {
-			// NOTE TẠm thời đóng console.log("❌ Error:", ex.response?.data || ex.message);
+			// NOTE TẠm thời đóng
+      console.log("❌ Error:", ex.response?.data || ex.message);
 		} finally {
 			setLoading(false);
 		}
@@ -151,141 +158,141 @@ const RoomSeekingCreate = () => {
 		<ScrollView contentContainerStyle={{ padding: 16 }}>
 			<Card style={style.card}>
 				<Card.Content>
-          <TextInput
-            label="Tiêu đề"
-            value={post.title}
-            onChangeText={(val) => updateField(val, "title")}
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.title}
-          />
-          <TextInput
-            label="Nội dung"
-            value={post.content}
-            onChangeText={(val) => updateField(val, "content")}
-            mode="outlined"
-            multiline
-            numberOfLines={4}
-            style={{ marginBottom: 16 }}
-            error={!!errors.content}
-          />
-          <TextInput
-            label="Diện tích (m²)"
-            value={post.area}
-            onChangeText={(val) => updateField(val, "area")}
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.area}
-          />
-          <TextInput
-            label="Giới hạn người ở"
-            value={post.limit_person}
-            onChangeText={(val) =>
-              updateField(val.replace(/[^0-9]/g, ""), "limit_person")
-            }
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.limit_person}
-          />
-          <TextInput
-            label="giá tối thiểu(VNĐ)"
-            value={post.price_min}
-            onChangeText={(val) => updateField(val, "price_min")}
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.limit_person}
-          />
-          <TextInput
-            label="Giá tối đa(VNĐ)"
-            value={post.price_max}
-            onChangeText={(val) => updateField(val, "price_max")}
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.limit_person}
-          />
-          <HelperText type="info" visible>
-            * Tối thiểu là 1 người
-          </HelperText>
-          <TextInput
-            label="Khu vực"
-            value={post.position}
-            onChangeText={(val) => updateField(val, "position")}
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.position}
-          />
-          {Object.keys(errors).length > 0 && (
-            <Text style={{ color: "red", marginBottom: 10 }}>
-              Vui lòng điền đầy đủ thông tin hợp lệ.
-            </Text>
-          )}
-          <Menu
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-            anchor={
-              <Button
-                onPress={() => setVisible(true)}
-                mode="outlined"
-                style={{ marginBottom: 16 }}
-                contentStyle={{ flexDirection: "row-reverse" }}
-              >
-                {selectedProvinceLabel || "Chọn tỉnh/thành"}
-              </Button>
-            }
-          >
-            {provinces.map((province) => (
-              <Menu.Item
-                key={province.value}
-                onPress={() => {
-                  updateField(province.value, "province"); // Lưu ID
-                  setSelectedProvinceLabel(province.label); // Hiển thị label
-                  loadDistricts(province.value); // Gọi huyện theo tỉnh
-                  setVisible(false);
-                }}
-                title={province.label}
-              />
-            ))}
-          </Menu>
-          <Menu
-            visible={visibleDistrict}
-            onDismiss={() => setVisibleDistrict(false)}
-            anchor={
-              <Button
-                onPress={() => setVisibleDistrict(true)}
-                mode="outlined"
-                style={{ marginBottom: 16 }}
-                contentStyle={{ flexDirection: "row-reverse" }}
-              >
-                {selectedDistrictLabel || "Chọn quận/huyện"}
-              </Button>
-            }
-          >
-            {districts.map((district) => (
-              <Menu.Item
-                key={district.value}
-                onPress={() => {
-                  updateField(district.value, "district"); // Lưu ID
-                  setSelectedDistrictLabel(district.label); // Hiển thị label
-                  setVisibleDistrict(false);
-                }}
-                title={district.label}
-              />
-            ))}
-          </Menu>
-          <Button
-            mode="contained"
-            onPress={postCreate}
-            loading={loading}
-            disabled={loading}
-            style={{ marginTop: 8, borderRadius: 8, paddingVertical: 6 }}
-          >
-            Đăng bài
-          </Button>
-        </Card.Content>
+					<TextInput
+						label="Tiêu đề"
+						value={post.title}
+						onChangeText={(val) => updateField(val, "title")}
+						mode="outlined"
+						style={{ marginBottom: 16 }}
+						error={!!errors.title}
+					/>
+					<TextInput
+						label="Nội dung"
+						value={post.content}
+						onChangeText={(val) => updateField(val, "content")}
+						mode="outlined"
+						multiline
+						numberOfLines={4}
+						style={{ marginBottom: 16 }}
+						error={!!errors.content}
+					/>
+					<TextInput
+						label="Diện tích (m²)"
+						value={post.area}
+						onChangeText={(val) => updateField(val, "area")}
+						keyboardType="numeric"
+						mode="outlined"
+						style={{ marginBottom: 16 }}
+						error={!!errors.area}
+					/>
+					<TextInput
+						label="Giới hạn người ở"
+						value={post.limit_person}
+						onChangeText={(val) =>
+							updateField(val.replace(/[^0-9]/g, ""), "limit_person")
+						}
+						keyboardType="numeric"
+						mode="outlined"
+						style={{ marginBottom: 16 }}
+						error={!!errors.limit_person}
+					/>
+					<TextInput
+						label="giá tối thiểu(VNĐ)"
+						value={post.price_min}
+						onChangeText={(val) => updateField(val, "price_min")}
+						keyboardType="numeric"
+						mode="outlined"
+						style={{ marginBottom: 16 }}
+						error={!!errors.limit_person}
+					/>
+					<TextInput
+						label="Giá tối đa(VNĐ)"
+						value={post.price_max}
+						onChangeText={(val) => updateField(val, "price_max")}
+						keyboardType="numeric"
+						mode="outlined"
+						style={{ marginBottom: 16 }}
+						error={!!errors.limit_person}
+					/>
+					<HelperText type="info" visible>
+						* Tối thiểu là 1 người
+					</HelperText>
+					<TextInput
+						label="Khu vực"
+						value={post.position}
+						onChangeText={(val) => updateField(val, "position")}
+						mode="outlined"
+						style={{ marginBottom: 16 }}
+						error={!!errors.position}
+					/>
+					{Object.keys(errors).length > 0 && (
+						<Text style={{ color: "red", marginBottom: 10 }}>
+							Vui lòng điền đầy đủ thông tin hợp lệ.
+						</Text>
+					)}
+					<Menu
+						visible={visible}
+						onDismiss={() => setVisible(false)}
+						anchor={
+							<Button
+								onPress={() => setVisible(true)}
+								mode="outlined"
+								style={{ marginBottom: 16 }}
+								contentStyle={{ flexDirection: "row-reverse" }}
+							>
+								{selectedProvinceLabel || "Chọn tỉnh/thành"}
+							</Button>
+						}
+					>
+						{provinces.map((province) => (
+							<Menu.Item
+								key={province.value}
+								onPress={() => {
+									updateField(province.value, "province"); // Lưu ID
+									setSelectedProvinceLabel(province.label); // Hiển thị label
+									loadDistricts(province.value); // Gọi huyện theo tỉnh
+									setVisible(false);
+								}}
+								title={province.label}
+							/>
+						))}
+					</Menu>
+					<Menu
+						visible={visibleDistrict}
+						onDismiss={() => setVisibleDistrict(false)}
+						anchor={
+							<Button
+								onPress={() => setVisibleDistrict(true)}
+								mode="outlined"
+								style={{ marginBottom: 16 }}
+								contentStyle={{ flexDirection: "row-reverse" }}
+							>
+								{selectedDistrictLabel || "Chọn quận/huyện"}
+							</Button>
+						}
+					>
+						{districts.map((district) => (
+							<Menu.Item
+								key={district.value}
+								onPress={() => {
+									updateField(district.value, "district"); // Lưu ID
+									setSelectedDistrictLabel(district.label); // Hiển thị label
+									setVisibleDistrict(false);
+								}}
+								title={district.label}
+							/>
+						))}
+					</Menu>
+					<Button
+						mode="contained"
+						onPress={postCreate}
+						loading={loading}
+						disabled={loading}
+						style={{ marginTop: 8, borderRadius: 8, paddingVertical: 6 }}
+					>
+						Đăng bài
+					</Button>
+				</Card.Content>
 			</Card>
 		</ScrollView>
 	);

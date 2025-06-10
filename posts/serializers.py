@@ -275,10 +275,10 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data["status"] = "pending"
+        validated_data["active"] = True
         post = PostReference.objects.create()
         roomSeeking_post = RoomSeekingPost.objects.create(
-            post=post, **validated_data, active=True
+            post=post, **validated_data
         )
 
         return roomSeeking_post
