@@ -32,7 +32,7 @@ const PropertyList = () => {
 		} catch (ex) {
 			console.error(ex);
 		} finally {
-			setLoading(false); // Kết thúc tải dữ liệu
+			setLoading(false); 
 			setRefreshing(false);
 		}
 	};

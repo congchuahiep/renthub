@@ -1,6 +1,8 @@
 from django.utils.html import format_html
 from renthub import settings
 from unfold.admin import ModelAdmin
+from django.core.mail import send_mail
+from django.conf import settings
 
 from admin_site.site import renthub_admin_site
 from posts.models import RentalPost, RoomSeekingPost, Utilities, PropertyStatus, PostReference
@@ -96,12 +98,42 @@ class RentalPostAdmin(ModelAdmin):
     image_gallery.short_description = "Image Gallery"
 
     def save_model(self, request, obj, form, change):
-        if "status" in form.changed_data:  # Chỉ khi status bị thay đổi
-            if obj.status == PropertyStatus.APPROVED:
+        status_before = None
+        if change:
+            old_obj = RentalPost.objects.get(pk=obj.pk)
+            status_before = old_obj.status
+        
+        super().save_model(request, obj, form, change)  # lưu obj mới
+
+        if "status" in form.changed_data:
+            if obj.status == PropertyStatus.APPROVED and status_before != PropertyStatus.APPROVED:
                 obj.active = True
+                obj.save(update_fields=["active"])
+                self.send_approval_email(obj)
+
             else:
                 obj.active = False
-        super().save_model(request, obj, form, change)
+                obj.save(update_fields=["active"])
+            self.send_update_status(obj)
+
+    def send_approval_email(self, rental_post):
+        emails = rental_post.get_followers_emails()
+        subject = f"Người dùng {rental_post.owner.first_name} {rental_post.owner.last_name} mà bạn đang theo dõi đã đăng tải 1 bài đăng mới trên hệ thống"
+        message = f"Bài đăng {rental_post.title} với yêu cầu cho thuê tại địa chỉ {rental_post.property.address}\n Vui lòng truy cập ứng dụng để xem chi tiết"
+        from_email = settings.DEFAULT_FROM_EMAIL
+
+        # Gửi mail từng người
+        for email in emails:
+            send_mail(subject, message, from_email, [email])
+
+    def send_update_status(self, rental_post):
+        email = rental_post.owner.email
+        print(email)
+        subject = f"Bài viết mới được đăng tải mới được cập nhật trạng thái mới trên hệ thống"
+        message = f"Bài đăng với tiêu đề {rental_post.title} với yêu cầu cho thuê đã được cập nhật trạng thái {rental_post.status}"
+        from_email = settings.DEFAULT_FROM_EMAIL
+        send_mail(subject, message, from_email,[email])
+        
 
 
 class RoomSeekingPostAdmin(ModelAdmin):
@@ -124,11 +156,21 @@ class RoomSeekingPostAdmin(ModelAdmin):
         if "status" in form.changed_data:
             if obj.status == PropertyStatus.APPROVED:
                 obj.active = True
+                
             elif obj.status != PropertyStatus.APPROVED:
                 obj.active = False
             else:
                 obj.active = False
+            self.send_update_status(obj)
         super().save_model(request, obj, form, change)
+
+    def send_update_status(self, roomseeking_post):
+        email = roomseeking_post.owner.email
+        print(email)
+        subject = f"Bài viết mới được đăng tải mới được cập nhật trạng thái mới trên hệ thống"
+        message = f"Bài đăng với tiêu đề {roomseeking_post.title} với yêu cầu thuê đã được cập nhật trạng thái {roomseeking_post.status}"
+        from_email = settings.DEFAULT_FROM_EMAIL
+        send_mail(subject, message, from_email,[email])
     
     class Media:
         js = ("js/locations1.js",)

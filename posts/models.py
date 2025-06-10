@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from utils.choices import PostStatus, PropertyStatus, UserType
 from utils.models import BaseModel, Image
+from accounts.models import Follow
 
 
 def default_post_expiration_date():
@@ -114,6 +115,21 @@ class RentalPost(BasePostContent):
     utilities = models.ManyToManyField(
         "Utilities", related_name="rental_posts", blank=True
     )
+
+    def get_followers_emails(self):
+        # landlord của bài đăng là owner của RentalPost
+        landlord = self.owner  # hoặc rental_post.owner
+
+        # Lấy danh sách tenant theo dõi landlord này
+        followers_qs = Follow.objects.filter(followee=landlord).select_related('follower')
+
+        emails = []
+        for follow in followers_qs:
+            if follow.follower and follow.follower.email:
+                emails.append(follow.follower.email)
+        print(emails)
+
+        return emails
 
 
 class RoomSeekingPost(BasePostContent):

@@ -15,6 +15,14 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
+"@appandflow/react-native-google-autocomplete@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@appandflow/react-native-google-autocomplete/-/react-native-google-autocomplete-2.1.0.tgz#72db2a4a977e5683be22a098d70513f08dbc05b0"
+  integrity sha512-svHOlGM7420P0gLFxFSCbQfVKmRiR0AVvVDUhqyaHM+CSAIyZoixJS4ZvdNnPuDNSEdLf+Qz9c4PLEyf7PpFEA==
+  dependencies:
+    query-string "7.1.3"
+    use-debounce "^10.0.1"
+
 "@babel/code-frame@7.10.4", "@babel/code-frame@~7.10.4":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.10.4.tgz#168da1a36e90da68ae8d49c0f1b48c7c6249213a"
@@ -1755,6 +1763,11 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
+"@ptomasroos/react-native-multi-slider@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@ptomasroos/react-native-multi-slider/-/react-native-multi-slider-2.2.2.tgz#35a97fb8c355627c6a2ded010b360ac5728b44ad"
+  integrity sha512-HWyCnRD3Z3SbHK2FLWYmBBqd1B4iXipeKv1+AK0FoY/CElEDTEixHE8hN60TsqxalPrznn798LE2Q4tHuCiyaA==
+
 "@react-native-async-storage/async-storage@^2.1.2":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-2.1.2.tgz#8aae432adfc20800308e2ef3ce380864f0f9def8"
@@ -1789,11 +1802,6 @@
   version "22.2.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-22.2.0.tgz#0f2fcce3114702e23ae8d4a25b2c42d132656c2e"
   integrity sha512-bAkVKcXTcFyqXsVw2cgOk0pX8yW1IpQd3+CeLBywB1/L56lIk3e2giGuTqDjw2sspRbSRu/JOMU4YEZ/8/+7rA==
-
-"@react-native-picker/picker@^2.11.0":
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.11.0.tgz#4587fbce6a382adedad74311e96ee10bb2b2d63a"
-  integrity sha512-QuZU6gbxmOID5zZgd/H90NgBnbJ3VV6qVzp6c7/dDrmWdX8S0X5YFYgDcQFjE3dRen9wB9FWnj2VVdPU64adSg==
 
 "@react-native-vector-icons/common@^12.0.0":
   version "12.0.0"
@@ -3141,6 +3149,11 @@ expo-keep-awake@~14.1.4:
   version "14.1.4"
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-14.1.4.tgz#80197728563e0e17523e5a606fbd6fbed9639503"
   integrity sha512-wU9qOnosy4+U4z/o4h8W9PjPvcFMfZXrlUoKTMBW7F4pLqhkkP/5G4EviPZixv4XWFMjn1ExQ5rV6BX8GwJsWA==
+
+expo-location@~18.1.5:
+  version "18.1.5"
+  resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-18.1.5.tgz#c809b88ca26d47b254c24a5a09dea6ec8039bda2"
+  integrity sha512-/ugxS4Ort9DbKD0Do6xn4TjeHaA/by5vv0p0PrY5Zbcez1S0AfrQn/4JG/8PLT2imngMwZU9TDKrgxqJQ4RuPQ==
 
 expo-manifests@~0.16.4, expo-manifests@~0.16.5:
   version "0.16.5"
@@ -4823,7 +4836,7 @@ qs@^6.14.0:
   dependencies:
     side-channel "^1.1.0"
 
-query-string@^7.1.3:
+query-string@7.1.3, query-string@^7.1.3:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.3.tgz#a1cf90e994abb113a325804a972d98276fe02328"
   integrity sha512-hh2WYhq4fi8+b+/2Kg9CEge4fDPvHS534aOOvOZeQ3+Vf2mCFsaFBYj0i+iXcAq6I9Vzp5fjMFBlONvayDC1qg==
@@ -5680,6 +5693,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-debounce@^10.0.1:
+  version "10.0.5"
+  resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-10.0.5.tgz#dfad6efbab981a9cff6c7cd8678509d1bc21e34f"
+  integrity sha512-Q76E3lnIV+4YT9AHcrHEHYmAd9LKwUAbPXDm7FlqVGDHiSOhX3RDjT8dm0AxbJup6WgOb1YEcKyCr11kBJR5KQ==
 
 use-latest-callback@^0.2.3:
   version "0.2.3"
