@@ -61,7 +61,7 @@ export default function TabNavigator() {
 			/>
 			{user !== null ? (
 				<>
-					<Tab.Screen
+					{/* <Tab.Screen
 						name="user"
 						component={Users}
 						options={{
@@ -74,7 +74,7 @@ export default function TabNavigator() {
 								/>
 							),
 						}}
-					/>
+					/> */}
 
 					<Tab.Screen
 						name="Chats"

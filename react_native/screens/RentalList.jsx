@@ -143,6 +143,7 @@ const RentalList = () => {
 						address={item.property.district + ", " + item.property.province}
 						numberOfBed={item.number_of_bedrooms}
 						numberOfBathroom={item.number_of_bathrooms}
+            ownerId={item.owner.id}
 					/>
 				)}
 				ListHeaderComponent={<View style={{ height: headerHeight }} />}

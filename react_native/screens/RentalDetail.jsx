@@ -480,7 +480,11 @@ const RentalDetail = ({ navigation, route }) => {
 								icon={"phone"}
 								label={"Liên hệ ngay"}
 								extended={isPhoneButtonExtended}
-								onPress={() => console.log("Pressed")}
+								onPress={() =>
+									navigation.navigate("ProfileUser", {
+										userId: rentalPost.owner.id,
+									})
+								}
 								animateFrom={"right"}
 								style={{ position: "absolute", bottom: 42, right: 24 }}
 							/>
