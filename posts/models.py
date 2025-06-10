@@ -48,7 +48,7 @@ class BasePostContent(BaseModel):
     title = models.CharField(max_length=256)
     content = models.TextField(null=True)
     status = models.CharField(
-        max_length=10, choices=PostStatus, default=PostStatus.PENDING
+        max_length=10, choices=PostStatus, default=PostStatus.ACTIVE
     )
 
     # Tự động thiết lập bài đăng hết hạn sau 7 ngày

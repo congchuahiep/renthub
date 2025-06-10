@@ -9,20 +9,26 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
-import { Avatar, useTheme } from "react-native-paper";
+import { AnimatedFAB, Avatar, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Apis, { endpoints } from "../config/Apis";
 import useStyle from "../styles/useStyle";
 import { getRelativeTime } from "../utils/datetime";
+import { useAuth } from "../config/auth";
 
 const RoomSeekingList = () => {
+	const { user } = useAuth();
+
 	const theme = useTheme();
 	const style = useStyle();
 	const navigation = useNavigation();
+
 	const [roomSeekings, setRoomSeekings] = useState([]);
-	const [refreshing, setRefreshing] = useState(false);
 	const [page, setPage] = useState(1);
 	const [hasNextPage, setHasNextPage] = useState(true);
+
+	const [refreshing, setRefreshing] = useState(false);
+	const [isCreateButtonExtended, setIsCreateButtonExtended] = useState(true);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 	const pageSize = 10;
@@ -70,7 +76,7 @@ const RoomSeekingList = () => {
 			});
 		}
 	};
-  
+
 	const renderFooter = () => {
 		if (!isLoadingMore) return null;
 		return (
@@ -80,9 +86,18 @@ const RoomSeekingList = () => {
 		);
 	};
 
+	// Khi trượt nút thêm bài đăng sẽ thu nhỏ lại
+	const handleOnScroll = ({ nativeEvent }) => {
+		const currentScrollPosition =
+			Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
+
+		setIsCreateButtonExtended(currentScrollPosition <= 0);
+	};
+
 	return (
-		<SafeAreaView style={style.container}>
+		<View style={{ position: "relative", flex: 1 }}>
 			<FlatList
+				style={style.container}
 				data={roomSeekings}
 				keyExtractor={(item, index) => item.id + "_" + index}
 				renderItem={({ item }) => (
@@ -158,9 +173,21 @@ const RoomSeekingList = () => {
 				}
 				onEndReached={onEndReached}
 				onEndReachedThreshold={0.3}
+				onScroll={handleOnScroll}
 				ListFooterComponent={renderFooter}
 			/>
-		</SafeAreaView>
+
+			{user?.user_type === "tenant" && (
+				<AnimatedFAB
+					label={"Thêm bài đăng"}
+					animateFrom={"right"}
+					extended={isCreateButtonExtended}
+					style={{ position: "absolute", right: 24, bottom: 24 }}
+					icon="plus"
+					onPress={() => navigation.navigate("RoomSeekingCreate")}
+				/>
+			)}
+		</View>
 	);
 };
 

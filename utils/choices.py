@@ -9,8 +9,7 @@ class PostStatus(models.TextChoices):
         - EXPIRED: Hết hạn
         - RENTED: Đã thuê
     """
-    PENDING = "pending", "Đang kiểm duyệt"
-    APPROVED = "approved", "Đã kiểm duyệt"
+    ACTIVE  = "active", "Đang hoạt động"
     REJECTED = "rejected", "Từ chối kiểm duyệt"
     EXPIRED = "expired", "Hết hạn"
     RENTED = "rented", "Đã thuê"

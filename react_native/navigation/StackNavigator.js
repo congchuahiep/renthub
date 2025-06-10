@@ -182,10 +182,13 @@ export default function StackNavigator() {
 				})}
 			/>
 			<Stack.Screen
-				name="Đăng bài"
+				name="RoomSeekingCreate"
 				component={RoomSeekingCreate}
 				options={{
-					title: "Đăng bài",
+					title: "Đăng bài tìm trọ",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
 				}}
 			/>
 		</Stack.Navigator>
