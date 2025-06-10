@@ -229,6 +229,14 @@ OAUTH2_PROVIDER = {
     "GRANT_TYPES": ["password", "refresh_token", "authorization_code"],
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Hoặc SMTP của dịch vụ bạn dùng
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'trongtin1292004@gmail.com'
+EMAIL_HOST_PASSWORD = 'pnwj itcs edwq ycow'  # App password, không phải mật khẩu thường
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 CLIENT_ID = os.getenv("OATUH2_CLIENT_ID")
 CLIENT_SECRET = os.getenv("OATUH2_CLIENT_SECRET")
