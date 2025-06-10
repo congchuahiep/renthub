@@ -9,21 +9,24 @@ import {
 	ActivityIndicator,
 	AnimatedFAB,
 	Avatar,
+	Button,
 	Card,
+	Chip,
 	Icon,
 	Text,
-	useTheme
+	useTheme,
 } from "react-native-paper";
 import Carousel from "../components/Carousel";
 import Apis, { authApis, endpoints } from "../config/Apis";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CommentsList from "../components/CommentList";
+import PropertyCard from "../components/PropertyCard";
 import useStyle from "../styles/useStyle";
 import { toVietNamDong } from "../utils/currency";
 import { formatDate, getRelativeTime } from "../utils/datetime";
 
-const RentalDetail = ({ route }) => {
+const RentalDetail = ({ navigation, route }) => {
 	const theme = useTheme();
 	const style = useStyle();
 
@@ -31,7 +34,10 @@ const RentalDetail = ({ route }) => {
 	const [loading, setLoading] = useState(false);
 
 	const [rentalPost, setRentalPost] = useState();
-	const [comments, setComments] = useState();
+	const [commentData, setCommentData] = useState({
+		results: null,
+		next: null,
+	});
 
 	const { id } = route.params;
 
@@ -39,7 +45,7 @@ const RentalDetail = ({ route }) => {
 		try {
 			const res = await Apis.get(endpoints["rental-comments"](id));
 			console.log(res.data);
-			setComments(res.data.results);
+			setCommentData(res.data);
 		} catch (ex) {
 			console.log(ex);
 		}
@@ -71,12 +77,15 @@ const RentalDetail = ({ route }) => {
 			.finally(() => {
 				setLoading(false);
 			});
-		loadComment();
 	};
 
 	useEffect(() => {
 		loadRentalPost();
 	}, []);
+
+	useEffect(() => {
+		loadComment();
+	}, [rentalPost]);
 
 	// Khi trượt nút liên hệ sẽ thu nhỏ lại
 	const handleOnScroll = ({ nativeEvent }) => {
@@ -104,13 +113,10 @@ const RentalDetail = ({ route }) => {
 		console.log("ID: ", commentId, " - NỘI DUNG:", content);
 
 		try {
-			const res = await authApis(token).post(
-				endpoints["rental-comments"](id),
-				{
-					content,
-					reply_to: commentId,
-				}
-			);
+			const res = await authApis(token).post(endpoints["rental-comments"](id), {
+				content,
+				reply_to: commentId,
+			});
 			console.log(res.data);
 		} catch (ex) {
 			console.log(ex);
@@ -285,34 +291,78 @@ const RentalDetail = ({ route }) => {
 									<Text style={{ color: theme.colors.secondary }}>
 										{rentalPost.content}
 									</Text>
+
+									<Text
+										style={[
+											style.title_small,
+											{ color: theme.colors.primary, marginBottom: 16 },
+										]}
+									>
+										Tiện ích
+									</Text>
+
+									<View
+										style={{
+											flexDirection: "row",
+											flexWrap: "wrap",
+											gap: 8,
+											// marginHorizontal: -4, // Để đảm bảo các chip được căn đều
+										}}
+									>
+										{rentalPost.utilities.map((utility) => (
+											<Chip
+												key={utility.id}
+												icon={utility.icon}
+												// mode="outlined"
+												compact
+												style={{
+													backgroundColor: theme.colors.surfaceVariant,
+													marginBottom: 4,
+												}}
+												textStyle={{
+													fontSize: 10,
+													color: theme.colors.onSurfaceVariant,
+												}}
+											>
+												{utility.name}
+											</Chip>
+										))}
+									</View>
 								</Card.Content>
 							</Card>
 
 							{/* THÔNG TIN DÃY TRỌ VÀ VỊ TRÍ DÃY TRỌ */}
-							<Card style={[style.card, { height: 468 }]}>
+							<Card style={[style.card, { height: 512 }]}>
 								<Card.Content>
-									<View style={{ height: 436 }}>
+									<View style={{ height: 478 }}>
 										<Text
 											style={[
 												style.title_small,
 												{ color: theme.colors.primary, marginBottom: 5 },
 											]}
 										>
-											Vị trí dãy trọ
+											Thông tin dãy trọ
 										</Text>
-										<Text
-											style={{
-												color: theme.colors.secondary,
-												flexShrink: 1,
-												marginBottom: 6,
-											}}
-										>
-											{rentalPost.property.address}, {rentalPost.property.ward},{" "}
-											{rentalPost.property.district},{" "}
-											{rentalPost.property.province}
-										</Text>
+
+										<PropertyCard
+											mode="small"
+											name={rentalPost.property.name}
+											images={rentalPost.property.images}
+											address={`${rentalPost.property.address}, ${rentalPost.property.ward}, ${rentalPost.property.district}, ${rentalPost.property.province}`}
+											onPress={() =>
+												navigation.navigate("PropertyDetail", {
+													id: rentalPost.property.id,
+												})
+											}
+										/>
+
 										<GoogleMaps.View
-											style={{ flex: 1, borderRadius: 6, flexShrink: 1 }}
+											style={{
+												flex: 1,
+												borderRadius: 6,
+												flexShrink: 1,
+												marginTop: 12,
+											}}
 											cameraPosition={{
 												coordinates: {
 													latitude: rentalPost.property.latitude,
@@ -372,15 +422,30 @@ const RentalDetail = ({ route }) => {
 											<Text>{rentalPost.owner.phone_number}</Text>
 										</View>
 									</View>
+									<View style={{ flexDirection: "row", gap: 4 }}>
+										<Button style={{ flex: 1 }} mode="contained-tonal">
+											Theo dõi
+										</Button>
+										<Button
+											style={{ flex: 1 }}
+											mode="contained"
+											onPress={() =>
+												navigation.navigate("ProfileDetail", {
+													userData: { id: rentalPost.owner.id },
+												})
+											}
+										>
+											Trang cá nhân
+										</Button>
+									</View>
 								</Card.Content>
 							</Card>
 
 							{/* KHUNG BÌNH LUẬN */}
-							{/* TODO: Triển khai bình luận bài đăng */}
 							<Card style={[style.card, { flex: 1 }]}>
 								<CommentsList
-									comments={comments}
-									loading={loading}
+									commentData={commentData}
+									setCommentData={setCommentData}
 									onCommentPost={handleCommentPost}
 									onCommentReply={handleCommentReply}
 									loadRepliesComment={loadRepliesComment}

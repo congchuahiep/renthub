@@ -23,6 +23,8 @@ const StreetAddressSelect = ({ route, navigation }) => {
 	const [coordinates, setCoordinates] = useState(null);
 	const [marker, setMarker] = useState();
 
+	const [error, setError] = useState();
+
 	const [showAutocomplete, setShowAutocomplete] = useState(false);
 
 	// Khởi tạo autocomplete
@@ -75,7 +77,7 @@ const StreetAddressSelect = ({ route, navigation }) => {
 		}
 	}, [locationResults]);
 
-	// Xử lý việc lấy toạ độ từ địa chỉ người nhập
+	// Xử lý việc lấy toạ độ từ địa chỉ mà người dùng chọn trong autocomplete
 	const handlePlaceSelect = async (place) => {
 		console.log("Selected place:", place.structured_formatting?.main_text);
 
@@ -127,6 +129,12 @@ const StreetAddressSelect = ({ route, navigation }) => {
 
 	// Xử lý trả về dữ liệu
 	const handleSubmit = () => {
+		if (!term || term.trim() === "") {
+			setError("Xin vui lòng nhập số nhà, tên đường,..");
+			return;
+		}
+
+		console.log("DDUOWCJ !");
 		navigation.popTo(route.params.returnScreen, {
 			street_address: term,
 			latitude: marker.latitude,
@@ -146,6 +154,7 @@ const StreetAddressSelect = ({ route, navigation }) => {
 						setShowAutocomplete(true); // Hiện autocomplete khi gõ
 					}}
 					onSubmitEditing={handleInputSubmit}
+					error={!!error}
 				/>
 
 				<View style={{ flex: 1, position: "relative" }}>

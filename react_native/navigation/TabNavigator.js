@@ -5,7 +5,6 @@ import RentalAppbar from "../components/RentalAppbar";
 import { useAuth } from "../config/auth";
 import ChatsList from "../screens/Chats";
 import Login from "../screens/Login";
-import RoomSeekingForm from "../screens/MyPost";
 import Profile from "../screens/Profile";
 import PropertyList from "../screens/PropertyList";
 import RentalList from "../screens/RentalList";
@@ -45,7 +44,7 @@ export default function TabNavigator() {
 					title: "Tìm trọ",
 					headerShown: true,
 					tabBarIcon: ({ color }) => (
-						<MaterialDesignIcons name="home-outline" color={color} size={26} />
+						<MaterialDesignIcons name="bullhorn" color={color} size={26} />
 					),
 				}}
 			/>
@@ -96,19 +95,6 @@ export default function TabNavigator() {
 							),
 						}}
 					/>
-					{user.user_type !== "landlord"? (
-						<>
-					<Tab.Screen
-						name="Đăng bài"
-						component={RoomSeekingForm}
-						options={{
-							title: "Đăng bài",
-							tabBarIcon: ({ color }) => (
-								<MaterialDesignIcons name="post" color={color} size={26} />
-							),
-						}}
-					/>
-					</>):<></>}
 				</>
 			) : (
 				<>

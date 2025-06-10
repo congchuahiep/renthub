@@ -197,7 +197,7 @@ class LandlordRegistrationSerializer(serializers.ModelSerializer):
         user_serializer = UserSerializer(data=validated_data)
         if user_serializer.is_valid():
             user = user_serializer.save(
-                is_active=False,  # Tài khoản chưa active cho đến khi `property` được duyệt
+                is_active=False,
                 user_type=UserType.LANDLORD,
             )
         else:

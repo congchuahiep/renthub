@@ -81,7 +81,7 @@ const Profile = () => {
 						left={(props) => <List.Icon {...props} icon="post" />}
 						onPress={() => {
 							if (user) {
-								navigation.navigate("detailInfo", { user });
+								navigation.navigate("MyPost");
 							} else {
 								alert("Người dùng không tồn tại!");
 							}

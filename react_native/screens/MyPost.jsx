@@ -1,325 +1,187 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text } from "react-native";
-import { Button, Card, HelperText, Menu, TextInput, Title, useTheme } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Avatar, IconButton, Menu, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Apis, { authApis, endpoints } from "../config/Apis";
+import { authApis, endpoints } from "../config/Apis";
+import { useAuth } from "../config/auth";
+import useStyle from "../styles/useStyle";
 
-const RoomSeekingForm = () => {
-  const theme = useTheme();
-  const [post, setPost] = useState({
-    title: "",
-    content: "",
-    area: "",
-    limit_person: "1",
-    district: "",
-    province: "",
-    position: ""
-  });
+const MyPost = () => {
+    const style = useStyle();
+    const theme = useTheme();
+    const [myPost, setMyPost] = useState([]);
+    const navigation = useNavigation();
+    const { user } = useAuth();
+    const [visibleMenu, setVisibleMenu] = useState(null);
 
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [loadingDistricts, setLoadingDistrict] = useState(false);
-  const [loadingProvince, setLoadingProvince] = useState(false);
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [visible, setVisible] = useState(false);
-  const [visibleDistrict, setVisibleDistrict] = useState(false);
-  const [selectedProvinceLabel, setSelectedProvinceLabel] = useState("");
-  const [selectedDistrictLabel, setSelectedDistrictLabel] = useState("");
+    const statusTypeMapping = {
+		active: "Đã kiểm duyệt",
+		rejected: "Từ chối kiểm duyệt",
+		expired: "Hết hạn",
+		rented: "Đã thuê",
+	};
 
+    const toRentalDetail = (id, title) => {
+        navigation.navigate("RentalDetail", { id, title });
+    };
+    const loadPost = async () => {
 
+        const token = await AsyncStorage.getItem("token");
+        if (user.user_type === 'landlord') {
+            let response = await authApis(token).get(endpoints.my_rental_post);
+            console.log(response.data);
+            setMyPost(response.data);
+        } else {
+            let response = await authApis(token).get(endpoints.my_room_seeking_post);
+            console.log(response.data);
+            setMyPost(response.data);
+        }
 
-
-  const loadDistricts = async (provinceId) => {
-    try {
-      setLoadingDistrict(true);
-      const res = await Apis.get(`${endpoints.districts}?province_id=${provinceId}`);
-      const formatter = res.data.map(item => ({
-        label: item.full_name || "Không có tên", // Sử dụng `full_name` như trong ảnh Postman
-        value: item.code || "undefined",
-      }));
-      setDistricts(formatter.filter(item => item.value !== "undefined"));
-    } catch (ex) {
-      console.log("❌ Lỗi load districts:", ex);
-      setDistricts([]);
-    } finally {
-      setLoadingDistrict(false);
     }
-  };
 
+    const updatePostStatus = async (postId, newStatus) => {
+        const token = await AsyncStorage.getItem("token");
+        try {
+            const endpoint =
+                user.user_type === "landlord"
+                    ? endpoints.rentals_update(postId) // Endpoint cho landlord
+                    : endpoints.roomseekings_update(postId); // Endpoint cho tenant
+    
+            await authApis(token).patch(endpoint, {
+                status: newStatus,
+            });
+    
+            console.log(`Cập nhật trạng thái bài đăng ${postId} thành ${newStatus}`);
+            loadPost(); // Làm mới danh sách bài đăng sau khi cập nhật
+        } catch (error) {
+            console.error("Lỗi khi cập nhật trạng thái:", error);
+        }
+    };
 
-  const loadProvince = async () => {
-    try {
-      setLoadingProvince(true);
-      const res = await Apis.get(endpoints.provinces);
+    useEffect(() => {
+        loadPost();
+    }, [])
 
-      // Đảm bảo res.data là mảng và có dữ liệu
-      const provincesData = Array.isArray(res?.data) ? res.data : [];
-      const formatted = provincesData.map(item => ({
-        label: item.name || "Không có tên",
-        value: item.code || "",
-      })).filter(item => item.value !== "undefined"); 
+    return (
+        <SafeAreaView style={{ position: "relative", flex: 1 }}>
+            <FlatList
+                style={style.container}
+                data={myPost}
+                keyExtractor={(item, index) => item.post.id + "_" + index}
+                renderItem={({ item }) => {
+                    return (
+                        <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() =>
+                            user.user_type === "tenant"
+                                ? navigation.navigate("RoomSeekingDetail", {
+                                      postIntanceId: item?.post?.id,
+                                  })
+                                : toRentalDetail(item?.post?.id, item?.title)
+                        }
+                    >
+                        <View style={[style.card, { padding: 15 }]}>
+                            {/* Avatar và thông tin chủ sở hữu */}
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between", // Thêm khoảng cách giữa avatar và menu
+                                    marginBottom: 8,
+                                }}
+                            >
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                    <Avatar.Image
+                                        source={item.owner?.avatar ? { uri: item.owner.avatar } : null}
+                                        style={{ borderRadius: 18, marginRight: 8 }}
+                                        size={32}
+                                    />
+                                    <View>
+                                        <Text
+                                            style={{
+                                                color: theme.colors.onSurface,
+                                                fontWeight: "bold",
+                                            }}
+                                        >
+                                            {item.owner?.name || "Không xác định"}
+                                        </Text>
+                                        <Text style={{ color: theme.colors.onSurface, fontSize: 12 }}>
+                                            {moment(item.created_date).format("DD/MM/YYYY")}
+                                        </Text>
+                                    </View>
+                                </View>
 
-      setProvinces(formatted || []);
-      
-    } catch (error) {
-      console.error("Lỗi khi tải tỉnh/thành:", error);
-      setProvinces([]); 
-    } finally {
-      setLoadingProvince(false);
-    }
-  };
+                                {/* Nút menu */}
+                                <Menu
+                                    visible={visibleMenu === item.post.id}
+                                    onDismiss={() => setVisibleMenu(null)}
+                                    anchor={
+                                        <IconButton
+                                            icon="dots-vertical"
+                                            size={24}
+                                            onPress={() => setVisibleMenu(item.post.id)}
+                                        />
+                                    }
+                                >
+                                    
+                                    <Menu.Item
+                                        onPress={() => {
+                                            updatePostStatus(item.post.id, "expired");
+                                            setVisibleMenu(null);
+                                        }}
+                                        title="Cập nhật trạng thái: Hết hạn"
+                                    />
+                                    <Menu.Item
+                                        onPress={() => {
+                                            updatePostStatus(item.post.id, "rejected");
+                                            setVisibleMenu(null);
+                                        }}
+                                        title="Cập nhật trạng thái: Từ chối"
+                                    />
+                                </Menu>
+                            </View>
 
+                            {/* Thông tin bài đăng */}
+                            <Text
+                                style={{
+                                    fontWeight: "bold",
+                                    fontSize: 18,
+                                    marginBottom: 8,
+                                    color: theme.colors.onSurface,
+                                }}
+                            >
+                                {item.title || "Không có tiêu đề"}
+                            </Text>
+                            <Text style={{ color: theme.colors.onSurface }}>
+                                Khu vực: {item.position || "Chưa cập nhật"}
+                            </Text>
+                            <Text style={{ color: theme.colors.onSurface }}>
+                                Diện tích: {item.area} m²
+                            </Text>
+                            <Text style={{ color: theme.colors.onSurface }}>
+                                Giới hạn: {item.limit_person} người
+                            </Text>
+                            <Text style={{ color: theme.colors.onSurface }}>
+                                Trạng thái: {statusTypeMapping[item.status] || "Không xác định"}
+                            </Text>
+                            <Text style={{ color: theme.colors.onSurface }}>
+                                Hết hạn:{" "}
+                                {item.expired_date
+                                    ? moment(item.expired_date).format("DD/MM/YYYY")
+                                    : "Không rõ"}
+                            </Text>
+                        </View>
+                        </TouchableOpacity>
+                    );
 
-
-  useEffect(() => {
-    loadProvince();
-  }, []);
-
-
-
-  const updateField = (value, field) => {
-    if (field === "limit_person") {
-      if (parseInt(value) < 1 || isNaN(value)) value = "1";
-    }
-    setPost({ ...post, [field]: value });
-    setErrors({ ...errors, [field]: null });
-  };
-
-  const validate = () => {
-    const newErrors = {};
-    for (let field in post) {
-      if (!post[field] || post[field].toString().trim() === "") {
-        newErrors[field] = "Không được để trống";
-      }
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const postCreate = async () => {
-    if (!validate()) return;
-
-    try {
-      const token = await AsyncStorage.getItem("token");
-      setLoading(true);
-
-      const form = new FormData();
-      console.log("Dữ liệu trước khi gửi:", post); 
-      form.append("title", post.title);
-      form.append("content", post.content);
-      form.append("area", post.area);
-      form.append("limit_person", post.limit_person);
-      form.append("position", post.position);
-      form.append("province", post.province);
-      form.append("district", post.district);
-
-      for (const key in post) {
-        form.append(key, post[key]);
-      }
-
-      console.log(form.data);
-
-      const res = await authApis(token).post(endpoints.roomseekings, form, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("✅ Post created:", res.data);
-
-      Alert.alert(
-        "Thành công",
-        "Bài đăng của bạn đã được tạo thành công!",
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              console.log("User acknowledged success alert");
-            },
-          },
-        ],
-        { cancelable: false }
-      );
-
-      setPost({
-        title: "",
-        content: "",
-        area: "",
-        limit_person: "1",
-        district: "",
-        province: "",
-        position: "",
-        price_min: "",
-        price_max: "",
-      });
-  
-      // Reset các label hiển thị
-      setSelectedProvinceLabel("");
-      setSelectedDistrictLabel("");
-    } catch (ex) {
-      console.log(ex);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-        >
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <Title style={{ marginBottom: 20 }}>Đăng bài tìm phòng</Title>
-
-        <Card style={{ padding: 20, borderRadius: 12 }}>
-          <TextInput
-            label="Tiêu đề"
-            value={post.title}
-            onChangeText={(val) => updateField(val, "title")}
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.title}
-          />
-          <TextInput
-            label="Nội dung"
-            value={post.content}
-            onChangeText={(val) => updateField(val, "content")}
-            mode="outlined"
-            multiline
-            numberOfLines={4}
-            style={{ marginBottom: 16 }}
-            error={!!errors.content}
-          />
-          <TextInput
-            label="Diện tích (m²)"
-            value={post.area}
-            onChangeText={(val) => updateField(val, "area")}
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.area}
-          />
-          <TextInput
-            label="Giới hạn người ở"
-            value={post.limit_person}
-            onChangeText={(val) => updateField(val.replace(/[^0-9]/g, ""), "limit_person")}
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.limit_person}
-          />
-          <TextInput
-            label="giá tối thiểu(VNĐ)"
-            value={post.price_min}
-            onChangeText={(val) => updateField(val, "price_min")}
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.limit_person}
-          />
-          <TextInput
-            label="Giá tối đa(VNĐ)"
-            value={post.price_max}
-            onChangeText={(val) => updateField(val, "price_max")}
-            keyboardType="numeric"
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.limit_person}
-          />
-
-
-          <HelperText type="info" visible>
-            * Tối thiểu là 1 người
-          </HelperText>
-          <TextInput
-            label="Khu vực"
-            value={post.position}
-            onChangeText={(val) => updateField(val, "position")}
-            mode="outlined"
-            style={{ marginBottom: 16 }}
-            error={!!errors.position}
-          />
-
-          {Object.keys(errors).length > 0 && (
-            <Text style={{ color: "red", marginBottom: 10 }}>
-              Vui lòng điền đầy đủ thông tin hợp lệ.
-            </Text>
-          )}
-
-          <Menu
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-            anchor={
-              <Button
-                onPress={() => setVisible(true)}
-                mode="outlined"
-                style={{ marginBottom: 16 }}
-                contentStyle={{ flexDirection: 'row-reverse' }}
-              >
-                {selectedProvinceLabel || "Chọn tỉnh/thành"}
-              </Button>
-            }>
-            {provinces.map((province) => (
-              <Menu.Item
-                key={province.value}
-                onPress={() => {
-                  updateField(province.value, "province"); // Lưu ID
-                  setSelectedProvinceLabel(province.label); // Hiển thị label
-                  loadDistricts(province.value); // Gọi huyện theo tỉnh
-                  setVisible(false);
                 }}
-                title={province.label}
-              />
 
-            ))}
-          </Menu>
-
-          <Menu
-            visible={visibleDistrict}
-            onDismiss={() => setVisibleDistrict(false)}
-            anchor={
-              <Button
-                onPress={() => setVisibleDistrict(true)}
-                mode="outlined"
-                style={{ marginBottom: 16 }}
-                contentStyle={{ flexDirection: 'row-reverse' }}
-              >
-                {selectedDistrictLabel || "Chọn quận/huyện"}
-              </Button>
-            }
-          >
-            {districts.map((district) => (
-              <Menu.Item
-                key={district.value}
-                onPress={() => {
-                  updateField(district.value, "district"); // Lưu ID
-                  setSelectedDistrictLabel(district.label); // Hiển thị label
-                  setVisibleDistrict(false);
-                }}
-                title={district.label}
-              />
-            ))}
-          </Menu>
-
-
-          <Button
-            mode="contained"
-            onPress={postCreate}
-            loading={loading}
-            disabled={loading}
-            style={{ marginTop: 8, borderRadius: 8, paddingVertical: 6 }}
-          >
-            Đăng bài
-          </Button>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
-    </KeyboardAvoidingView>
-  );
+            />
+        </SafeAreaView>
+    );
 };
-
-export default RoomSeekingForm;
+    
+export default MyPost;

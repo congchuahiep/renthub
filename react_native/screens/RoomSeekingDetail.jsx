@@ -27,11 +27,11 @@ import { formatDate, getRelativeTime } from "../utils/datetime";
 const RoomSeekingDetail = ({ route }) => {
 	const theme = useTheme();
 	const style = useStyle();
-
+	const [commentData, setCommentData] = useState();
 	const [roomSeeking, setRoomSeeking] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [comments, setComments] = useState();
-	 const navigation = useNavigation();
+	const navigation = useNavigation();
 
 	const { postIntanceId } = route?.params;
 
@@ -41,7 +41,7 @@ const RoomSeekingDetail = ({ route }) => {
 				endpoints["roomseeking-comments"](postIntanceId)
 			);
 			console.log(res.data);
-			setComments(res.data.results);
+			setCommentData(res.data);
 		} catch (ex) {
 			console.log(ex);
 		}
@@ -106,7 +106,6 @@ const RoomSeekingDetail = ({ route }) => {
 			);
 			console.log(res.data);
 			setRoomSeeking(res.data);
-			console.log(roomSeeking);
 		} catch (ex) {
 			console.log(ex);
 		} finally {
@@ -115,7 +114,6 @@ const RoomSeekingDetail = ({ route }) => {
 	};
 
 	useEffect(() => {
-		console.log(postIntanceId);
 		loadRoomSeekingPost();
 	}, []);
 
@@ -259,30 +257,30 @@ const RoomSeekingDetail = ({ route }) => {
 								Thông tin liên hệ
 							</Text>
 							<TouchableOpacity
-										onPress={() => navigation.navigate("ProfileUser", { userId: roomSeeking.owner.id })}
-									>
-							<View
-								style={{
-									flex: 1,
-									flexDirection: "row",
-									justifyContent: "center",
-									alignItems: "center",
-									gap: 24,
-									marginBottom: 16,
-								}}
+								onPress={() => navigation.navigate("ProfileUser", { userId: roomSeeking.owner.id })}
 							>
-								<Avatar.Image
-									source={{ uri: roomSeeking.owner.avatar }}
-									size={96}
-								/>
-								<View>
-									<Text style={[style.title_small]}>
-										{roomSeeking.owner.name}{" "}
-									</Text>
-									<Text>{roomSeeking.owner.email}</Text>
-									<Text>{roomSeeking.owner.phone_number}</Text>
+								<View
+									style={{
+										flex: 1,
+										flexDirection: "row",
+										justifyContent: "center",
+										alignItems: "center",
+										gap: 24,
+										marginBottom: 16,
+									}}
+								>
+									<Avatar.Image
+										source={{ uri: roomSeeking.owner.avatar }}
+										size={96}
+									/>
+									<View>
+										<Text style={[style.title_small]}>
+											{roomSeeking.owner.name}{" "}
+										</Text>
+										<Text>{roomSeeking.owner.email}</Text>
+										<Text>{roomSeeking.owner.phone_number}</Text>
+									</View>
 								</View>
-							</View>
 							</TouchableOpacity>
 						</Card.Content>
 					</Card>
@@ -293,14 +291,16 @@ const RoomSeekingDetail = ({ route }) => {
 
 			<Card style={[style.card, { flex: 1 }]}>
 				<CommentsList
-					comments={comments}
-					loading={loading}
+					commentData={commentData || { results: [], next: null }} // Đảm bảo giá trị mặc định
+					setCommentData={setCommentData}
 					onCommentPost={handleCommentPost}
 					onCommentReply={handleCommentReply}
 					loadRepliesComment={loadRepliesComment}
 					loadComments={loadComment}
 				/>
 			</Card>
+
+			<View style={{ height: 54 }} />
 		</ScrollView>
 	);
 };

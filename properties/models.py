@@ -44,7 +44,6 @@ class Property(BaseModel):
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": UserType.LANDLORD},
         related_name="properties",
-        null=True,
     )
 
     name = models.CharField(max_length=256)
@@ -53,24 +52,21 @@ class Property(BaseModel):
         "locations.Province",
         on_delete=models.SET_NULL,
         null=True,
-        blank=False,
         related_name="properties",
     )
     district = models.ForeignKey(
         "locations.District",
         on_delete=models.SET_NULL,
         null=True,
-        blank=False,
         related_name="properties",
     )
     ward = models.ForeignKey(
         "locations.Ward",
         on_delete=models.SET_NULL,
         null=True,
-        blank=False,
         related_name="properties",
     )
-    address = models.CharField(max_length=256, null=False, blank=False)
+    address = models.CharField(max_length=256)
 
     def __str__(self):
         return f"{self.name}"

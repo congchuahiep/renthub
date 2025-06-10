@@ -9,15 +9,19 @@ import RegionAddressSelect from "../screens/address/RegionAddressSelect";
 import StreetAddressSelect from "../screens/address/StreetAddressSelect";
 import ChatScreen from "../screens/Chat";
 import FollowerList from "../screens/FollowList";
+import MyPost from "../screens/MyPost";
 import ProfileDetail from "../screens/ProfileDetail";
 import ProfileUser from "../screens/ProfileUser";
 import PropertySellect from "../screens/property/PropertySelect";
+import PropertyCreate from "../screens/PropertyCreate";
+import PropertyDetail from "../screens/PropertyDetail";
 import Register from "../screens/Register";
 import RegisterLandlord from "../screens/RegisterLandlord";
 import RegisterTenant from "../screens/RegisterTenant";
 import RentalCreate from "../screens/RentalCreate";
 import RentalDetail from "../screens/RentalDetail";
 import RentalMapping from "../screens/RentalMapping";
+import RoomSeekingCreate from "../screens/RoomSeekingCreate";
 import RoomSeekingDetail from "../screens/RoomSeekingDetail";
 import Setting from "../screens/Setting";
 import TabNavigator from "./TabNavigator";
@@ -54,13 +58,13 @@ export default function StackNavigator() {
 			/>
 			<Stack.Screen
 				name="RoomSeekingDetail"
-				component={RoomSeekingDetail} options={({ route }) => ({
-					title: route.params.title
-						? route.params.title
-						: "Bài đăng tìm trọ",
+				component={RoomSeekingDetail}
+				options={({ route }) => ({
+					title: route.params.title ? route.params.title : "Bài đăng tìm trọ",
 					headerShown: true,
 					header: (props) => <AppbarDefault {...props} />,
-				})} />
+				})}
+			/>
 
 			<Stack.Screen
 				name="ProfileDetail"
@@ -155,6 +159,16 @@ export default function StackNavigator() {
 				})}
 			/>
 			<Stack.Screen
+				name="RentalMapping"
+				component={RentalMapping}
+				options={({ route }) => ({
+					title: "Tìm kiếm dãy trọ",
+					headerShown: true,
+					headerTransparent: true,
+					header: (props) => <RentalMapAppbar {...props} />,
+				})}
+			/>
+			<Stack.Screen
 				name="PropertySelect"
 				component={PropertySellect}
 				options={({ route }) => ({
@@ -165,14 +179,44 @@ export default function StackNavigator() {
 				})}
 			/>
 			<Stack.Screen
-				name="RentalMapping"
-				component={RentalMapping}
+				name="PropertyCreate"
+				component={PropertyCreate}
 				options={({ route }) => ({
-					title: "Tìm kiếm dãy trọ",
+					title: "Đăng ký dãy trọ mới",
 					headerShown: true,
-					headerTransparent: true,
-					header: (props) => <RentalMapAppbar {...props} />,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
 				})}
+			/>
+			<Stack.Screen
+				name="PropertyDetail"
+				component={PropertyDetail}
+				options={({ route }) => ({
+					title: "Chi tiết dãy trọ",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				})}
+			/>
+			<Stack.Screen
+				name="RoomSeekingCreate"
+				component={RoomSeekingCreate}
+				options={{
+					title: "Đăng bài tìm trọ",
+					headerShown: true,
+					headerTransparent: false,
+					header: (props) => <AppbarDefault {...props} />,
+				}}
+			/>
+			<Stack.Screen
+				name="MyPost"
+				component={MyPost}
+				// options={({ route }) => ({
+				// 	title: "Chi tiết dãy trọ",
+				// 	headerShown: true,
+				// 	headerTransparent: false,
+				// 	header: (props) => <AppbarDefault {...props} />,
+				// })}
 			/>
 		</Stack.Navigator>
 	);

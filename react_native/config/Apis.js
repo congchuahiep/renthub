@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// // Nhập biến môi trường
+// Nhập biến môi trường
 const BASE_URL = 'http://192.168.1.3:8000';
 
 export const endpoints = {
@@ -23,6 +23,7 @@ export const endpoints = {
 
   properties: "/properties/",
   propertyDetails: (property_id) => `/properties/${property_id}/`,
+  propertiesOfUser: (user_id) => `/properties/of-user/${user_id}/`,
   propertiesUserList: "/properties/my-properties/",
 
   tenantRegister: "/users/tenant-register/",
@@ -36,7 +37,12 @@ export const endpoints = {
   districts: "/districts/",
   wards: "/wards/",
 
-  utilities: "/utilities/"
+  utilities: "/utilities/",
+  my_room_seeking_post :"/roomseekings/my-roomseeking-posts/",
+  my_rental_post :"/rentals/my-rental-posts/",
+  rentals_update: (postId) => `/rentals/${postId}/`, 
+  roomseekings_update: (postId) => `/roomseekings/${postId}/`,
+
 };
 
 export const authApis = (token) => {

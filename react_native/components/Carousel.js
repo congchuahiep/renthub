@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, Image, FlatList, Dimensions, StyleSheet } from 'react-native';
-import { Chip, Icon, useTheme } from 'react-native-paper';
+import React, { useState } from "react";
+import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
+import { Chip, useTheme } from "react-native-paper";
 
 const Carousel = ({ images, badge }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const screenWidth = Dimensions.get('window').width;
+  const screenWidth = Dimensions.get("window").width;
   const theme = useTheme();
 
   const handleScroll = (event) => {
@@ -28,8 +28,8 @@ const Carousel = ({ images, badge }) => {
           </View>
         )}
       />
-      {/* 
-        Dấu chấm hiển thị số lượng ảnh 
+      {/*
+        Dấu chấm hiển thị số lượng ảnh
         #TODO: sửa lại dấu chấm trượt cho đúng ảnh
       */}
       <View style={styles.dotsContainer}>
@@ -45,45 +45,44 @@ const Carousel = ({ images, badge }) => {
                     : theme.colors.backdrop,
               },
               currentIndex === index ? styles.activeDot : styles.inactiveDot,
-
             ]}
           />
         ))}
       </View>
 
-      {badge &&
+      {badge && (
         <Chip
           icon={"square-rounded-outline"}
           // mode='outlined'
           compact={true}
-          style={{ position: 'absolute', bottom: 5, left: 5 }}
+          style={{ position: "absolute", bottom: 5, left: 5 }}
           // textStyle={{ color: theme.colors.primary }}
         >
           {badge}m²
         </Chip>
-      }
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1 / 1, // Đảm bảo khung trượt là hình vuông
     borderRadius: 8, // Bo cong khung trượt
-    overflow: 'hidden', // Đảm bảo nội dung bên trong không vượt ra ngoài
-    position: 'relative'
+    overflow: "hidden", // Đảm bảo nội dung bên trong không vượt ra ngoài
+    position: "relative",
   },
   imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     aspectRatio: 1 / 1, // Đảm bảo khung trượt là hình vuông
-    height: '100%'
+    height: "100%",
   },
   image: {
     aspectRatio: 1 / 1,
-    width: '100%',
-    resizeMode: 'cover', // Cắt ảnh để vừa khung hình vuông
+    width: "100%",
+    resizeMode: "cover", // Cắt ảnh để vừa khung hình vuông
   },
 
   dotsContainer: {
@@ -91,9 +90,9 @@ const styles = StyleSheet.create({
     bottom: 10,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 10,
   },
   dot: {
@@ -103,10 +102,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   activeDot: {
-    width: 16
+    width: 16,
   },
   inactiveDot: {
-    backgroundColor: '#ccccccaa', // Màu nhạt cho ảnh không được chọn
+    backgroundColor: "#ccccccaa", // Màu nhạt cho ảnh không được chọn
   },
 });
 

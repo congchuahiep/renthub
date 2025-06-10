@@ -215,7 +215,10 @@ class RentalPostSerializer(serializers.ModelSerializer):
         # Tạo RentalPost với post reference
         print("validated_data:", validated_data)
         rental_post = RentalPost.objects.create(
-            post=post, property=property, **validated_data
+            post=post,
+            property=property,
+            **validated_data,
+            active=True,
         )
 
         # Thêm utilities cho rental post
@@ -283,9 +286,11 @@ class RoomSeekingPostSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data["status"] = "pending"
+        validated_data["active"] = True
         post = PostReference.objects.create()
-        roomSeeking_post = RoomSeekingPost.objects.create(post=post, **validated_data)
+        roomSeeking_post = RoomSeekingPost.objects.create(
+            post=post, **validated_data
+        )
 
         return roomSeeking_post
 

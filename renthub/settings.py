@@ -42,7 +42,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '10.17.64.127',  # Android Emulator
+    "10.17.64.127",  # Android Emulator
+    "192.168.1.12",
     "localhost",
     "127.0.0.1",
     ".vercel.app",
@@ -88,7 +89,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware', # White noise
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # White noise
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -192,7 +193,6 @@ REST_FRAMEWORK = {
 }
 
 
-
 # Configuration for Cloudinary
 cloudinary.config(
     cloud_name="dmt4mvjdx",
@@ -207,7 +207,7 @@ GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 # Thiết lập địa chỉ IP cho Debug Toolbar, chỉ cho phép truy cập
 # vào debug toolbar ở địa chỉ localhost
 
-INTERNAL_IPS = ["127.0.0.1", "10.0.2.2","192.168.1.3"]
+INTERNAL_IPS = ["127.0.0.1", "10.0.2.2", "192.168.1.3"]
 
 # JWT Configuration
 SIMPLE_JWT = {

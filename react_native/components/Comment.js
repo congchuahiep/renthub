@@ -1,18 +1,20 @@
-// components/Comment.jsx
-import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { TouchableOpacity, View } from "react-native";
 import {
+	ActivityIndicator,
 	Avatar,
+	Button,
 	Text,
 	TextInput,
-	Button,
 	useTheme,
-	ActivityIndicator,
 } from "react-native-paper";
 import { getRelativeTime } from "../utils/datetime";
+import { useAuth } from "../config/auth";
 
 const Comment = ({ comment, onReplySubmit, loadRepliesComment }) => {
 	const theme = useTheme();
+
+	const { user } = useAuth();
 
 	const [isRepliesOpen, setIsRepliesOpen] = useState(false);
 	const [isReplyInputOpen, setIsReplyInputOpen] = useState(false);
@@ -62,7 +64,7 @@ const Comment = ({ comment, onReplySubmit, loadRepliesComment }) => {
 					flexDirection: "row",
 					alignItems: "flex-start",
 					gap: 8,
-					marginBottom: 6,
+					marginBottom: 4,
 					maxWidth: "100%",
 				}}
 			>
@@ -130,16 +132,18 @@ const Comment = ({ comment, onReplySubmit, loadRepliesComment }) => {
 					</Text>
 				</TouchableOpacity>
 
-				<TouchableOpacity onPress={handleToggleReplyInput}>
-					<Text
-						style={{
-							color: theme.colors.primary,
-							fontWeight: "600",
-						}}
-					>
-						{isReplyInputOpen ? "Hủy" : "Trả lời"}
-					</Text>
-				</TouchableOpacity>
+				{user && (
+					<TouchableOpacity onPress={handleToggleReplyInput}>
+						<Text
+							style={{
+								color: theme.colors.primary,
+								fontWeight: "600",
+							}}
+						>
+							{isReplyInputOpen ? "Hủy" : "Trả lời"}
+						</Text>
+					</TouchableOpacity>
+				)}
 			</View>
 
 			{/* Replies Section */}
@@ -164,7 +168,7 @@ const Comment = ({ comment, onReplySubmit, loadRepliesComment }) => {
 										reply.user?.avatar ? { uri: reply.user.avatar } : null
 									}
 								/>
-								{/* Reply omment Content */}
+								{/* Reply comment Content */}
 								<View
 									style={{
 										backgroundColor: theme.colors.surfaceDisabled,
@@ -189,7 +193,12 @@ const Comment = ({ comment, onReplySubmit, loadRepliesComment }) => {
 										>
 											{reply.user?.name}
 										</Text>
-										<Text style={{ color: theme.colors.onSurfaceDisabled, fontSize: 12 }}>
+										<Text
+											style={{
+												color: theme.colors.onSurfaceDisabled,
+												fontSize: 12,
+											}}
+										>
 											{getRelativeTime(reply.created_date)}
 										</Text>
 									</View>
