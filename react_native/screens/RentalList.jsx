@@ -33,6 +33,8 @@ const RentalList = () => {
 	const [showFilterModal, setShowFilterModal] = useState(false);
 	const [isFiltered, setIsFiltered] = useState(false);
 
+	const [nextPage, setNextPage] = useState(null);
+
 	// State lưu dữ liệu
 	const [rentalPosts, setRentalPosts] = useState([]);
 
@@ -55,6 +57,23 @@ const RentalList = () => {
 		await Apis.get(endpoints.rentals, { params })
 			.then((res) => {
 				setRentalPosts(res.data.results);
+				setNextPage(res.data.next);
+			})
+			.catch((err) => {
+				console.log(err);
+			})
+			.finally(() => {
+				setLoading(false);
+				setRefreshing(false);
+			});
+	};
+
+	const loadNextPage = async () => {
+		setLoading(true);
+		await Apis.get(nextPage)
+			.then((res) => {
+				setRentalPosts((prev) => [...prev, ...res.data.results]);
+				setNextPage(res.data.next);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -94,10 +113,16 @@ const RentalList = () => {
 		setIsCreateButtonExtended(currentScrollPosition <= 0);
 	};
 
+	const handleEndReached = () => {
+		if (!loading && nextPage) {
+			loadNextPage();
+		}
+	};
+
 	return (
 		<View style={{ position: "relative", flex: 1 }}>
 			<FlatList
-				style={[style.container]}
+				style={[style.container, { paddingBottom: 12 }]}
 				data={rentalPosts}
 				refreshControl={
 					<RefreshControl
@@ -145,9 +170,15 @@ const RentalList = () => {
 					)
 				}
 				ListFooterComponent={
-					loading ? <ActivityIndicator /> : <View style={{ height: 8 }} />
+					loading ? (
+						<ActivityIndicator size={24} style={{ padding: 12 }} />
+					) : (
+						<View style={{ height: 24 }} />
+					)
 				}
 				onScroll={handleOnScroll}
+				onEndReached={handleEndReached}
+				onEndReachedThreshold={0.7}
 			/>
 			{user?.user_type === "landlord" && (
 				<AnimatedFAB

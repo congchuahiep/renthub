@@ -1,6 +1,6 @@
 import { GoogleMaps } from "expo-maps";
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, ScrollView, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import {
 	ActivityIndicator,
 	AnimatedFAB,
@@ -26,6 +26,7 @@ const RentalDetail = ({ navigation, route }) => {
 	const theme = useTheme();
 	const style = useStyle();
 
+	const [keyboardVisible, setKeyboardVisible] = useState(false);
 	const [isPhoneButtonExtended, setIsPhoneButtonExtended] = useState(true);
 	const [loading, setLoading] = useState(false);
 
@@ -82,6 +83,28 @@ const RentalDetail = ({ navigation, route }) => {
 	useEffect(() => {
 		loadComment();
 	}, [rentalPost]);
+
+	useEffect(() => {
+		// Lắng nghe sự kiện mở bàn phím
+		const keyboardDidShowListener = Keyboard.addListener(
+			"keyboardDidShow",
+			() => {
+				setKeyboardVisible(true);
+			}
+		);
+		// Lắng nghe sự kiện đóng bàn phím
+		const keyboardDidHideListener = Keyboard.addListener(
+			"keyboardDidHide",
+			() => {
+				setKeyboardVisible(false);
+			}
+		);
+		// Cleanup listeners khi component unmount
+		return () => {
+			keyboardDidHideListener?.remove();
+			keyboardDidShowListener?.remove();
+		};
+	}, []);
 
 	// Khi trượt nút liên hệ sẽ thu nhỏ lại
 	const handleOnScroll = ({ nativeEvent }) => {
@@ -452,17 +475,18 @@ const RentalDetail = ({ navigation, route }) => {
 
 							<View style={{ height: 120 }} />
 
-							{/* TODO: TRIỂN KHAI NÚT LIÊN HỆ */}
 						</ScrollView>
 
-						<AnimatedFAB
-							icon={"phone"}
-							label={"Liên hệ ngay"}
-							extended={isPhoneButtonExtended}
-							onPress={() => console.log("Pressed")}
-							animateFrom={"right"}
-							style={{ position: "absolute", bottom: 42, right: 24 }}
-						/>
+						{!keyboardVisible && (
+							<AnimatedFAB
+								icon={"phone"}
+								label={"Liên hệ ngay"}
+								extended={isPhoneButtonExtended}
+								onPress={() => console.log("Pressed")}
+								animateFrom={"right"}
+								style={{ position: "absolute", bottom: 42, right: 24 }}
+							/>
+						)}
 					</View>
 				) : (
 					<ActivityIndicator

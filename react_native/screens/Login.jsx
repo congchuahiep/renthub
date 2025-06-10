@@ -123,6 +123,7 @@ const Login = () => {
 							style={{
 								color: theme.colors.onSurfaceVariant,
 								lineHeight: 20,
+								fontSize: 13,
 							}}
 							numberOfLines={4}
 						>
@@ -175,10 +176,6 @@ const Login = () => {
 						Đăng ký ngay
 					</Link>
 				</Text>
-				<Button onPress={() => navigation.navigate("RentalMapping")}>
-					TESTMAP
-				</Button>
-				<Button onPress={() => snackbar("XIN CHÀO!")}>TESTSNACKBAR</Button>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);

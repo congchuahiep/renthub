@@ -151,14 +151,12 @@ const RegisterLandlord = ({ navigation, route }) => {
 	 * Xử lý hoàn tất đăng ký
 	 */
 	const handleSubmit = async () => {
-		console.log("HẢ");
-
 		if (!handleValidateStep()) {
 			console.log("Validate thất bại");
 			return;
 		}
 
-    console.log("HẢ @@");
+		console.log("HẢ @@");
 
 		try {
 			setLoading(true);
@@ -199,6 +197,7 @@ const RegisterLandlord = ({ navigation, route }) => {
 				},
 			});
 		} catch (error) {
+      console.log(error);
 			if (error.response?.data) {
 				const apiErrors = {};
 				if (error.response.data.email) {

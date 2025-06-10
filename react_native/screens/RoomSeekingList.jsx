@@ -24,14 +24,12 @@ const RoomSeekingList = () => {
 	const navigation = useNavigation();
 
 	const [roomSeekings, setRoomSeekings] = useState([]);
-	const [page, setPage] = useState(1);
-	const [hasNextPage, setHasNextPage] = useState(true);
 
 	const [refreshing, setRefreshing] = useState(false);
 	const [isCreateButtonExtended, setIsCreateButtonExtended] = useState(true);
-	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-	const pageSize = 10;
+	const [loading, setLoading] = useState(false);
+	const [nextPage, setNextPage] = useState(null);
 
 	const statusTypeMapping = {
 		approved: "Đã kiểm duyệt",
@@ -41,18 +39,32 @@ const RoomSeekingList = () => {
 		rented: "Đã thuê",
 	};
 
-	const loadRoomSeekingPosts = async (pageToLoad = 1, refreshing = false) => {
+	const loadRoomSeekingPosts = async () => {
 		try {
-			// const res = await Apis.get(`${endpoints.roomseekings}?page=${pageToLoad}&page_size=${pageSize}`);
+			setLoading(true);
 			const res = await Apis.get(endpoints.roomseekings);
-			if (refreshing) {
-				setRoomSeekings(res.data.results);
-			} else {
-				setRoomSeekings((prev) => [...prev, ...res.data.results]);
-			}
-			setHasNextPage(res.data.next !== null);
+
+			setRoomSeekings(res.data.results);
+			setNextPage(res.data.next);
 		} catch (ex) {
 			console.error("Error loading posts:", ex);
+		} finally {
+			setLoading(false);
+			setRefreshing(false);
+		}
+	};
+
+	const loadNextPage = async () => {
+		try {
+			setLoading(true);
+			const res = await Apis.get(nextPage);
+
+			setRoomSeekings((prev) => [...prev, ...res.data.results]);
+			setNextPage(res.data.next);
+		} catch (ex) {
+			console.error("Error loading posts:", ex);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -62,23 +74,17 @@ const RoomSeekingList = () => {
 
 	const onRefresh = () => {
 		setRefreshing(true);
-		setPage(1);
-		loadRoomSeekingPosts(1, true).finally(() => setRefreshing(false));
+		loadRoomSeekingPosts();
 	};
 
 	const onEndReached = () => {
-		if (hasNextPage && !isLoadingMore) {
-			const nextPage = page + 1;
-			setIsLoadingMore(true);
-			loadRoomSeekingPosts(nextPage).finally(() => {
-				setPage(nextPage);
-				setIsLoadingMore(false);
-			});
+		if (!loading && nextPage) {
+			loadNextPage();
 		}
 	};
 
 	const renderFooter = () => {
-		if (!isLoadingMore) return null;
+		if (!loading) return null;
 		return (
 			<View style={{ paddingVertical: 20 }}>
 				<ActivityIndicator size="small" color={theme.colors.primary} />

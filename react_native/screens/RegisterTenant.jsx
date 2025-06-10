@@ -104,7 +104,6 @@ const RegisterTenant = ({ navigation }) => {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 
-			snackbar("Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
 			navigation.navigate("Home", {
 				screen: "Login",
 				params: {
