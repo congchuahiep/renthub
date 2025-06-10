@@ -272,10 +272,6 @@ class RentalPostViewSet(
             f"Rental post '{instance.title}' has been created successfully."
         )
 
-    def create(self, request, *args, **kwargs):
-        print(request.data)
-
-
 
 class RoomSeekingPostViewSet(
     viewsets.GenericViewSet,
